@@ -1,4 +1,5 @@
 <template>
+    <Loader v-if="loader" />
     <section id="home">
         <div class="container row">
             <div class="hero-left">
@@ -22,6 +23,7 @@
 <style scoped>
 #home {
     height: 600px;
+    padding-top: 80px;
 }
 #home > .container {
     height: 100%;
@@ -49,7 +51,6 @@
 .buttons > button:last-child {
     margin-bottom: 0;
 }
-
 .hero-right {
     flex-basis: 70%;
     padding-left: 10%;
@@ -59,6 +60,7 @@
 <script setup>
 const color = ref('');
 const colors = ref([]);
+let loader = ref(true);
 
 async function getPalette(argColor) {
     const { data } = await useFetch(() => `/api/getdata/`, {
@@ -86,7 +88,7 @@ function randomPalette(count) {
 }
 
 onMounted(() => {
-
+    setTimeout(() => loader.value = false, 1500)
 });
 
 </script>
