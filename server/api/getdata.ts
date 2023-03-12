@@ -1,8 +1,7 @@
 import { Configuration, OpenAIApi } from 'openai';
 
-const runtimeConfig = useRuntimeConfig();
 const configuration = new Configuration({
-    apiKey: runtimeConfig.apikey,
+    apiKey: process.env.OPENAI_API_KEY,
 });
 const openai = new OpenAIApi(configuration);
 
