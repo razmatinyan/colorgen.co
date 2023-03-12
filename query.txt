@@ -1,0 +1,48 @@
+Create one color palette of 5 colors for this color: "#56ab91", where two colors will be of another shade. Show the result in JSON format only like this: 
+"{
+    "colors": [
+           "color", "color", "color"
+     ]
+}".
+
+
+bgc function: 
+
+const element = document.querySelector('#block');
+
+let backgroundColor = getComputedStyle(element, null).getPropertyValue('background-color');
+
+let textColor;
+
+// to get the color in rgb format 
+let rgb = backgroundColor.replace(/^rgba?\(|\s+|\)$/g,'').split(',');
+
+// get the luminance of the color
+let luminance = 0.2126 * rgb[0] + 0.7152 * rgb[1] + 0.0722 * rgb[2];
+
+if (luminance < 128) {
+	textColor = '#FFFFFF';
+}
+else {
+	textColor = '#000000';
+}
+
+element.style.color = textColor;
+
+
+
+<div>
+            <button class="btn btn-medium btn-blue btn-width btn-padding-40" @click="getPalette()">Generate Palette</button>
+            <input type="text" v-model="color" placeholder="Paste your color...">
+        </div>
+    
+        <div
+        v-if="colors"
+        class="palette">
+            <div
+            v-for="item in colors[0]"
+            :key="item"
+            :style="{ 'background-color': item }"
+            class="single-color"
+            ></div>
+        </div>
