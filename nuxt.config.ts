@@ -3,9 +3,6 @@ export default defineNuxtConfig({
     typescript: {
         shim: false
     },
-    runtimeConfig: {
-        apikey: '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',
-    },
     imports: {
         dirs: [
           'utils/**'
