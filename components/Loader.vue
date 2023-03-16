@@ -1,7 +1,7 @@
 <template>
     <div id="loader">
         <div class="loader-in">
-            <span class="loader"></span>
+            <div class="loader"><div class="waves"></div></div>
         </div>
     </div>
 </template>
@@ -21,56 +21,59 @@
     height: 100%;
 }
 .loader {
-    position: relative;
-    width: 78px;
-    height: 78px;
-    border-radius: 50%;
-    box-sizing: border-box;
-    background: #fff;
-    border: 8px solid #131a1d;
-    overflow: hidden;
-    box-sizing: border-box;
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%,-50%);
+  overflow: hidden;
+  height: 150px;
+  width: 150px;
+  border: 1px solid transparent;
+  box-shadow: 0 0 0 2px rgb(25, 116, 253);
+  border-radius: 50%;
 }
-.loader::after {
-    content: '';
-    position: absolute;
-    left: 0;
-    top: -50%;
-    width: 100%;
-    height: 100%;
-    background: #263238 ;
-    z-index: 5;
-    border-bottom: 8px solid #131a1d;
-    box-sizing: border-box;
-    animation: eyeShade 3s infinite;
+
+.waves {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  border-radius: 50%;
+  background: rgb(30, 146, 255);
+  box-shadow: inset 0 0 50px rgb(0,0,0,.3);
 }
-.loader::before {
-    content: '';
-    position: absolute;
-    left: 20px;
-    bottom: 15px;
-    width: 32px;
-    z-index: 2;
-    height: 32px;
-    background: #111;
-    border-radius: 50%;
-    animation: eyeMove 3s infinite;
+
+.waves::before,
+.waves::after {
+  content: '';
+  position: absolute;
+  width: 200%;
+  height: 200%;
+  top: 0;
+  left: 50%;
+  transform: translate(-50%, -75%);
+  background: #000;
 }
-@keyframes eyeShade {
-    0%   { transform: translateY(0)}
-    20%   { transform: translateY(5px)}
-    40% , 50%   { transform: translateY(-5px)}
-    60%   { transform: translateY( -8px)}
-    75%   { transform: translateY( 5px)}
-    100%   { transform: translateY(0)}
+
+.waves::before {
+  border-radius: 45%;
+  background: rgb(248, 248, 248);
+  animation: wave 5s linear infinite;
 }
-@keyframes eyeMove {
-    0%   { transform: translate(0 , 0)}
-    20%   { transform: translate(0px , 5px)}
-    40% , 50%   { transform: translate(0px , -5px)}
-    60%   { transform: translate(-10px , -5px)}
-    75%   { transform: translate(-20px , 5px)}
-    100%   { transform: translate(0 , 0)}
+
+.waves::after {
+  border-radius: 40%;
+  background: rgb(255,255,255,.5);
+  animation: wave 10s linear infinite;
+}
+
+@keyframes wave {
+  0% {
+    transform: translate(-50%, -75%) rotate(0deg);
+  }
+
+  100% {
+    transform: translate(-50%, -75%) rotate(360deg);
+  }
 }
 </style>
 
