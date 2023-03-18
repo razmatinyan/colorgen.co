@@ -4,6 +4,7 @@
     --blue: #0066ff;
     --blue-hover: #005ce6;
     --white: #ffffff;
+    --text-black: #1a1a1a;
     --black: #000000;
     --dark: #202020;
     --gray: #c2c2c2;
@@ -46,7 +47,7 @@
 body, select, input, textarea, button {
 	font: normal 16px/1.5 'Inter', sans-serif;
     font-weight: 400;
-	color: var(--black);
+	color: var(--text-black);
 	outline: none;
 }
 a { 
@@ -92,6 +93,13 @@ body {
     width: 100%;
     padding: 0 30px;
     margin: 0 auto;
+}
+.paddings {
+    padding-left: 30px;
+    padding-right: 30px;
+}
+.cg-content {
+    padding-top: 80px;
 }
 
 /* Inputs */
@@ -153,6 +161,9 @@ textarea.full {
     text-decoration: none;
     transition: box-shadow var(--time-01), color var(--time-01), background var(--time-01);
     user-select: none;
+}
+.btn:hover {
+    text-decoration: none;
 }
 .btn-medium {
     border-radius: 10px;
