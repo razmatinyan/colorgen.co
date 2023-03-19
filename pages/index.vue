@@ -7,10 +7,10 @@
                         Generate Your Color Palettes
                     </h1>
                     <p class="hero-description">
-                        Lorem ipsum dolor sit amet consectetur adipisicing elit. Enim perspiciatis minima illo soluta vero adipisci totam minus fugiat. Ab iste odit expedita perferendis, aliquam tenetur blanditiis corporis eum saepe animi.
+                        Generate beautiful color palettes with our easy-to-use Color Palette Generator. Experiment with random palettes or select your own colors to create eye-catching designs in seconds.
                     </p>
                     <div class="buttons">
-                        <NuxtLink to="/palette/0066ff" class="button btn btn-medium btn-padding-40 btn-blue">Generate Palettes</NuxtLink>
+                        <NuxtLink to="/palette" class="button btn btn-medium btn-padding-40 btn-blue">Generate Palettes</NuxtLink>
                         <div class="input-wrapper">
                             <input 
                                 type="text" 
@@ -18,12 +18,18 @@
                                 class="hero-input full"
                                 placeholder="Paste your color here..."
                                 tabindex="-1"
-                                v-model="color">
+                                v-model="color"
+                                @input="showError = false"
+                                >
                             <button 
                                 class="input-button"
                                 @click="clickHandler()"
                                 v-html="startText"
                                 ></button>
+                            <span :class="{ 'show-error': showError }" class="error">
+                                <img src="@/assets/icons/warn.svg" alt="Warn">
+                                {{ errMessage }}
+                            </span>
                         </div>
                     </div>
                 </div>
@@ -58,6 +64,76 @@
 
 </template>
 
+
+<script setup>
+const color = ref('');
+let startText = ref('Start!');
+let errMessage = ref('');
+let showError = ref(false);
+
+async function getPalette(argColor) {
+    const { data } = await useFetch(() => `/api/getdata/`, {
+        params: {
+            color: argColor ?? color
+        }
+    });
+    colors.value.length = 0;
+    colors.value.push(JSON.parse(data.value.response).colors);
+    console.log(colors.value);
+    return colors;
+}
+
+function randomPalette(count) {
+    colors.value.length = 0;
+    const newPalette = [
+        '#' + Math.random().toString(16).slice(2, 8).toUpperCase(),
+        '#' + Math.random().toString(16).slice(2, 8).toUpperCase(),
+        '#' + Math.random().toString(16).slice(2, 8).toUpperCase(),
+        '#' + Math.random().toString(16).slice(2, 8).toUpperCase(),
+        '#' + Math.random().toString(16).slice(2, 8).toUpperCase()
+    ];
+    colors.value.push(newPalette);
+    return colors.value;
+}
+
+function clickHandler() {
+    let inputColor = color.value.trim();
+
+    if ( inputColor !== '' ) {
+        startText.value = '<div class="spinner"></div>';
+        let colorType = detectColorType(inputColor);
+
+        if ( colorType !== null ) {
+
+            let hex = '';
+            if ( colorType === 'rgb' ) {
+                hex = rgbToHex(inputColor);
+            } else if ( colorType === 'hex' ) {
+                hex = inputColor.charAt(0) === '#' ? inputColor.substring(1) : inputColor;
+            } else if ( colorType === 'rgba' ) {
+                hex = rgbaToHex(inputColor);
+            }
+
+            navigateTo(`/palette/${hex}`);
+
+        } else {
+            handleError('Input has invalid value!');
+            startText.value = 'Start!';
+        }
+
+    } else {
+        handleError('Input field cannot be empty!');
+    }
+    
+}
+
+function handleError(msg) {
+    errMessage.value = msg
+    showError.value = true
+}
+
+</script>
+
 <style scoped>
 #home {
     position: relative;
@@ -73,7 +149,7 @@
     width: 100%;
 }
 .hero-left > .in {
-    max-width: 430px;
+    max-width: 432px;
 }
 .main-title {
     font-size: var(--font-clamp);
@@ -126,6 +202,32 @@
 }
 .input-wrapper > .input-button:hover {
     background: var(--green-hover);
+}
+.error {
+    position: absolute;
+    width: 100%;
+    display: flex;
+    align-items: center;
+    padding: 6px 12px;
+    color: #fff;
+    background: var(--red);
+    border-radius: 8px;
+    bottom: 5px;
+    z-index: -1;
+    opacity: 0;
+    visibility: hidden;
+    transition: all .5s cubic-bezier(.7,0,.2,1);
+}
+.show-error.error {
+    opacity: 1;
+    visibility: visible;
+    bottom: -44px;
+}
+.error > img {
+    width: 18px;
+    height: 18px;
+    margin-right: 10px;
+    user-select: none;
 }
 .hero-right {
     position: absolute;
@@ -189,40 +291,3 @@ svg {
     }
 }
 </style>
-
-<script setup>
-const color = ref('');
-const colors = ref([]);
-let startText = ref('Start!');
-
-async function getPalette(argColor) {
-    const { data } = await useFetch(() => `/api/getdata/`, {
-        params: {
-            color: argColor ?? color
-        }
-    });
-    colors.value.length = 0;
-    colors.value.push(JSON.parse(data.value.response).colors);
-    console.log(colors.value);
-    return colors;
-}
-
-function randomPalette(count) {
-    colors.value.length = 0;
-    const newPalette = [
-        '#' + Math.random().toString(16).slice(2, 8).toUpperCase(),
-        '#' + Math.random().toString(16).slice(2, 8).toUpperCase(),
-        '#' + Math.random().toString(16).slice(2, 8).toUpperCase(),
-        '#' + Math.random().toString(16).slice(2, 8).toUpperCase(),
-        '#' + Math.random().toString(16).slice(2, 8).toUpperCase()
-    ];
-    colors.value.push(newPalette);
-    return colors.value;
-}
-
-function clickHandler() {
-    startText.value = '<div class="spinner"></div>';
-}
-
-
-</script>
