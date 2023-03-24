@@ -4,7 +4,7 @@
             <div class="hero-left">
                 <div class="in">
                     <h1 class="main-title">
-                        Generate Your Color Palettes
+                        Generate Cool Color Palettes
                     </h1>
                     <p class="hero-description">
                         Generate beautiful color palettes with our easy-to-use Color Palette Generator. Experiment with random palettes or select your own colors to create eye-catching designs in seconds.
@@ -132,6 +132,10 @@ function handleError(msg) {
     showError.value = true
 }
 
+onMounted(() => {
+    
+})
+
 </script>
 
 <style scoped>
@@ -146,7 +150,9 @@ function handleError(msg) {
     align-items: center;
 }
 .hero-left {
+    position: relative;
     width: 100%;
+    z-index: 3;
 }
 .hero-left > .in {
     max-width: 432px;
@@ -270,7 +276,9 @@ function handleError(msg) {
     width: 100%;
     animation: hueRotate2 10s infinite;
 }
-svg {
+.blob-1,
+.blob-2,
+.blob-3 {
     filter: blur(20px);
 }
 
