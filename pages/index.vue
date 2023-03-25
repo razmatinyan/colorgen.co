@@ -20,6 +20,7 @@
                                 tabindex="-1"
                                 v-model="color"
                                 @input="showError = false"
+                                @keyup.enter="clickHandler()"
                                 >
                             <button 
                                 class="input-button"
@@ -64,37 +65,12 @@
 
 </template>
 
-
 <script setup>
+const { $chroma } = useNuxtApp();
 const color = ref('');
 let startText = ref('Start!');
 let errMessage = ref('');
 let showError = ref(false);
-
-async function getPalette(argColor) {
-    const { data } = await useFetch(() => `/api/getdata/`, {
-        params: {
-            color: argColor ?? color
-        }
-    });
-    colors.value.length = 0;
-    colors.value.push(JSON.parse(data.value.response).colors);
-    console.log(colors.value);
-    return colors;
-}
-
-function randomPalette(count) {
-    colors.value.length = 0;
-    const newPalette = [
-        '#' + Math.random().toString(16).slice(2, 8).toUpperCase(),
-        '#' + Math.random().toString(16).slice(2, 8).toUpperCase(),
-        '#' + Math.random().toString(16).slice(2, 8).toUpperCase(),
-        '#' + Math.random().toString(16).slice(2, 8).toUpperCase(),
-        '#' + Math.random().toString(16).slice(2, 8).toUpperCase()
-    ];
-    colors.value.push(newPalette);
-    return colors.value;
-}
 
 function clickHandler() {
     let inputColor = color.value.trim();
@@ -104,18 +80,16 @@ function clickHandler() {
         let colorType = detectColorType(inputColor);
 
         if ( colorType !== null ) {
+            try {
+                let schemes = new Array('monochromatic', 'analogous', 'custom-1', 'custom-2', 'custom-3', 'custom-4', 'custom-5', 'custom-6', 'custom-7', 'custom-8', 'custom-9', 'custom-10');
+                let colors = generatePalette(inputColor, schemes[Math.floor((Math.random() * schemes.length))], 5);
+                colors = colors.map(c => c.substring(1)).join('-');
 
-            let hex = '';
-            if ( colorType === 'rgb' ) {
-                hex = rgbToHex(inputColor);
-            } else if ( colorType === 'hex' ) {
-                hex = inputColor.charAt(0) === '#' ? inputColor.substring(1) : inputColor;
-            } else if ( colorType === 'rgba' ) {
-                hex = rgbaToHex(inputColor);
+                navigateTo('/palette/'+colors);
+            } catch(e) {
+                handleError('Something went wrong! Try again later.');
+                startText.value = 'Start!';
             }
-
-            navigateTo(`/palette/${hex}`);
-
         } else {
             handleError('Input has invalid value!');
             startText.value = 'Start!';
@@ -124,7 +98,10 @@ function clickHandler() {
     } else {
         handleError('Input field cannot be empty!');
     }
-    
+}
+
+function randomNumber(min, max) {
+  return Math.floor(Math.random() * (max - min + 1) + min)
 }
 
 function handleError(msg) {

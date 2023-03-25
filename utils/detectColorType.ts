@@ -1,4 +1,4 @@
-export const detectColorType = (color) => {
+export const detectColorType = (color: string) => {
     if (typeof color !== 'string') {
       return null; // Return null if the input is not a string
     }
