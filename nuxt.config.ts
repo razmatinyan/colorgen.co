@@ -31,5 +31,5 @@ export default defineNuxtConfig({
     css: ["~/assets/reset.css", "~/assets/fonts.css", "~/assets/main.css"],
     alias: {
         "assets": "/<rootDir>/assets"
-    }
+    },
 })

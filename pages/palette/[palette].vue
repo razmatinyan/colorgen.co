@@ -1,6 +1,7 @@
 <template>
     <article id="palette">
         <div class="palette-wrapper">
+            <input type="text" v-model="color">
             <div class="colors">
                 <div
                 v-for="color in paletteArray"
@@ -17,9 +18,17 @@
 
 <script setup>
 const { $chroma } = useNuxtApp();
-const route = useRoute()
-const palette = computed(() => route.params.palette);
-const paletteArray = palette.value.split('-').map(c => '#' + c);
+let color = ref('');
+
+const route = useRoute();
+const { data } = await useFetch(`/api/palette/${route.params.palette}`)
+
+const palette = data.value;
+const paletteArray = palette.split('-').map(c => '#' + c);
+
+onMounted(() => {
+    color.value = localStorage.getItem('fromColor') ? localStorage.getItem('fromColor') : '';
+})
 </script>
 
 <style scoped>

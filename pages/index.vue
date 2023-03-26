@@ -71,6 +71,7 @@ const color = ref('');
 let startText = ref('Start!');
 let errMessage = ref('');
 let showError = ref(false);
+let schemes = computed(() => new Array('monochromatic', 'monoLight', 'monoDark', 'analogous', 'custom-1', 'custom-2', 'custom-3'));
 
 function clickHandler() {
     let inputColor = color.value.trim();
@@ -81,10 +82,10 @@ function clickHandler() {
 
         if ( colorType !== null ) {
             try {
-                let schemes = new Array('monochromatic', 'analogous', 'custom-1', 'custom-2', 'custom-3', 'custom-4', 'custom-5', 'custom-6', 'custom-7', 'custom-8', 'custom-9', 'custom-10');
-                let colors = generatePalette(inputColor, schemes[Math.floor((Math.random() * schemes.length))], 5);
+                let colors = generatePalette(inputColor, schemes.value[Math.floor((Math.random() * schemes.value.length))], 5);
                 colors = colors.map(c => c.substring(1)).join('-');
 
+                localStorage.setItem('fromColor', $chroma(color.value).hex());
                 navigateTo('/palette/'+colors);
             } catch(e) {
                 handleError('Something went wrong! Try again later.');
@@ -94,7 +95,7 @@ function clickHandler() {
             handleError('Input has invalid value!');
             startText.value = 'Start!';
         }
-
+        
     } else {
         handleError('Input field cannot be empty!');
     }
