@@ -170,6 +170,20 @@ textarea.full {
     width: 100%;
 }
 
+input::-webkit-outer-spin-button,
+input::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+
+input[type=number] {
+  -moz-appearance: textfield;
+}
+
+.v-color-picker-edit__input > input {
+    padding: 0;
+}
+
 /* Buttons */
 .btn {
     display: block;
@@ -232,6 +246,12 @@ textarea.full {
 .btn-green:hover {
     background: var(--green-hover);
 }
+.btn-min-width {
+    min-width: 230px;
+}
+.btn-min-width-200 {
+    min-width: 200px;
+}
 
 .spinner {
     width: 26px;
@@ -246,4 +266,17 @@ textarea.full {
     to {
      transform: rotate(360deg);
     }
+}
+
+.v-application__wrap {
+    min-height: auto !important;
+}
+.v-color-picker-canvas {
+    z-index: 4;
+}
+.v-color-picker-canvas__dot {
+    cursor: grabbing;
+}
+.material-icons-outlined {
+    font-size: 20px;
 }

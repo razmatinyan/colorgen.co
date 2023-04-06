@@ -31,15 +31,6 @@ export const generatePalette = (baseColor: string, scheme: string, numColors: nu
         case 'square':
             colors = $chroma.scale([color, color.set('hsl.h', '+90'), color.set('hsl.h', '+180'), color.set('hsl.h', '+270')]).colors(numColors);
             break;
-        case "custom-1":
-            colors = $chroma.scale([color.darken(1), color, color.brighten(2)]).colors(numColors);
-            break;
-        case "custom-2":
-            colors = $chroma.scale([color.darken(1), color, color.brighten(1)]).colors(numColors);
-            break;
-        case "custom-3":
-            colors = $chroma.scale([color.darken(2), color, color.brighten(1)]).colors(numColors);
-            break;
         default:
             throw new Error("Invalid color scheme.");
     }

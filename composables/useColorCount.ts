@@ -1,0 +1,1 @@
+export const useColorCount = () => useState<number>('count', () => 5);

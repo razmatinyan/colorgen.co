@@ -10,28 +10,7 @@
                         Generate beautiful color palettes with our easy-to-use Color Palette Generator. Experiment with random palettes or select your own colors to create eye-catching designs in seconds.
                     </p>
                     <div class="buttons">
-                        <NuxtLink to="/palette" class="button btn btn-medium btn-padding-40 btn-blue">Generate Palettes</NuxtLink>
-                        <div class="input-wrapper">
-                            <input 
-                                type="text" 
-                                id="hero-input" 
-                                class="hero-input full"
-                                placeholder="Paste your color here..."
-                                tabindex="-1"
-                                v-model="color"
-                                @input="showError = false"
-                                @keyup.enter="clickHandler()"
-                                >
-                            <button 
-                                class="input-button"
-                                @click="clickHandler()"
-                                v-html="startText"
-                                ></button>
-                            <span :class="{ 'show-error': showError }" class="error">
-                                <img src="@/assets/icons/warn.svg" alt="Warn">
-                                {{ errMessage }}
-                            </span>
-                        </div>
+                        <button @click="generateRandomPalette" class="button btn btn-medium btn-padding-40 btn-blue">Generate Palettes</button>
                     </div>
                 </div>
             </div>
@@ -67,47 +46,34 @@
 
 <script setup>
 const { $chroma } = useNuxtApp();
-const color = ref('');
-let startText = ref('Start!');
-let errMessage = ref('');
-let showError = ref(false);
-let schemes = computed(() => new Array('monochromatic', 'monoLight', 'monoDark', 'analogous', 'custom-1', 'custom-2', 'custom-3'));
+const schemes = useHomeSchemes();
+const count = useColorCount();
 
-function clickHandler() {
-    let inputColor = color.value.trim();
-
-    if ( inputColor !== '' ) {
-        startText.value = '<div class="spinner"></div>';
-        let colorType = detectColorType(inputColor);
-
-        if ( colorType !== null ) {
-            try {
-                let colors = generatePalette(inputColor, schemes.value[Math.floor((Math.random() * schemes.value.length))], 5);
-                colors = colors.map(c => c.substring(1)).join('-');
-
-                localStorage.setItem('fromColor', $chroma(color.value).hex());
-                navigateTo('/palette/'+colors);
-            } catch(e) {
-                handleError('Something went wrong! Try again later.');
-                startText.value = 'Start!';
-            }
-        } else {
-            handleError('Input has invalid value!');
-            startText.value = 'Start!';
+function generateRandomPalette() {
+    
+    if ( count.value <= 0 ) count.value = 5
+    else if ( count.value >= 15 ) count.value = 15
+    
+    let colors;
+    const randomType = randomNumber(1, 2);
+    
+    if ( randomType === 1 ) {
+        let inputColor = $chroma.random().hex();
+        colors = generatePalette(inputColor, schemes.value[Math.floor((Math.random() * schemes.value.length))], count.value);
+        colors = colors.map(c => c.substring(1)).join('-');
+    } else if ( randomType === 2 ) {
+        colors = new Array();
+        for( let i = 1; i <= count.value; i++ ) {
+            colors.push($chroma.random().hex());
         }
-        
-    } else {
-        handleError('Input field cannot be empty!');
+        colors = colors.map(c => c.substring(1)).join('-');
     }
+
+    navigateTo('/palette/'+colors);
 }
 
 function randomNumber(min, max) {
   return Math.floor(Math.random() * (max - min + 1) + min)
-}
-
-function handleError(msg) {
-    errMessage.value = msg
-    showError.value = true
 }
 
 onMounted(() => {
