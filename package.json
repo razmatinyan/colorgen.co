@@ -16,6 +16,7 @@
     "chroma-js": "^2.4.2",
     "material-icons": "^1.13.4",
     "openai": "^3.2.1",
+    "vuedraggable": "^4.1.0",
     "vuetify": "^3.1.12"
   }
 }

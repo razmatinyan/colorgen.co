@@ -7,22 +7,47 @@
     >
         <div class="options">
 
-            <div class="color-option">
+            <div class="color-option remove">
+                <div class="option-in remove-handler" @click="$emit('delete')">
+                    <v-tooltip
+                        open-delay="600"
+                        activator="parent"
+                        location="top"
+                    >Remove</v-tooltip>
+                    <span class="material-icons-outlined">close</span>
+                </div>
+            </div>
+
+            <div class="color-option sort">
+                <div class="option-in sort-handler">
+                    <v-tooltip
+                        open-delay="600"
+                        activator="parent"
+                        location="top"
+                    >Move</v-tooltip>
+                    <span class="material-icons-outlined">sync_alt</span>
+                </div>
+            </div>
+
+            <div class="color-option copy">
                 <div class="option-in" @click="copy()">
+                    <v-tooltip
+                        open-delay="600"
+                        activator="parent"
+                        location="top"
+                    >Copy</v-tooltip>
                     <span class="material-icons-outlined">content_copy</span>
                 </div>
             </div>
 
-            <div class="color-option">
+            <div class="color-option current-color">
 
                 <v-color-picker 
                     class="color-picker"
                     :model-value="props.modelValue"
                     :modes="['hex']"
                     dot-size="20"
-                    @update:model-value="{
-                        $emit('color-change', $event);
-                    }"
+                    @update:model-value="$emit('color-change', $event)"
                 ></v-color-picker>
 
                 <span 
@@ -34,7 +59,7 @@
 
                 <div 
                     class="overlay"
-                    @click="show = !show"
+                    @click="show = !show, $emit('done', $event)"
                 ></div>
 
             </div>
@@ -51,7 +76,7 @@ const props = defineProps({
         type: String
     },
     number: {
-
+        type: Number
     }
 });
 
@@ -65,11 +90,16 @@ function copy() {
 </script>
 
 <style scoped>
+.sortable-fallback {
+    opacity: 1 !important;
+}
+
 .color {
     width: auto;
     height: 100%;
     flex-basis: 100%;
 }
+
 .options {
     display: flex;
     flex-direction: column;
@@ -87,6 +117,27 @@ function copy() {
 .options > .color-option:first-child {
     margin-top: 0;
 }
+
+.color .options > .color-option:not(.color-option.current-color) {
+    opacity: 0;
+    visibility: hidden;
+    transition: opacity var(--time-02), visibility var(--time-02);
+}
+.color:hover .options > .color-option:not(.color-option.current-color) {
+    opacity: 1;
+    visibility: visible;
+}
+.color.sortable-chosen .options > .color-option.sort:not(.color-option.current-color) {
+    opacity: 1;
+    visibility: visible;
+}
+.color.light-color.sortable-chosen .options > .color-option.sort .sort-handler {
+    background-color: rgba(255, 255, 255, 0.1);
+}
+.color.dark-color.sortable-chosen .options > .color-option.sort .sort-handler {
+    background-color: rgba(0, 0, 0, 0.1);
+}
+
 .color-option > .option-in {
     display: flex;
     align-items: center;
@@ -98,6 +149,13 @@ function copy() {
     margin: 0 auto;
     cursor: pointer;
     transition: background var(--time-02);
+    user-select: none;
+}
+.color-option > .option-in.sort-handler {
+    cursor: grab;
+}
+.color.sortable-chosen .color-option > .option-in.sort-handler {
+    cursor: grabbing;
 }
 .light-color .options .option-in:hover,
 .light-color.color.show .options .option-in {
@@ -128,6 +186,7 @@ function copy() {
     border-radius: 10px;
     cursor: pointer;
     transition: background var(--time-02);
+    user-select: none;
 }
 .light-color .options .color-code:hover,
 .light-color.color.show .options .color-code {
@@ -137,6 +196,7 @@ function copy() {
 .dark-color.color.show .options .color-code {
     background: rgba(0, 0, 0, 0.1);
 }
+
 .overlay {
     display: none;
     position: fixed;

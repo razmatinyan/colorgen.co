@@ -34,5 +34,5 @@ export default defineNuxtConfig({
     css: ["material-icons/iconfont/outlined.css", "vuetify/styles/main.css", "~/assets/reset.css", "~/assets/fonts.css", "~/assets/main.css"],
     build: {
         transpile: ["vuetify"],
-    }
+    },
 })

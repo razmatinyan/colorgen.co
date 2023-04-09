@@ -268,6 +268,10 @@ input[type=number] {
     }
 }
 
+/* Vuetify */
+.v-application {
+    height: 100%;
+}
 .v-application__wrap {
     min-height: auto !important;
 }
@@ -277,6 +281,12 @@ input[type=number] {
 .v-color-picker-canvas__dot {
     cursor: grabbing;
 }
+.v-tooltip > .v-overlay__content {
+    background: var(--black) !important;
+    color: var(--white) !important;
+}
+
+/* Material Icons */
 .material-icons-outlined {
     font-size: 20px;
 }

@@ -19,28 +19,68 @@
             </div>
 
             <v-app>
-                <div class="colors">
-                    <Colors 
-                        v-for="(color, index) in state.paletteArray"
-                        :key="index"
-                        :color="color"
-                        :number="index"
-                        v-model:modelValue="state.paletteArray[index]"
-                        @color-change="setNewValue(index, $event)"
-                    />
-                </div>
+                <draggable
+                    class="colors"
+                    v-model="state.paletteArray"
+                    item-key="id"
+                    :key="1 + 1"
+                    @start="$event.item.style.opacity = 0, setCursor()"
+                    @end="$event.item.style.opacity = 1, removeCursor()"
+                    @update="changeRoute"
+                    forceFallback="true"
+                    direction="horizontal"
+                    dragClass="dragging"
+                    handle=".sort-handler"
+                    animation="200"
+                    >
+                    <template #item="{ color, index }">
+                        <PaletteColors
+                            :key="index"
+                            :color="state.paletteArray[index]"
+                            :number="index"
+                            v-model:modelValue="state.paletteArray[index]"
+                            @color-change="setNewValue(index, $event)"
+                            @delete="deleteColor(state.paletteArray[index])"
+                            @done="changeRoute"
+                        />
+                    </template>
+                </draggable>
             </v-app>
         </div>
     </article>
 </template>
 
 <script setup>
+import draggable from 'vuedraggable'
+
 const route = useRoute();
 const { data } = await useFetch(`/api/palette/${route.params.palette}`)
 const { $chroma } = useNuxtApp();
 
 const schemes = useHomeSchemes();
 const count = useColorCount();
+
+const palette = data.value;
+const state = reactive({
+    paletteArray: palette.split('-').map(c => '#' + c)
+});
+
+function changeRoute() {
+    const colors = state.paletteArray.map(c => c.substring(1)).join('-');
+    navigateTo('/palette/'+colors);
+}
+
+function deleteColor(event) {
+    state.paletteArray = state.paletteArray.filter(color => color !== event);
+    changeRoute();
+}
+
+function setCursor() {
+    document.documentElement.style.cursor = 'grabbing';
+}
+function removeCursor() {
+    document.documentElement.style.cursor = 'default';
+}
 
 function generateRandomPalette() {
 
@@ -71,26 +111,11 @@ function generateRandomPalette() {
 
 function setNewValue(index, value) {
     state.paletteArray[index] = value
-    console.log(state.paletteArray);
 }
-
-// function openColorPicker(event) {
-//     const element = document.getElementById(event.target.id);
-//     const currentPicker = element.previousSibling;
-//     element.classList.toggle('active');
-//     currentPicker.classList.toggle('show');
-//     // currentPicker.getProperty("--v-color-picker-color-hsv");
-//     const newColor = window.getComputedStyle(currentPicker).getPropertyValue('--v-color-picker-color-hsv');
-// }
 
 function randomNumber(min, max) {
   return Math.floor(Math.random() * (max - min + 1) + min)
 }
-
-const palette = data.value;
-const state = reactive({
-    paletteArray: palette.split('-').map(c => '#' + c)
-});
 
 function changePalette() {
     let first = firstColor.value !== '' ? $chroma(firstColor.value) : $chroma('#000');
@@ -113,19 +138,20 @@ function changePalette() {
 .palette-wrapper {
     height: 100%;
 }
-
 .palette-menu {
     display: flex;
     justify-content: center;
     padding: 16px 30px;
     border-bottom: 1px solid #e5e5e5;
 }
+
 .menu-item {
     margin-right: 20px;
 }
 .menu-item:last-child {
     margin-right: 0;
 }
+
 .menu-color {
     position: relative;
 }
@@ -139,6 +165,7 @@ function changePalette() {
     background: #fff;
     z-index: 2;
 }
+
 .menu-color > .inputs {
     position: relative;
 }

@@ -111,9 +111,6 @@ onMounted(() => {
     margin-bottom: 34px;
     color: var(--gray-3);
 }
-.buttons {
-    
-}
 .buttons > .button {
     margin-bottom: 14px;
 }
@@ -122,9 +119,6 @@ onMounted(() => {
 }
 .input-wrapper {
     position: relative;
-}
-.input-wrapper > input {
-    
 }
 .input-wrapper > input:focus {
     outline: var(--blue);
