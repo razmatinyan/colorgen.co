@@ -2,8 +2,9 @@
     <article id="palette">
         <div class="palette-wrapper">
             <div class="palette-menu">
+
                 <div class="menu-item menu-color">
-                    <label for="count">Colors Count</label>
+                    <label for="count" class="input-label">Colors Count</label>
                     <div class="inputs">
                         <input 
                             type="number" 
@@ -11,11 +12,27 @@
                             class="color-input"
                             v-model="count"
                         >
+                        <span class="count-arrow count-plus" @click="count++">
+                            <span class="material-icons-outlined">keyboard_arrow_up</span>
+                        </span>
+                        <span class="count-arrow count-minus" @click="count--">
+                            <span class="material-icons-outlined">keyboard_arrow_down</span>
+                        </span>
                     </div>
                 </div>
-                <div class="menu-item random-button">
-                    <button id="random-btn" @click="generateRandomPalette" class="btn btn-medium btn-border btn-min-width-200">Random</button>
+
+                <div class="menu-item method">
+                    <Select 
+                        :options="schemes"
+                        @select="selectedScheme($event)"
+                        :selected="selected"
+                    />
                 </div>
+
+                <div class="menu-item random-button">
+                    <button id="random-btn" @click="generateRandomPalette" class="btn btn-medium btn-blue btn-min-width-200">Generate</button>
+                </div>
+
             </div>
 
             <v-app>
@@ -35,6 +52,7 @@
                     >
                     <template #item="{ color, index }">
                         <PaletteColors
+                            :default="color"
                             :key="index"
                             :color="state.paletteArray[index]"
                             :number="index"
@@ -59,6 +77,7 @@ const { $chroma } = useNuxtApp();
 
 const schemes = useHomeSchemes();
 const count = useColorCount();
+const selected = ref('');
 
 const palette = data.value;
 const state = reactive({
@@ -70,9 +89,15 @@ function changeRoute() {
     navigateTo('/palette/'+colors);
 }
 
+function selectedScheme(option) {
+    selected.value = option
+}
+
 function deleteColor(event) {
-    state.paletteArray = state.paletteArray.filter(color => color !== event);
-    changeRoute();
+    if ( state.paletteArray.length !== 1 ) {
+        state.paletteArray = state.paletteArray.filter(color => color !== event);
+        changeRoute();
+    }
 }
 
 function setCursor() {
@@ -141,6 +166,7 @@ function changePalette() {
 .palette-menu {
     display: flex;
     justify-content: center;
+    align-items: center;
     padding: 16px 30px;
     border-bottom: 1px solid #e5e5e5;
 }
@@ -155,7 +181,7 @@ function changePalette() {
 .menu-color {
     position: relative;
 }
-.menu-color > label {
+.menu-color > .input-label {
     display: block;
     color: var(--text-black);
     font-size: 13px;
@@ -164,16 +190,46 @@ function changePalette() {
     left: 13px;
     background: #fff;
     z-index: 2;
+    user-select: none;
 }
 
 .menu-color > .inputs {
     position: relative;
 }
 .menu-color > .inputs > .color-input {
-    max-width: 200px;
+    max-width: 150px;
     text-align: center;
-    padding: 0;
+    padding: 0 7px 0 0;
 }
+.menu-color .count-arrow {
+    position: absolute;
+    display: block;
+    right: 0;
+    height: 23px;
+    cursor: pointer;
+    border: 1px solid var(--gray);
+    transition: border var(--time-02);
+    user-select: none;
+}
+.menu-color .count-arrow:hover {
+    border-color: var(--black);
+}
+.menu-color .count-arrow.count-plus {
+    top: 0;
+    border-top-right-radius: 10px;
+    border-bottom-color: transparent;
+}
+.menu-color .count-arrow.count-plus:hover {
+    border-bottom-color: var(--black);
+}
+.menu-color .count-arrow.count-minus {
+    bottom: 0;
+    border-bottom-right-radius: 10px;
+}
+.menu-color .count-arrow > span {
+    font-size: 23px;
+}
+
 .menu-color > .inputs > .color-picker {
     position: absolute;
     top: 100%;
@@ -195,9 +251,3 @@ function changePalette() {
     height: 100%;
 }
 </style>
-
-<!--
-    :style="{ 'background-color': color, 'color': $chroma.contrast(color, 'white') >= $chroma.contrast(color, 'black') ? 'white' : 'black' }"
-
-
-  -->

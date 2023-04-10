@@ -4,31 +4,31 @@ export const generatePalette = (baseColor: string, scheme: string, numColors: nu
     
     let colors;
     switch(scheme) {
-        case "monochromatic":
+        case "Monochromatic":
             colors = $chroma.scale([color.darken(2), color, color.brighten(2)]).colors(numColors);
             break;
-        case "monoLight": 
+        case "Mono Light": 
             colors = $chroma.scale(['white', color.hex()]).mode('lab').colors(numColors);
             break;
-        case "monoDark": 
+        case "Mono Dark": 
             colors = $chroma.scale(['black', color.hex()]).mode('lab').colors(numColors);
             break;
-        case "analogous":
+        case "Analogous":
             colors = $chroma.scale([color.set('hsl.h', '+20'), color, color.set('hsl.h', '-20')]).colors(numColors);
             break;
-        case "complementary":
+        case "Complementary":
             colors = $chroma.scale([color, color.set('hsl.h', '+180')]).colors(numColors);
             break;
-        case "split_complementary":
+        case "Split Complementary":
             colors = $chroma.scale([color, color.set('hsl.h', '+180')]).mode('lab').colors(numColors);
             break;
-        case "triadic":
+        case "Triadic":
             colors = $chroma.scale([color, color.set('hsl.h', '+120'), color.set('hsl.h', '-120')]).colors(numColors);
             break;
-        case "tetradic":
+        case "Tetradic":
             colors = $chroma.scale([color, color.set('hsl.h', '+90'), color.set('hsl.h', '+180'), color.set('hsl.h', '-90')]).colors(numColors);
             break;
-        case 'square':
+        case 'Square':
             colors = $chroma.scale([color, color.set('hsl.h', '+90'), color.set('hsl.h', '+180'), color.set('hsl.h', '+270')]).colors(numColors);
             break;
         default:
