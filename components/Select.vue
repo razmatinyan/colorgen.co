@@ -7,7 +7,7 @@
         <transition name="fade" appear>
             <div class="options" v-if="showOptions">
                 <span 
-                    v-for="option in options"
+                    v-for="option in allOptions"
                     :key="option"
                     class="option"
                     :class="{ 'selected': selected === option }"
@@ -15,6 +15,7 @@
                 >
                     {{ option }}
                 </span>
+
             </div>
         </transition>
     </div>
@@ -47,6 +48,9 @@ export default {
             default() {
                 return ''
             }
+        },
+        customOptions: {
+            type: Array,
         }
     },
     data() {
@@ -59,7 +63,12 @@ export default {
             this.$emit('select', option);
             this.showOptions = false;
         }
-    }
+    },
+    computed: {
+        allOptions() {
+            return [...this.customOptions, ...this.options]
+        }
+    },
 }
 </script>
 

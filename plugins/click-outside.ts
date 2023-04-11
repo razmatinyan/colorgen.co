@@ -1,15 +1,15 @@
-export default defineNuxtPlugin(nuxtApp => {
-    nuxtApp.VueApp.directive('click-outside', {
-        beforeMount (el: any, binding: any, vnode: any) {
-            el.clickOutsideEvent = function (event: Event) {
-                if (!(el === event.target || el.contains(event.target))) {
-                    vnode.context[binding.expression](event);
-                }
-            };
-            document.body.addEventListener('click', el.clickOutsideEvent);
+export default defineNuxtPlugin(nuxt => {
+    nuxt.vueApp.directive('click-outside', {
+        mounted(el, binding, vnode) {
+          el.clickOutsideEvent = function(event) {
+            if (!(el === event.target || el.contains(event.target))) {
+              binding.value(event, el);
+            }
+          };
+          document.body.addEventListener('click', el.clickOutsideEvent);
         },
-        unmounted (el: any) {
-            document.body.removeEventListener('click', el.clickOutsideEvent);
+        unmounted(el) {
+          document.body.removeEventListener('click', el.clickOutsideEvent);
         }
-    });
+    })
 })

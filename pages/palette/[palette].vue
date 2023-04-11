@@ -26,6 +26,7 @@
                         :options="schemes"
                         @select="selectedScheme($event)"
                         :selected="selected"
+                        :customOptions="['Auto']"
                     />
                 </div>
 
@@ -77,7 +78,10 @@ const { $chroma } = useNuxtApp();
 
 const schemes = useHomeSchemes();
 const count = useColorCount();
-const selected = ref('');
+const selected = useState('selected', () => '');
+
+const randomScheme = schemes.value[Math.floor((Math.random() * schemes.value.length))];
+const scheme = useState('scheme', () => 'Auto');
 
 const palette = data.value;
 const state = reactive({
@@ -86,11 +90,20 @@ const state = reactive({
 
 function changeRoute() {
     const colors = state.paletteArray.map(c => c.substring(1)).join('-');
-    navigateTo('/palette/'+colors);
+
+    if ( colors ) {
+        navigateTo('/palette/'+colors);
+    }
 }
 
 function selectedScheme(option) {
     selected.value = option
+
+    if ( option === 'Auto' ) {
+        scheme.value = 'Auto'
+    } else {
+        scheme.value = option
+    }
 }
 
 function deleteColor(event) {
@@ -109,6 +122,16 @@ function removeCursor() {
 
 function generateRandomPalette() {
 
+    let schemeRes = '';
+
+    if ( scheme.value === 'Auto' ) {
+        schemeRes = schemes.value[Math.floor((Math.random() * schemes.value.length))];
+    } else {
+        schemeRes = scheme.value; 
+    }
+
+    console.log(schemeRes);
+
     if ( count.value <= 0 ) count.value = 5
     else if ( count.value >= 15 ) count.value = 15
 
@@ -118,7 +141,7 @@ function generateRandomPalette() {
     if ( randomType === 1 ) {
 
         let inputColor = $chroma.random().hex();
-        colors = generatePalette(inputColor, schemes.value[Math.floor((Math.random() * schemes.value.length))], count.value);
+        colors = generatePalette(inputColor, schemeRes, count.value);
         colors = colors.map(c => c.substring(1)).join('-');
 
     } else if ( randomType === 2 ) {

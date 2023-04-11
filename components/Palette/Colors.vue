@@ -1,8 +1,15 @@
 <template>
     <div
     class="color"
-    :class="{ 'dark-color': $chroma(props.color).luminance() >= 0.5, 'light-color': $chroma(props.color).luminance() <= 0.5, 'show': show }"
-    :style="{ 'background-color': props.color, 'color': $chroma(props.color).luminance() >= 0.5 ? '#000' : '#fff' }"
+    :class="{
+        'dark-color': $chroma(props.color).luminance() >= 0.5,
+        'light-color': $chroma(props.color).luminance() <= 0.5,
+        'show': show 
+    }"
+    :style="{
+        'background-color': props.color,
+        'color': $chroma(props.color).luminance() >= 0.5 ? '#000' : '#fff'
+    }"
     :id="number + '-' + props.color.substring(1)"
     >
         <div class="options">
@@ -77,7 +84,7 @@ const props = defineProps({
     },
     number: {
         type: Number
-    }
+    },
 });
 
 const show = ref(false)
