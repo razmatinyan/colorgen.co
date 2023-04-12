@@ -37,7 +37,7 @@
             </div>
 
             <div class="color-option copy">
-                <div class="option-in" @click="copy()">
+                <div class="option-in" @click="copy(), $emit('copied', props.color)">
                     <v-tooltip
                         open-delay="600"
                         activator="parent"

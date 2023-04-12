@@ -51,7 +51,7 @@ export default {
         },
         customOptions: {
             type: Array,
-        }
+        },
     },
     data() {
         return {
@@ -62,7 +62,7 @@ export default {
         selectOption(option) {
             this.$emit('select', option);
             this.showOptions = false;
-        }
+        },
     },
     computed: {
         allOptions() {
@@ -101,7 +101,7 @@ export default {
     outline: none;
     transition: border var(--time-01);
     cursor: pointer;
-    z-index: 1002;
+    z-index: 2;
 }
 .c-sel-header:hover,
 .c-sel-header.opened {
@@ -113,14 +113,12 @@ export default {
     text-overflow: ellipsis;
     white-space: nowrap;
 }
-.c-sel-header > span {
 
-}
 .c-sel-select .options {
     position: absolute;
     top: 50px;
     width: 100%;
-    z-index: 1001;
+    z-index: 1;
     background: #fff;
     padding: 10px;
     border-radius: 10px;

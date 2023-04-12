@@ -198,6 +198,10 @@ input[type=number] {
     transition: box-shadow var(--time-01), color var(--time-01), background var(--time-01);
     user-select: none;
 }
+.btn-flex {
+    display: flex;
+    align-items: center;
+}
 .btn:hover {
     text-decoration: none;
 }
@@ -254,6 +258,13 @@ input[type=number] {
     min-width: 200px;
 }
 
+.btn-with-icon {
+    padding: 0 14px 0 20px;
+}
+.btn-icon {
+    margin-left: 10px;
+}
+
 .spinner {
     width: 26px;
     height: 26px;
@@ -290,4 +301,5 @@ input[type=number] {
 /* Material Icons */
 .material-icons-outlined {
     font-size: 20px;
+    user-select: none;
 }

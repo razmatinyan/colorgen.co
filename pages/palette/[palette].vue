@@ -1,5 +1,6 @@
 <template>
     <article id="palette">
+
         <div class="palette-wrapper">
             <div class="palette-menu">
 
@@ -23,15 +24,24 @@
 
                 <div class="menu-item method">
                     <Select 
+                        ref="selectChild"
                         :options="schemes"
                         @select="selectedScheme($event)"
                         :selected="selected"
                         :customOptions="['Auto']"
+                        v-click-outside="handleClickOutside"
                     />
                 </div>
 
                 <div class="menu-item random-button">
                     <button id="random-btn" @click="generateRandomPalette" class="btn btn-medium btn-blue btn-min-width-200">Generate</button>
+                </div>
+
+                <div class="menu-item download">
+                    <button class="btn btn-medium btn-border btn-flex btn-with-icon" @click="handleDownload">
+                        Export
+                        <span class="material-icons-outlined btn-icon">file_download</span>
+                    </button>
                 </div>
 
             </div>
@@ -41,7 +51,6 @@
                     class="colors"
                     v-model="state.paletteArray"
                     item-key="id"
-                    :key="1 + 1"
                     @start="$event.item.style.opacity = 0, setCursor()"
                     @end="$event.item.style.opacity = 1, removeCursor()"
                     @update="changeRoute"
@@ -50,7 +59,7 @@
                     dragClass="dragging"
                     handle=".sort-handler"
                     animation="200"
-                    >
+                >
                     <template #item="{ color, index }">
                         <PaletteColors
                             :default="color"
@@ -61,11 +70,17 @@
                             @color-change="setNewValue(index, $event)"
                             @delete="deleteColor(state.paletteArray[index])"
                             @done="changeRoute"
+                            @copied="showToast('You copied this color: ', 'info', $event)"
                         />
                     </template>
                 </draggable>
             </v-app>
         </div>
+
+    <Teleport to="body">
+        <Toast ref="toast" />
+    </Teleport>
+
     </article>
 </template>
 
@@ -73,7 +88,7 @@
 import draggable from 'vuedraggable'
 
 const route = useRoute();
-const { data } = await useFetch(`/api/palette/${route.params.palette}`)
+const { data } = await useFetch(`/api/palette/${route.params.palette}`);
 const { $chroma } = useNuxtApp();
 
 const schemes = useHomeSchemes();
@@ -85,8 +100,20 @@ const scheme = useState('scheme', () => 'Auto');
 
 const palette = data.value;
 const state = reactive({
-    paletteArray: palette.split('-').map(c => '#' + c)
+    paletteArray: palette.split('-').map(c => '#' + c),
 });
+
+const selectChild = ref(null);
+function handleClickOutside() {
+    if ( selectChild.value.showOptions === true ) {
+        selectChild.value.showOptions = false
+    }
+}
+
+const toast = ref(null);
+function showToast(message, type, color) {
+    toast.value.show(message, type, color);
+}
 
 function changeRoute() {
     const colors = state.paletteArray.map(c => c.substring(1)).join('-');
@@ -107,10 +134,16 @@ function selectedScheme(option) {
 }
 
 function deleteColor(event) {
-    if ( state.paletteArray.length !== 1 ) {
+    if ( state.paletteArray.length !== 2 ) {
         state.paletteArray = state.paletteArray.filter(color => color !== event);
+        count.value--;
         changeRoute();
     }
+}
+
+function handleDownload() {
+    const colors = state.paletteArray.map(c => c.substring(1)).join('-');
+    downloadColors(colors, '.colors');
 }
 
 function setCursor() {
@@ -130,10 +163,8 @@ function generateRandomPalette() {
         schemeRes = scheme.value; 
     }
 
-    console.log(schemeRes);
-
     if ( count.value <= 0 ) count.value = 5
-    else if ( count.value >= 15 ) count.value = 15
+    else if ( count.value >= 10 ) count.value = 10
 
     let colors;
     const randomType = randomNumber(1, 2);
