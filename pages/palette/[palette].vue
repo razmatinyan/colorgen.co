@@ -32,15 +32,30 @@
                         v-click-outside="handleClickOutside"
                     />
                 </div>
+				
+				<div class="menu-item seperator">
+					<span></span>
+				</div>
 
                 <div class="menu-item random-button">
                     <button id="random-btn" @click="generateRandomPalette" class="btn btn-medium btn-blue btn-min-width-200">Generate</button>
                 </div>
 
+				<div class="menu-item seperator">
+					<span></span>
+				</div>
+
                 <div class="menu-item download">
                     <button class="btn btn-medium btn-border btn-flex btn-with-icon" @click="handleDownload">
                         Export
                         <span class="material-icons-outlined btn-icon">file_download</span>
+                    </button>
+                </div>
+
+                <div class="menu-item copy-url">
+                    <button class="btn btn-medium btn-border btn-flex btn-with-icon" @click="handleCopyURL">
+                        Copy URL
+                        <span class="material-icons-outlined btn-icon">link</span>
                     </button>
                 </div>
 
@@ -77,9 +92,9 @@
             </v-app>
         </div>
 
-    <Teleport to="body">
-        <Toast ref="toast" />
-    </Teleport>
+        <Teleport to="body">
+            <Toast ref="toast" />
+        </Teleport>
 
     </article>
 </template>
@@ -90,6 +105,7 @@ import draggable from 'vuedraggable'
 const route = useRoute();
 const { data } = await useFetch(`/api/palette/${route.params.palette}`);
 const { $chroma } = useNuxtApp();
+const config = useRuntimeConfig()
 
 const schemes = useHomeSchemes();
 const count = useColorCount();
@@ -98,29 +114,28 @@ const selected = useState('selected', () => '');
 const randomScheme = schemes.value[Math.floor((Math.random() * schemes.value.length))];
 const scheme = useState('scheme', () => 'Auto');
 
+const toast = ref(null);
+const selectChild = ref(null);
+
 const palette = data.value;
 const state = reactive({
     paletteArray: palette.split('-').map(c => '#' + c),
 });
 
-const selectChild = ref(null);
 function handleClickOutside() {
     if ( selectChild.value.showOptions === true ) {
         selectChild.value.showOptions = false
     }
 }
 
-const toast = ref(null);
 function showToast(message, type, color) {
     toast.value.show(message, type, color);
 }
 
-function changeRoute() {
-    const colors = state.paletteArray.map(c => c.substring(1)).join('-');
+function handleCopyURL() {
+	copyURL(`${config.public.BASE_URL}${route.fullPath}`);
 
-    if ( colors ) {
-        navigateTo('/palette/'+colors);
-    }
+	toast.value.show('You copied the current page URL.', 'info');
 }
 
 function selectedScheme(option) {
@@ -167,7 +182,7 @@ function generateRandomPalette() {
     else if ( count.value >= 10 ) count.value = 10
 
     let colors;
-    const randomType = randomNumber(1, 2);
+    const randomType = scheme.value === 'Auto' ? randomNumber(1, 2) : 1;
     
     if ( randomType === 1 ) {
 
@@ -186,6 +201,15 @@ function generateRandomPalette() {
     }
 
     navigateTo('/palette/'+colors);
+
+}
+
+function changeRoute() {
+    const colors = state.paletteArray.map(c => c.substring(1)).join('-');
+
+    if ( colors ) {
+        navigateTo('/palette/'+colors);
+    }
 }
 
 function setNewValue(index, value) {
@@ -193,7 +217,7 @@ function setNewValue(index, value) {
 }
 
 function randomNumber(min, max) {
-  return Math.floor(Math.random() * (max - min + 1) + min)
+	return Math.floor(Math.random() * (max - min + 1) + min)
 }
 
 function changePalette() {
@@ -221,7 +245,7 @@ function changePalette() {
     display: flex;
     justify-content: center;
     align-items: center;
-    padding: 16px 30px;
+    padding: 14px 30px;
     border-bottom: 1px solid #e5e5e5;
 }
 
@@ -232,16 +256,30 @@ function changePalette() {
     margin-right: 0;
 }
 
+.menu-item > button {
+    height: 40px;
+    line-height: 39px;
+}
+
+.menu-item.seperator > span[data-v-884bd382] {
+    width: 1px;
+    height: 30px;
+    background: rgba(0, 0, 0, 0.1);
+    user-select: none;
+    pointer-events: none;
+    display: block;
+}
+
 .menu-color {
     position: relative;
 }
 .menu-color > .input-label {
     display: block;
     color: var(--text-black);
-    font-size: 13px;
+    font-size: 12px;
     position: absolute;
-    top: -9px;
-    left: 13px;
+    top: -8px;
+    left: 32px;
     background: #fff;
     z-index: 2;
     user-select: none;
@@ -254,12 +292,14 @@ function changePalette() {
     max-width: 150px;
     text-align: center;
     padding: 0 7px 0 0;
+    height: 40px;
+    line-height: 39px;
 }
 .menu-color .count-arrow {
     position: absolute;
     display: block;
     right: 0;
-    height: 23px;
+    height: 20px;
     cursor: pointer;
     border: 1px solid var(--gray);
     transition: border var(--time-02);
@@ -281,7 +321,7 @@ function changePalette() {
     border-bottom-right-radius: 10px;
 }
 .menu-color .count-arrow > span {
-    font-size: 23px;
+    font-size: 20px;
 }
 
 .menu-color > .inputs > .color-picker {

@@ -47,6 +47,17 @@
                 </div>
             </div>
 
+            <div class="color-option lock">
+                <div class="option-in" @click="copy(), $emit('lock', props.color)">
+                    <v-tooltip
+                        open-delay="600"
+                        activator="parent"
+                        location="top"
+                    >Lock</v-tooltip>
+                    <span class="material-icons-outlined">lock_open</span>
+                </div>
+            </div>
+
             <div class="color-option current-color">
 
                 <v-color-picker 

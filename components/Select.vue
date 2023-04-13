@@ -92,10 +92,10 @@ export default {
     align-items: center;
     justify-content: space-between;
     min-width: 200px;
-    height: 46px;
+    height: 40px;
     padding: 0 10px 0 20px;
     background: #fff;
-    line-height: 45px;
+    line-height: 39px;
     border-radius: 10px;
     border: 1px solid var(--gray);
     outline: none;

@@ -8,6 +8,11 @@ export default defineNuxtConfig({
           'utils/**'
         ]
     },
+    runtimeConfig: {
+        public: {
+            BASE_URL: 'colorgen.co'
+        }
+    },
     app: {
         head: {
             title: 'Color Palette Generator - Create Stunning Color Schemes Online | colorgen.co',
