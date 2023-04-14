@@ -86,6 +86,7 @@
                             @delete="deleteColor(state.paletteArray[index])"
                             @done="changeRoute"
                             @copied="showToast('You copied this color: ', 'info', $event)"
+                            @lock="handleLock($event)"
                         />
                     </template>
                 </draggable>
@@ -105,7 +106,7 @@ import draggable from 'vuedraggable'
 const route = useRoute();
 const { data } = await useFetch(`/api/palette/${route.params.palette}`);
 const { $chroma } = useNuxtApp();
-const config = useRuntimeConfig()
+const config = useRuntimeConfig();
 
 const schemes = useHomeSchemes();
 const count = useColorCount();
@@ -121,6 +122,7 @@ const palette = data.value;
 const state = reactive({
     paletteArray: palette.split('-').map(c => '#' + c),
 });
+const lockedColors = useState('locked');
 
 function handleClickOutside() {
     if ( selectChild.value.showOptions === true ) {
@@ -136,6 +138,10 @@ function handleCopyURL() {
 	copyURL(`${config.public.BASE_URL}${route.fullPath}`);
 
 	toast.value.show('You copied the current page URL.', 'info');
+}
+
+function handleLock(color) {
+    return true;
 }
 
 function selectedScheme(option) {

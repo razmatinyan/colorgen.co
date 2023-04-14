@@ -48,13 +48,13 @@
             </div>
 
             <div class="color-option lock">
-                <div class="option-in" @click="copy(), $emit('lock', props.color)">
+                <div class="option-in" @click="lock = !lock, $emit('lock', props.color)">
                     <v-tooltip
                         open-delay="600"
                         activator="parent"
                         location="top"
-                    >Lock</v-tooltip>
-                    <span class="material-icons-outlined">lock_open</span>
+                    >{{ lock === true ? 'Unlock' : 'Lock' }}</v-tooltip>
+                    <span class="material-icons-outlined">{{ lock === true ? 'lock' : 'lock_open' }}</span>
                 </div>
             </div>
 
@@ -98,7 +98,8 @@ const props = defineProps({
     },
 });
 
-const show = ref(false)
+const show = ref(false);
+const lock = ref(false);
 
 const { $chroma } = useNuxtApp();
 

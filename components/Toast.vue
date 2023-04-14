@@ -82,6 +82,7 @@ export default {
     font-weight: 500;
     color: #fff;
     background-color: #333;
+    box-shadow: 0px 0px 4px 0px rgba(0,0,0,.2);
 }
 
 .toast.success {
