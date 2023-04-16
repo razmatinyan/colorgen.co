@@ -1,1 +1,1 @@
-export const useHomeSchemes = () => useState<object>('homeschemes', () => computed(() => new Array('Monochromatic', 'Mono Light', 'Mono Dark', 'Analogous', 'Complementary', 'Split Complementary', 'Triadic', 'Tetradic', 'Square')));
+export const useHomeSchemes = () => useState<object>('homeschemes', () => computed(() => new Array('Random', 'Monochromatic', 'Mono Light', 'Mono Dark', 'Analogous', 'Compound', 'Complementary', 'Split Complementary', 'Triadic', 'Tetradic', 'Square')));

@@ -4,7 +4,8 @@
     :class="{
         'dark-color': $chroma(props.color).luminance() >= 0.5,
         'light-color': $chroma(props.color).luminance() <= 0.5,
-        'show': show 
+        'show': show,
+        'locked': props.lock,
     }"
     :style="{
         'background-color': props.color,
@@ -63,7 +64,7 @@
                 <v-color-picker 
                     class="color-picker"
                     :model-value="props.modelValue"
-                    :modes="['hex']"
+                    :modes="['hex', 'rgb', 'hsl']"
                     dot-size="20"
                     @update:model-value="$emit('color-change', $event)"
                 ></v-color-picker>
@@ -77,7 +78,7 @@
 
                 <div 
                     class="overlay"
-                    @click="show = !show, $emit('done', $event)"
+                    @click="show = !show, $emit('done')"
                 ></div>
 
             </div>
@@ -96,10 +97,13 @@ const props = defineProps({
     number: {
         type: Number
     },
+    lock: {
+        type: Boolean,
+        default: false
+    }
 });
 
 const show = ref(false);
-const lock = ref(false);
 
 const { $chroma } = useNuxtApp();
 
@@ -137,7 +141,7 @@ function copy() {
     margin-top: 0;
 }
 
-.color .options > .color-option:not(.color-option.current-color) {
+.color .options > .color-option:not(.color-option.current-color, .locked .color-option.lock) {
     opacity: 0;
     visibility: hidden;
     transition: opacity var(--time-02), visibility var(--time-02);
@@ -155,6 +159,13 @@ function copy() {
 }
 .color.dark-color.sortable-chosen .options > .color-option.sort .sort-handler {
     background-color: rgba(0, 0, 0, 0.1);
+}
+
+.color .color-option.lock .option-in {
+    transition: transform var(--time-02) ease;
+}
+.color.locked .color-option.lock .option-in {
+    transform: scale(1.2);
 }
 
 .color-option > .option-in {
@@ -178,12 +189,20 @@ function copy() {
 }
 .light-color .options .option-in:hover,
 .light-color.color.show .options .option-in {
-    background: rgba(255, 255, 255, 0.1);
+    background: rgba(255, 255, 255, 0.06);
 }
 .dark-color .options .option-in:hover,
 .dark-color.color.show .options .option-in {
+    background: rgba(0, 0, 0, 0.06);
+}
+
+.light-color.color .options .option-in:active { 
+    background: rgba(255, 255, 255, 0.1);
+}
+.dark-color.color .options .option-in:active {
     background: rgba(0, 0, 0, 0.1);
 }
+
 .options .color-picker {
     position: absolute;
     bottom: 60px;

@@ -5,7 +5,7 @@
             <div class="palette-menu">
 
                 <div class="menu-item menu-color">
-                    <label for="count" class="input-label">Colors Count</label>
+                    <label for="count" class="input-label">Count</label>
                     <div class="inputs">
                         <input 
                             type="number" 
@@ -38,6 +38,11 @@
 				</div>
 
                 <div class="menu-item random-button">
+                    <v-tooltip
+                        open-delay="0"
+                        activator="parent"
+                        location="top"
+                    >Press "Spacebar" to generate palettes</v-tooltip>
                     <button id="random-btn" @click="generateRandomPalette" class="btn btn-medium btn-blue btn-min-width-200">Generate</button>
                 </div>
 
@@ -77,11 +82,12 @@
                 >
                     <template #item="{ color, index }">
                         <PaletteColors
+                            v-model:modelValue="state.paletteArray[index]"
                             :default="color"
                             :key="index"
                             :color="state.paletteArray[index]"
                             :number="index"
-                            v-model:modelValue="state.paletteArray[index]"
+							:lock="lockedColors.includes(state.paletteArray[index])"
                             @color-change="setNewValue(index, $event)"
                             @delete="deleteColor(state.paletteArray[index])"
                             @done="changeRoute"
@@ -108,8 +114,13 @@ const { data } = await useFetch(`/api/palette/${route.params.palette}`);
 const { $chroma } = useNuxtApp();
 const config = useRuntimeConfig();
 
+const palette = data.value;
+const state = reactive({
+	paletteArray: palette.split('-').map(c => '#' + c),
+});
+
+const count = useColorCount(state.paletteArray.length);
 const schemes = useHomeSchemes();
-const count = useColorCount();
 const selected = useState('selected', () => '');
 
 const randomScheme = schemes.value[Math.floor((Math.random() * schemes.value.length))];
@@ -118,11 +129,19 @@ const scheme = useState('scheme', () => 'Auto');
 const toast = ref(null);
 const selectChild = ref(null);
 
-const palette = data.value;
-const state = reactive({
-    paletteArray: palette.split('-').map(c => '#' + c),
+const lockedColors = useState('locked', () => []);
+
+onMounted(() => {
+	document.addEventListener('keydown', handleSpaceBar);
 });
-const lockedColors = useState('locked');
+
+onUnmounted(() => {
+	document.removeEventListener('keydown', handleSpaceBar);
+});
+
+function handleSpaceBar(event) {
+	if ( event.code === 'Space' ) generateRandomPalette();
+}
 
 function handleClickOutside() {
     if ( selectChild.value.showOptions === true ) {
@@ -136,12 +155,16 @@ function showToast(message, type, color) {
 
 function handleCopyURL() {
 	copyURL(`${config.public.BASE_URL}${route.fullPath}`);
-
-	toast.value.show('You copied the current page URL.', 'info');
+	toast.value.show('You copied the current palette URL.', 'info');
 }
 
 function handleLock(color) {
-    return true;
+    if ( !lockedColors.value.includes(color) ) {
+        lockedColors.value.push(color);
+    } else {
+        let cindex = lockedColors.value.indexOf(color)
+		lockedColors.value.splice(cindex, 1);
+    }
 }
 
 function selectedScheme(option) {
@@ -157,14 +180,14 @@ function selectedScheme(option) {
 function deleteColor(event) {
     if ( state.paletteArray.length !== 2 ) {
         state.paletteArray = state.paletteArray.filter(color => color !== event);
-        count.value--;
+		lockedColors.value = lockedColors.value.filter(color => color !== event);
+        count.value = state.paletteArray.length;
         changeRoute();
     }
 }
 
 function handleDownload() {
-    const colors = state.paletteArray.map(c => c.substring(1)).join('-');
-    downloadColors(colors, '.colors');
+    downloadColors('.colors', 'palette');
 }
 
 function setCursor() {
@@ -172,42 +195,6 @@ function setCursor() {
 }
 function removeCursor() {
     document.documentElement.style.cursor = 'default';
-}
-
-function generateRandomPalette() {
-
-    let schemeRes = '';
-
-    if ( scheme.value === 'Auto' ) {
-        schemeRes = schemes.value[Math.floor((Math.random() * schemes.value.length))];
-    } else {
-        schemeRes = scheme.value; 
-    }
-
-    if ( count.value <= 0 ) count.value = 5
-    else if ( count.value >= 10 ) count.value = 10
-
-    let colors;
-    const randomType = scheme.value === 'Auto' ? randomNumber(1, 2) : 1;
-    
-    if ( randomType === 1 ) {
-
-        let inputColor = $chroma.random().hex();
-        colors = generatePalette(inputColor, schemeRes, count.value);
-        colors = colors.map(c => c.substring(1)).join('-');
-
-    } else if ( randomType === 2 ) {
-
-        colors = new Array();
-        for( let i = 1; i <= count.value; i++ ) {
-            colors.push($chroma.random().hex());
-        }
-        colors = colors.map(c => c.substring(1)).join('-');
-
-    }
-
-    navigateTo('/palette/'+colors);
-
 }
 
 function changeRoute() {
@@ -218,8 +205,71 @@ function changeRoute() {
     }
 }
 
+function generateRandomPalette() {
+
+	if ( state.paletteArray.length === lockedColors.value.length && state.paletteArray.length === count.value ) {
+
+		showToast('You locked all colors!', 'error');
+
+	} else {
+		
+		let schemeRes = '';
+	
+		if ( scheme.value === 'Auto' ) {
+			schemeRes = schemes.value[Math.floor((Math.random() * schemes.value.length))];
+		} else {
+			schemeRes = scheme.value; 
+		}
+	
+		if ( count.value <= 0 ) count.value = 5
+		else if ( count.value >= 10 ) count.value = 10
+	
+		let colors;
+		const randomType = scheme.value === 'Auto' ? randomNumber(1, 2) : 1;
+		
+		if ( randomType === 1 ) {
+	
+			let inputColor = $chroma.random().hex();
+			colors = generatePalette(inputColor, schemeRes, count.value);
+	
+		} else if ( randomType === 2 ) {
+	
+			colors = new Array();
+			for( let i = 1; i <= count.value; i++ ) {
+				colors.push($chroma.random().hex());
+			}
+	
+		}
+	
+		if ( lockedColors.value.length > 0 ) {
+	
+			state.paletteArray.forEach((clr, idx) => {
+	
+				if ( lockedColors.value.includes(clr) ) {
+					colors[idx] = clr;
+				}
+	
+			});
+	
+		}
+	
+		colors = colors.map(c => c.substring(1)).join('-');
+	
+		navigateTo('/palette/'+colors);
+
+	}
+
+
+}
+
 function setNewValue(index, value) {
+	let lockedIndex;
+	if ( lockedColors.value.indexOf(state.paletteArray[index]) !== -1 ) {
+		lockedIndex = lockedColors.value.indexOf(state.paletteArray[index]);
+	}
+	
     state.paletteArray[index] = value
+	lockedColors.value[lockedIndex] = value;
 }
 
 function randomNumber(min, max) {
@@ -285,7 +335,7 @@ function changePalette() {
     font-size: 12px;
     position: absolute;
     top: -8px;
-    left: 32px;
+    left: 28px;
     background: #fff;
     z-index: 2;
     user-select: none;
@@ -295,7 +345,7 @@ function changePalette() {
     position: relative;
 }
 .menu-color > .inputs > .color-input {
-    max-width: 150px;
+    max-width: 100px;
     text-align: center;
     padding: 0 7px 0 0;
     height: 40px;

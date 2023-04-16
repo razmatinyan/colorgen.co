@@ -91,7 +91,7 @@ export default {
     display: flex;
     align-items: center;
     justify-content: space-between;
-    min-width: 200px;
+    min-width: 208px;
     height: 40px;
     padding: 0 10px 0 20px;
     background: #fff;
@@ -118,11 +118,13 @@ export default {
     position: absolute;
     top: 50px;
     width: 100%;
+    max-height: 400px;
     z-index: 1;
     background: #fff;
     padding: 10px;
     border-radius: 10px;
     box-shadow: 0px 0px 13px 0px rgb(0 0 0 / 18%);
+    overflow-y: scroll;
 }
 .c-sel-select .options .option {
     display: block;

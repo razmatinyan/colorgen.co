@@ -4,6 +4,9 @@ export const generatePalette = (baseColor: string, scheme: string, numColors: nu
     
     let colors;
     switch(scheme) {
+        case "Random":
+            colors = $chroma.scale([$chroma.random(), $chroma.random()]).mode('lch').colors(numColors);
+            break;
         case "Monochromatic":
             colors = $chroma.scale([color.darken(2), color, color.brighten(2)]).colors(numColors);
             break;
@@ -15,6 +18,12 @@ export const generatePalette = (baseColor: string, scheme: string, numColors: nu
             break;
         case "Analogous":
             colors = $chroma.scale([color.set('hsl.h', '+20'), color, color.set('hsl.h', '-20')]).colors(numColors);
+            break;
+        case "Compound":
+            const complement = $chroma(color).set('hsl.h', '+=180').hex();
+            const thirdColor = $chroma.mix(color, complement, 0.5, 'hsl').hex();
+
+            colors = $chroma.scale([complement, color, thirdColor]).mode('lch').colors(numColors);
             break;
         case "Complementary":
             colors = $chroma.scale([color, color.set('hsl.h', '+180')]).colors(numColors);
