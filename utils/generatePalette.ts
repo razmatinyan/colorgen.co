@@ -3,6 +3,7 @@ export const generatePalette = (baseColor: string, scheme: string, numColors: nu
     const color = $chroma(baseColor);
     
     let colors;
+    const colorArray = [];
     switch(scheme) {
         case "Random":
             colors = $chroma.scale([$chroma.random(), $chroma.random()]).mode('lch').colors(numColors);
@@ -19,12 +20,6 @@ export const generatePalette = (baseColor: string, scheme: string, numColors: nu
         case "Analogous":
             colors = $chroma.scale([color.set('hsl.h', '+20'), color, color.set('hsl.h', '-20')]).colors(numColors);
             break;
-        case "Compound":
-            const complement = $chroma(color).set('hsl.h', '+=180').hex();
-            const thirdColor = $chroma.mix(color, complement, 0.5, 'hsl').hex();
-
-            colors = $chroma.scale([complement, color, thirdColor]).mode('lch').colors(numColors);
-            break;
         case "Complementary":
             colors = $chroma.scale([color, color.set('hsl.h', '+180')]).colors(numColors);
             break;
@@ -39,6 +34,21 @@ export const generatePalette = (baseColor: string, scheme: string, numColors: nu
             break;
         case 'Square':
             colors = $chroma.scale([color, color.set('hsl.h', '+90'), color.set('hsl.h', '+180'), color.set('hsl.h', '+270')]).colors(numColors);
+            break;
+        case 'Luminance':
+            const minLuminance = 0.2;
+            const maxLuminance = 0.8;
+
+            const step = (maxLuminance - minLuminance) / (numColors - 1);
+          
+            for (let i = 0; i < numColors; i++) {
+                const luminance = minLuminance + i * step;
+                const newColor = $chroma(color).luminance(luminance);
+                colorArray.push(newColor);
+            }
+
+            colors = colorArray;
+
             break;
         default:
             throw new Error("Invalid color scheme.");

@@ -58,6 +58,13 @@
                 </div>
 
                 <div class="menu-item copy-url">
+                    <button class="btn btn-medium btn-border btn-flex btn-with-icon" @click="handleSave(palette, action)">
+                        {{ action === 'set' ? 'Save palette' : 'Unsave palette' }}
+                        <span class="material-icons-outlined btn-icon">{{ action === 'set' ? 'bookmark_add' : 'bookmark_added' }}</span>
+                    </button>
+                </div>
+                
+                <div class="menu-item copy-url">
                     <button class="btn btn-medium btn-border btn-flex btn-with-icon" @click="handleCopyURL">
                         Copy URL
                         <span class="material-icons-outlined btn-icon">link</span>
@@ -113,11 +120,22 @@ const route = useRoute();
 const { data } = await useFetch(`/api/palette/${route.params.palette}`);
 const { $chroma } = useNuxtApp();
 const config = useRuntimeConfig();
+const savedPalettes = useCookie('saved-palettes');
 
 const palette = data.value;
 const state = reactive({
 	paletteArray: palette.split('-').map(c => '#' + c),
 });
+
+const action = ref('set');
+if ( savedPalettes !== undefined ) {
+    for( let saved in savedPalettes.value ) {
+        if ( palette === savedPalettes.value[saved].palette ) {
+            action.value = 'delete';
+            break;
+        }
+    }
+}
 
 const count = useColorCount(state.paletteArray.length);
 const schemes = useHomeSchemes();
@@ -138,6 +156,18 @@ onMounted(() => {
 onUnmounted(() => {
 	document.removeEventListener('keydown', handleSpaceBar);
 });
+
+async function handleSave(palette, action) {
+    const res = await $fetch('/api/saved/palettes', {
+        method: 'POST',
+        body: {
+            palette: palette,
+            action: action
+        }
+    });
+
+    if ( res.action === 'saved' ) action.value = 'delete'
+}
 
 function handleSpaceBar(event) {
 	if ( event.code === 'Space' ) generateRandomPalette();
