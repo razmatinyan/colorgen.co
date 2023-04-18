@@ -59,7 +59,7 @@
 
                 <div class="menu-item copy-url">
                     <button class="btn btn-medium btn-border btn-flex btn-with-icon" @click="handleSave(palette, action)">
-                        {{ action === 'set' ? 'Save palette' : 'Unsave palette' }}
+                        {{ action === 'set' ? 'Save' : 'Unsave' }}
                         <span class="material-icons-outlined btn-icon">{{ action === 'set' ? 'bookmark_add' : 'bookmark_added' }}</span>
                     </button>
                 </div>
@@ -157,16 +157,18 @@ onUnmounted(() => {
 	document.removeEventListener('keydown', handleSpaceBar);
 });
 
-async function handleSave(palette, action) {
+async function handleSave(palette, saveAction) {
     const res = await $fetch('/api/saved/palettes', {
         method: 'POST',
         body: {
             palette: palette,
-            action: action
+            action: saveAction
         }
     });
 
     if ( res.action === 'saved' ) action.value = 'delete'
+    else if ( res.action === 'unsaved' ) action.value = 'set'
+    else if ( res.status === 400 ) showToast('Something went wrong!', 'error');
 }
 
 function handleSpaceBar(event) {
@@ -345,6 +347,10 @@ function changePalette() {
 .menu-item > button {
     height: 40px;
     line-height: 39px;
+}
+.menu-item.copy-url > button {
+    min-width: 125px;
+    justify-content: space-between;
 }
 
 .menu-item.seperator > span[data-v-884bd382] {
