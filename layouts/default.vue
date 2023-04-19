@@ -1,6 +1,6 @@
 <template>
-    
-	<transition name="loader">
+
+    <transition name="loader">
         <Loader v-if="loader" />
     </transition>
 
@@ -11,6 +11,7 @@
             <slot />
         </div>
     </div>
+    
 </template>
 
 <script setup>
@@ -22,7 +23,6 @@ onMounted(() => {
 </script>
 
 <style scoped>
-
 .loader-enter-from {
 	opacity: 0;
     visibility: hidden;
