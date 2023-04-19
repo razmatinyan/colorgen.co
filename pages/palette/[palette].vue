@@ -38,11 +38,6 @@
 				</div>
 
                 <div class="menu-item random-button">
-                    <v-tooltip
-                        open-delay="0"
-                        activator="parent"
-                        location="top"
-                    >Press "Spacebar" to generate palettes</v-tooltip>
                     <button id="random-btn" @click="generateRandomPalette" class="btn btn-medium btn-blue btn-min-width-200">Generate</button>
                 </div>
 
@@ -128,7 +123,7 @@ const state = reactive({
 });
 
 const action = ref('set');
-if ( savedPalettes !== undefined ) {
+if ( savedPalettes.value !== undefined ) {
     for( let saved in savedPalettes.value ) {
         if ( palette === savedPalettes.value[saved].palette ) {
             action.value = 'delete';
@@ -238,14 +233,13 @@ function changeRoute() {
 }
 
 function generateRandomPalette() {
-
+	
+	let schemeRes = '';
 	if ( state.paletteArray.length === lockedColors.value.length && state.paletteArray.length === count.value ) {
 
 		showToast('You locked all colors!', 'error');
 
 	} else {
-		
-		let schemeRes = '';
 	
 		if ( scheme.value === 'Auto' ) {
 			schemeRes = schemes.value[Math.floor((Math.random() * schemes.value.length))];
@@ -285,12 +279,15 @@ function generateRandomPalette() {
 	
 		}
 	
+		if ( schemeRes !== 'Monochromatic' && schemeRes !== 'Mono Light' && schemeRes !== 'Mono Dark' && schemeRes !== 'Analogous' ) {
+			colors = shuffleArrayWithExceptions(colors, lockedColors.value);
+		}
+
 		colors = colors.map(c => c.substring(1)).join('-');
-	
+
 		navigateTo('/palette/'+colors);
 
 	}
-
 
 }
 
@@ -320,7 +317,7 @@ function changePalette() {
 <style scoped>
 #palette {
     position: fixed;
-    top: 82px;
+    top: 70px;
     left: 0;
     width: 100%;
     height: 100%;

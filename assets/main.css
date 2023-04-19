@@ -68,6 +68,7 @@
 
 html {
     overflow: auto;
+    overflow-x: hidden;
 }
 
 body, select, input, textarea, button {
@@ -125,10 +126,16 @@ body {
     padding-right: 30px;
 }
 .cg-content {
-    padding-top: 80px;
+    padding-top: 70px;
+}
+.big-title {
+    font-size: var(--font-clamp);
 }
 .disable-scroll {
     overflow: hidden;
+}
+.text-center {
+    text-align: center;
 }
 
 /* Inputs */

@@ -12,7 +12,7 @@ export const generatePalette = (baseColor: string, scheme: string, numColors: nu
             colors = $chroma.scale([color.darken(2), color, color.brighten(2)]).colors(numColors);
             break;
         case "Mono Light": 
-            colors = $chroma.scale(['white', color.hex()]).mode('lab').colors(numColors);
+            colors = $chroma.scale(['#efefef', color.hex()]).mode('lab').colors(numColors);
             break;
         case "Mono Dark": 
             colors = $chroma.scale(['black', color.hex()]).mode('lab').colors(numColors);

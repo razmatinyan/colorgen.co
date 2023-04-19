@@ -9,7 +9,7 @@
     }"
     :style="{
         'background-color': props.color,
-        'color': $chroma(props.color).luminance() >= 0.5 ? '#000' : '#fff'
+        'color': $chroma(props.color).luminance() >= 0.5 ? 'var(--text-black)' : '#fff'
     }"
     :id="number + '-' + props.color.substring(1)"
     >

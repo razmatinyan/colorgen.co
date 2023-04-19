@@ -11,6 +11,10 @@
 .page-right-leave-active {
   transition: all 0.2s;
 }
+.page-same-enter-active,
+.page-same-leave-active {
+    transition: none;
+}
 .page-left-enter-from {
   opacity: 0;
   transform: translate(50px, 0);

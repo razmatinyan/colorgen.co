@@ -123,7 +123,7 @@ function toggleMenu() {
     display: inline-block;
 }
 .logo-wrapper > a > img {
-    max-width: 90px;
+    max-width: 70px;
     width: 100%;
 }
 .menu {
