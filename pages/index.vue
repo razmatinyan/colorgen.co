@@ -12,7 +12,7 @@
                             Generate beautiful color palettes with our easy-to-use Color Palette Generator. Experiment with random palettes or select your own colors to create eye-catching designs in seconds.
                         </p>
                         <div class="buttons">
-                            <button @click="generateRandomPalette" class="button btn btn-medium btn-padding-40 btn-blue">Generate Palettes</button>
+                            <button @click="generateRandomPalette" :disabled="disableButton" class="button btn btn-medium btn-padding-40 btn-blue">Generate Palettes</button>
                         </div>
                     </div>
                 </div>
@@ -52,8 +52,10 @@
 const { $chroma } = useNuxtApp();
 const schemes = useHomeSchemes();
 const count = useColorCount();
+const disableButton = ref(false);
 
 function generateRandomPalette() {
+    disableButton.value = true
     
     if ( count.value <= 0 ) count.value = 5
     else if ( count.value >= 15 ) count.value = 15
@@ -72,6 +74,10 @@ function generateRandomPalette() {
         }
         colors = colors.map(c => c.substring(1)).join('-');
     }
+
+    setTimeout(() => {
+        disableButton.value = false
+    }, 2000)
 
     navigateTo('/palette/'+colors);
 }

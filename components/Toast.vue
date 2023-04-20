@@ -1,19 +1,26 @@
 <template>
-	<div class="toast">
-        <transition-group name="toast" class="messages-list" tag="div">
-            <div 
-                class="toast-content"
-                v-for="message in messages"
-                :key="message.id"
-            >
-                <div class="content-text">
-                    <span class="material-icons-outlined icon">check_circle_outline</span>
-                    <span class="name">{{ message.name }}</span>
+    <transition name="toast">
+        <div v-if="messages.length > 0" class="toast">
+            <transition-group name="toast" class="messages-list" tag="div">
+                <div 
+                    class="toast-content"
+                    v-for="(message, index) in messages"
+                    :key="message.id"
+                    :class="[message.type]"
+                >
+                    <div class="content-text">
+                        <span v-if="message.type === 'info'" class="material-icons-outlined icon">info</span>
+                        <span v-else-if="message.type === 'success'" class="material-icons-outlined icon">check_circle_outline</span>
+                        <span v-else-if="message.type === 'error'" class="material-icons-outlined icon">report</span>
+                        <span v-else-if="message.type === 'warn'" class="material-icons-outlined icon">report_problem</span>
+
+                        <span class="name">{{ message.name }}</span>
+                    </div>
+                    <span class="material-icons-outlined close" @click="close(index)">close</span>
                 </div>
-                <span class="material-icons-outlined close">close</span>
-            </div>
-        </transition-group>
-    </div>
+            </transition-group>
+        </div>
+    </transition>
 </template>
 
 <script>
@@ -43,6 +50,9 @@ export default {
                     this.messages.splice(this.messages[0], 1);
                 }, this.timeout);
             }
+        },
+        close(index) {
+            this.messages.splice(index, 1)
         }
     },
     mounted() {
@@ -75,12 +85,26 @@ export default {
     justify-content: space-between;
     align-items: center;
     min-height: 50px;
-    margin-bottom: 16px;
+    margin-top: 16px;
     padding: 16px;
     color: #fff;
     border-radius: 4px;
-    background: var(--green);
+    background: #000;
+    box-shadow: 10px 9px 16px rgba(0, 0, 0, 0.07);
 }
+.toast-content.info {
+    background: #050711;
+}
+.toast-content.success {
+    background: #2eb332;
+}
+.toast-content.warn {
+    background: #e47d00;
+}
+.toast-content.error {
+    background: #d32545;
+}
+
 .content-text {
     display: flex;
     align-items: center;
@@ -93,6 +117,7 @@ export default {
     margin-right: 8px;
 }
 .close {
+    font-size: 18px;
     cursor: pointer;
 }
 
@@ -105,15 +130,15 @@ export default {
     opacity: 1;
 }
 .toast-enter-active {
-	transition: all .7s ease;
+	transition: all .7s cubic-bezier(.7, 0, .3, 1);;
 }
 .toast-leave-active {
-	transition: all .7s ease;
+	transition: all .7s cubic-bezier(.7, 0, .3, 1);;
 }
 .toast-leave-to {
 	transform: translateX(400px);
 }
 .toast-move {
-	transition: transform .7s ease;
+	transition: transform .7s cubic-bezier(.7, 0, .3, 1);;
 }
 </style>

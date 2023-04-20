@@ -17,6 +17,37 @@
                 <span class="code">{{ '#' + color }}</span>
             </div>
         </div>
+        <div class="palette-info">
+            <span class="palette-name"></span>
+            <div class="options">
+                <div class="option unsave">
+                    <v-tooltip
+                        open-delay="200"
+                        activator="parent"
+                        location="top"
+                    >Unsave</v-tooltip>
+                    <span class="material-icons-outlined icon">bookmark_added</span>
+                </div>
+                <div class="option copy">
+                    <v-tooltip
+                        open-delay="200"
+                        activator="parent"
+                        location="top"
+                    >Copy URL</v-tooltip>
+                    <span class="material-icons-outlined icon">copy</span>
+                </div>
+                <div class="option open">
+                    <v-tooltip
+                        open-delay="200"
+                        activator="parent"
+                        location="top"
+                    >Open palette</v-tooltip>
+                    <NuxtLink :to="`/palette/${item.palette}`" target="_blank">
+                        <span class="material-icons-outlined icon">open_in_new</span>
+                    </NuxtLink>
+                </div>
+            </div>
+        </div>
     </div>
 </template>
 
@@ -71,8 +102,55 @@ function copy(color) {
     opacity: 0;
 	transform: translateY(-50%);
     transition: all var(--time-01) ease;
+    z-index: 3;
 }
 .color:hover .code {
 	opacity: 1;
+}
+
+.palette-info {
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    padding: 0 15px;
+    margin-top: 8px;
+}
+.palette-name {
+
+}
+.options {
+    display: flex;
+    align-items: center;
+}
+.option {
+    display: flex;
+    align-items: center;
+    margin-left: 6px;
+    cursor: pointer;
+}
+.option:first-child {
+    margin-left: 0;
+}
+.option span {
+    font-size: 20px;
+    color: #7d7c83;
+    transition: color var(--time-02) ease;
+}
+.option > a {
+    display: flex;
+    align-items: center;
+    text-decoration: none;
+}
+.option:hover span {
+    color: var(--text-black);
+}
+.option.unsave .icon {
+    font-size: 24px;
+}
+.option.copy .icon {
+
+}
+.option.open .icon {
+    font-size: 22px;
 }
 </style>

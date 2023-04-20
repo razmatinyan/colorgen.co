@@ -105,6 +105,7 @@ function toggleMenu() {
     top: 0;
     left: 0;
     width: 100%;
+    height: 70px;
     background: #fff;
     box-shadow: rgba(0, 0, 0, 0.1) 0 1px;
     z-index: 1000;

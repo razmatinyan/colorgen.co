@@ -103,9 +103,7 @@
 
         <Teleport to="body">
             <Toast 
-                ref="toast"
                 :messages="messages"
-                :timeout="4000"
             />
         </Teleport>
 
@@ -143,7 +141,6 @@ const selected = useState('selected', () => '');
 const randomScheme = schemes.value[Math.floor((Math.random() * schemes.value.length))];
 const scheme = useState('scheme', () => 'Auto');
 
-const toast = ref(null);
 const messages = ref([]);
 const selectChild = ref(null);
 
@@ -176,8 +173,9 @@ function handleCopy(color) {
         {
             id: Date.now().toLocaleString(),
             name: `You copied this color: ${color}`,
+            type: 'info'
         }
-    )
+    );
 }
 
 function handleSpaceBar(event) {
@@ -190,8 +188,14 @@ function handleClickOutside() {
     }
 }
 
-function showToast(message, type, color) {
-    toast.value.show(message, type, color);
+function showToast(message, type) {
+    messages.value.unshift(
+        {
+            id: Date.now().toLocaleString(),
+            name: message,
+            type: type
+        }
+    );
 }
 
 function handleCopyURL() {

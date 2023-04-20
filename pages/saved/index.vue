@@ -14,17 +14,23 @@
         </div>
         
         <Teleport to="body">
-            <Toast ref="toast" />
+            <Toast :messages="messages" />
         </Teleport>
     </section>
 </template>
 
 <script setup>
 const savedPalettes = useCookie('saved-palettes');
-const toast = ref(null);
+const messages = ref([]);
 
 function showToast(message, type, color) {
-    toast.value.show(message, type, color);
+    messages.value.unshift(
+        {
+            id: Date.now().toLocaleString(),
+            name: message,
+            type: type
+        }
+    );
 }
 
 function handleToast(color) {
