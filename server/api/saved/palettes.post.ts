@@ -1,4 +1,4 @@
-import { defineEventHandler, H3Event, parseCookies, setCookie } from 'h3'
+import { defineEventHandler, H3Event, parseCookies, setCookie, deleteCookie } from 'h3'
 
 export default defineEventHandler(async (event: H3Event) => {
     const data = await readBody(event);
@@ -8,7 +8,7 @@ export default defineEventHandler(async (event: H3Event) => {
 
         try {
 
-            if ( savedPalettes === undefined ) {
+            if ( savedPalettes === undefined || savedPalettes === '' ) {
                 savedPalettes = [{
                     id: 1,
                     palette: data.palette
@@ -46,40 +46,37 @@ export default defineEventHandler(async (event: H3Event) => {
 
             let removed = false;
 
-            if ( savedPalettes === undefined ) {
-                savedPalettes = [];
+            if ( savedPalettes === undefined || savedPalettes === '' ) {
+                deleteCookie(event, 'saved-palettes');
                 removed = true;
             } else {
     
                 savedPalettes = JSON.parse(savedPalettes);
-    
-                for ( const [idx, palette] of savedPalettes.entries() ) {
-                    if ( savedPalettes[idx].palette === data.palette ) {
-                        savedPalettes.splice(idx, 1);
-                        removed = true;
+
+                if ( savedPalettes.length === 1 ) {
+                    deleteCookie(event, 'saved-palettes');
+                } else {
+
+                    for ( const [idx, palette] of savedPalettes.entries() ) {
+                        if ( savedPalettes[idx].palette === data.palette ) {
+                            savedPalettes.splice(idx, 1);
+                            removed = true;
+                        }
                     }
+
+                    savedPalettes = JSON.stringify(savedPalettes);
+                    
+                    setCookie(event, 'saved-palettes', savedPalettes, {
+                        maxAge: 365 * 24 * 60 * 60
+                    });
+
                 }
 
-            }
-            
-            if ( removed ) {
-
-                setCookie(event, 'saved-palettes', JSON.stringify(savedPalettes), {
-                    maxAge: 365 * 24 * 60 * 60
-                });
-    
                 return {
                     status: 200,
                     action: 'unsaved'
                 }
-    
-            } else {
-    
-                return {
-                    status: 400,
-                    action: 'Something went wrong while unsaving palette!',
-                }
-    
+
             }
 
         } catch(e) {

@@ -1,135 +1,119 @@
 <template>
-	<transition name="toast">
-		<div v-if="isVisible" class="toast-container">
-			<div class="toast" :class="[type]">
-				<div class="message-block">
-					<span v-if="type === 'success'" class="material-icons-outlined">check_circle_outline</span>
-					<span v-else-if="type === 'info'" class="material-icons-outlined">info</span>
-					<span v-else-if="type === 'warning'" class="material-icons-outlined">highlight_off</span>
-					<span v-else-if="type === 'error'" class="material-icons-outlined">error_outline</span>
-
-					<span class="message"> {{ message }} {{ color }}</span>
-				</div>
-				<span class="material-icons-outlined close" @click="hide">close</span>
-			</div>
-		</div>
-	</transition>
+	<div class="toast">
+        <transition-group name="toast" class="messages-list" tag="div">
+            <div 
+                class="toast-content"
+                v-for="message in messages"
+                :key="message.id"
+            >
+                <div class="content-text">
+                    <span class="material-icons-outlined icon">check_circle_outline</span>
+                    <span class="name">{{ message.name }}</span>
+                </div>
+                <span class="material-icons-outlined close">close</span>
+            </div>
+        </transition-group>
+    </div>
 </template>
 
 <script>
 export default {
-  setup() {
-	const isVisible = ref(false);
-	const type = ref('info');
-	const message = ref('');
-	const color = ref('');
+    name: 'Toast',
+    props: {
+        messages: {
+            type: Array,
+            default: () => {
+                return []
+            }
+        },
+        timeout: {
+            type: Number,
+            default: 3000
+        }
+    },
+    data() {
+        return {
 
-	const show = (msg, toastType, copiedColor) => {
-
-		if ( isVisible.value === true ) {
-			setTimeout(() => {
-				show(msg, toastType, copiedColor);
-			}, 3000);
-
-			clearInterval(() => {
-				show(msg, toastType, copiedColor);
-			});
-		} else {
-			message.value = msg;
-			type.value = toastType || 'info';
-			color.value = copiedColor;
-			isVisible.value = true;
-
-			setTimeout(hide, 3000);
-		}
-
-	};
-
-	const hide = () => {
-		isVisible.value = false;
-		type.value = '';
-		color.value = '';
-		clearInterval(hide);
-	};
-
-	return {
-		isVisible,
-		message,
-		type,
-		color,
-		show,
-		hide,
-	};
-  }
+        }
+    },
+    methods: {
+        hideToast() {
+            if ( this.messages.length ) {
+                setTimeout(() => {
+                    this.messages.splice(this.messages[0], 1);
+                }, this.timeout);
+            }
+        }
+    },
+    mounted() {
+        this.hideToast();
+    },
+    watch: {
+        messages: {
+            handler() {
+                this.hideToast()
+            },
+            deep: true
+        }
+    }
 };
 </script>
 
 <style scoped>
-.toast-container {
+.toast {
     position: fixed;
     bottom: 20px;
     right: 20px;
-    z-index: 9999;
+    z-index: 10;
 }
-
-.toast {
+.messages-list {
+    display: flex;
+    flex-direction: column;
+}
+.toast-content {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    min-height: 50px;
+    margin-bottom: 16px;
+    padding: 16px;
+    color: #fff;
+    border-radius: 4px;
+    background: var(--green);
+}
+.content-text {
     display: flex;
     align-items: center;
-    justify-content: space-between;
-    padding: 12px 16px;
-    border-radius: 4px;
-    font-size: 14px;
-    font-weight: 500;
-    color: #fff;
-    background-color: #333;
-    box-shadow: 0px 0px 4px 0px rgba(0,0,0,.2);
-}
-
-.toast.success {
-    background-color: #4caf50;
-}
-.toast.warning {
-    background-color: #f4c20d;
-}
-.toast.error {
-    background-color: #db3236;
-}
-.toast.info {
-    background-color: #2196f3;
-}
-
-.message-block {
-	display: flex;
-	align-items: center;
-}
-.message-block > span:first-child {
-	margin-right: 8px;
-}
-
-.message-block {
     margin-right: 16px;
 }
+.name {
 
+}
+.icon {
+    margin-right: 8px;
+}
 .close {
-    background-color: transparent;
-    color: #fff;
-    font-size: 14px;
     cursor: pointer;
 }
 
 .toast-enter-from {
 	transform: translateX(400px);
+    opacity: 0;
 }
 .toast-enter-to {
 	transform: translateX(0);
+    opacity: 1;
 }
 .toast-enter-active {
-	transition: all .7s cubic-bezier(.7, 0, .3, 1);
+	transition: all .7s ease;
 }
 .toast-leave-active {
-	transition: all .7s cubic-bezier(.7, 0, .3, 1);
+	transition: all .7s ease;
 }
 .toast-leave-to {
 	transform: translateX(400px);
+}
+.toast-move {
+	transition: transform .7s ease;
 }
 </style>

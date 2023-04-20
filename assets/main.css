@@ -126,6 +126,7 @@ body {
     padding-right: 30px;
 }
 .cg-content {
+    position: relative;
     padding-top: 70px;
 }
 .big-title {

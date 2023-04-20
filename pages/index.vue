@@ -89,6 +89,7 @@ onMounted(() => {
 <style scoped>
 .home-wrapper {
     position: relative;
+    min-height: 800px;
 }
 #home {
     position: relative;
@@ -197,7 +198,7 @@ onMounted(() => {
 
 .blob-1 {
     position: absolute;
-    top: 50%;
+    top: 266px;
     left: 40px;
     transform: translate(0, -50%);
     max-width: 120px;

@@ -9,7 +9,7 @@ export default defineNuxtRouteMiddleware((to, from) => {
     if (toDepth > fromDepth) {
         to.meta.pageTransition = { name: 'page-left' };
         from.meta.pageTransition = { name: 'page-left' };
-    } else if ( toDepth === fromDepth ) {
+    } else if ( toDepth === fromDepth && to.name === 'palette-palette' ) {
         to.meta.pageTransition = { name: 'page-same' };
         from.meta.pageTransition = { name: 'page-same' };
     } else {

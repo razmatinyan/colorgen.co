@@ -93,7 +93,7 @@
                             @color-change="setNewValue(index, $event)"
                             @delete="deleteColor(state.paletteArray[index])"
                             @done="changeRoute"
-                            @copied="showToast('You copied this color: ', 'info', $event)"
+                            @copied="handleCopy($event)"
                             @lock="handleLock($event)"
                         />
                     </template>
@@ -102,7 +102,11 @@
         </div>
 
         <Teleport to="body">
-            <Toast ref="toast" />
+            <Toast 
+                ref="toast"
+                :messages="messages"
+                :timeout="4000"
+            />
         </Teleport>
 
     </article>
@@ -140,6 +144,7 @@ const randomScheme = schemes.value[Math.floor((Math.random() * schemes.value.len
 const scheme = useState('scheme', () => 'Auto');
 
 const toast = ref(null);
+const messages = ref([]);
 const selectChild = ref(null);
 
 const lockedColors = useState('locked', () => []);
@@ -164,6 +169,15 @@ async function handleSave(palette, saveAction) {
     if ( res.action === 'saved' ) action.value = 'delete'
     else if ( res.action === 'unsaved' ) action.value = 'set'
     else if ( res.status === 400 ) showToast('Something went wrong!', 'error');
+}
+
+function handleCopy(color) {
+    messages.value.unshift(
+        {
+            id: Date.now().toLocaleString(),
+            name: `You copied this color: ${color}`,
+        }
+    )
 }
 
 function handleSpaceBar(event) {
