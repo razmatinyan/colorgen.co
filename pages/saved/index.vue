@@ -10,6 +10,7 @@
                 :key="index"
                 :item="item"
                 @copied="handleToast($event)"
+                @copyURL="handleCopyURL($event)"
             />
         </div>
         
@@ -35,6 +36,11 @@ function showToast(message, type, color) {
 
 function handleToast(color) {
     showToast(`You copied this color: ${color}`, 'info');
+}
+function handleCopyURL(palette) {
+    navigator.clipboard.writeText('https://colorgen.co/palette/' + palette);
+
+    showToast(`You copied palette URL`, 'info');
 }
 
 </script>

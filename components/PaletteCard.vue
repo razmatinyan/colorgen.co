@@ -28,7 +28,7 @@
                     >Unsave</v-tooltip>
                     <span class="material-icons-outlined icon">bookmark_added</span>
                 </div>
-                <div class="option copy">
+                <div class="option copy" @click="$emit('copyURL', item.palette)">
                     <v-tooltip
                         open-delay="200"
                         activator="parent"
