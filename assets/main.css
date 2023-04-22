@@ -105,6 +105,9 @@ h5, .h5 { font-size: 18px; }
 body {
     background: #fff;
 }
+html.modal-opened {
+    overflow: hidden;
+}
 .reset {
     padding: 0;
     margin: 0;

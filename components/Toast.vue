@@ -47,7 +47,7 @@ export default {
         hideToast() {
             if ( this.messages.length ) {
                 setTimeout(() => {
-                    this.messages.splice(this.messages[0], 1);
+                    this.messages.splice(this.messages.length - 1, 1);
                 }, this.timeout);
             }
         },
@@ -78,7 +78,7 @@ export default {
 }
 .messages-list {
     display: flex;
-    flex-direction: column;
+    flex-direction: column-reverse;
 }
 .toast-content {
     display: flex;
@@ -130,15 +130,15 @@ export default {
     opacity: 1;
 }
 .toast-enter-active {
-	transition: all .7s cubic-bezier(.7, 0, .3, 1);;
+	transition: all .7s cubic-bezier(.7, 0, .3, 1);
 }
 .toast-leave-active {
-	transition: all .7s cubic-bezier(.7, 0, .3, 1);;
+	transition: all .7s cubic-bezier(.7, 0, .3, 1);
 }
 .toast-leave-to {
 	transform: translateX(400px);
 }
 .toast-move {
-	transition: transform .7s cubic-bezier(.7, 0, .3, 1);;
+	transition: transform .4s ease;
 }
 </style>

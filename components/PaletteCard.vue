@@ -20,7 +20,7 @@
         <div class="palette-info">
             <span class="palette-name"></span>
             <div class="options">
-                <div class="option unsave">
+                <div class="option unsave" @click="$emit('unsave', item.palette)">
                     <v-tooltip
                         open-delay="200"
                         activator="parent"
@@ -52,7 +52,7 @@
 </template>
 
 <script setup>
-const emit = defineEmits(['copied']);
+const emit = defineEmits(['copied', 'copyURL', 'unsave']);
 const props = defineProps({
     item: {
         type: Object
