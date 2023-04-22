@@ -75,7 +75,7 @@
                     item-key="id"
                     @start="$event.item.style.opacity = 0, setCursor()"
                     @end="$event.item.style.opacity = 1, removeCursor()"
-                    @update="changeRoute"
+                    @update="handleDragUpdate"
                     forceFallback="true"
                     direction="horizontal"
                     dragClass="dragging"
@@ -168,6 +168,21 @@ async function handleSave(palette, saveAction) {
     else if ( res.status === 400 ) showToast('Something went wrong!', 'error');
 }
 
+async function handleDragUpdate() {
+    const res = await $fetch('/api/saved/palettes', {
+        method: 'POST',
+        body: {
+            palette: palette,
+            newPalette: state.paletteArray.map(c => c.substring(1)).join('-'),
+            action: 'change'
+        }
+    });
+
+    if ( res.action === 'changed' ) {
+        changeRoute();
+    }
+}
+
 function handleCopy(color) {
     messages.value.unshift(
         {
@@ -200,7 +215,7 @@ function showToast(message, type) {
 
 function handleCopyURL() {
 	copyURL(`${config.public.BASE_URL}${route.fullPath}`);
-	toast.value.show('You copied the current palette URL.', 'info');
+	showToast('You copied the current palette URL.', 'info');
 }
 
 function handleLock(color) {

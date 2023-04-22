@@ -40,6 +40,46 @@ export default defineEventHandler(async (event: H3Event) => {
             }
         }
 
+    } else if ( data.action === 'change' ) {
+
+        try {
+
+            if ( savedPalettes !== undefined || savedPalettes !== '' ) {
+
+                savedPalettes = JSON.parse(savedPalettes);
+
+                for ( const [idx, palette] of savedPalettes.entries() ) {
+                    if ( savedPalettes[idx].palette === data.palette ) {
+                        savedPalettes[idx].palette = data.newPalette
+                    }
+                }
+
+                savedPalettes = JSON.stringify(savedPalettes);
+                
+                setCookie(event, 'saved-palettes', savedPalettes, {
+                    maxAge: 365 * 24 * 60 * 60
+                });
+
+                return {
+                    status: 200,
+                    action: 'changed',
+                    newSaved: JSON.parse(savedPalettes)
+                }
+
+            } else {
+                return {
+                    status: 404,
+                    action: 'There are no any saved palette!'
+                }
+            }
+
+        } catch(e) {
+            return {
+                status: 400,
+                action: 'Something went wrong while changing palette info!'
+            }
+        }
+
     } else if ( data.action === 'delete' ) {
 
         try {
@@ -74,7 +114,8 @@ export default defineEventHandler(async (event: H3Event) => {
 
                 return {
                     status: 200,
-                    action: 'unsaved'
+                    action: 'unsaved',
+                    newSaved: JSON.parse(savedPalettes)
                 }
 
             }

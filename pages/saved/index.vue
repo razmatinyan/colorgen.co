@@ -20,13 +20,15 @@
 
             <Modal ref="modal">
                 <template #content>
-                    Are you sure you want to delete this palette?
+                    <p class="content-text">
+                        Are you sure you want to delete this palette?
+                    </p>
                 </template>
 
                 <template #buttons>
                     <div class="custom-buttons">
-                        <button class="button btn btn-medium btn-padding-40 btn-red">Yes</button>
-                        <button class="button btn btn-medium btn-padding-40 btn-blue">No</button>
+                        <button class="button no-btn btn btn-medium btn-border" @click="modal.showContent = false">Cancel</button>
+                        <button class="button yes-btn btn btn-medium btn-blue" @click="handleUnsave(deletePalette)">Delete</button>
                     </div>
                 </template>
             </Modal>
@@ -39,6 +41,7 @@
 const savedPalettes = useCookie('saved-palettes');
 const modal = ref('');
 const messages = ref([]);
+const deletePalette = ref('');
 
 function showToast(message, type, color) {
     messages.value.unshift(
@@ -51,7 +54,12 @@ function showToast(message, type, color) {
 }
 
 function handleUnsaveModal(palette) {
-    if ( modal.value.showModal === false ) modal.value.showModal = true
+    if ( modal.value.showModal === false ) {
+        deletePalette.value = palette
+        modal.value.showModal = true
+    } else {
+        deletePalette.value = '';
+    }
 }
 
 async function handleUnsave(palette) {
@@ -63,8 +71,15 @@ async function handleUnsave(palette) {
         }
     });
 
-    if ( res.action === 'unsaved' ) showToast('You successfully deleted palette.');
+    if ( res.action === 'unsaved' ) {
+        showToast('You successfully deleted palette.', 'info');
+
+        savedPalettes.value = res.newSaved;
+        modal.value.showContent = false;
+        deletePalette.value = '';
+    }
     else if ( res.status === 400 ) showToast('Something went wrong!', 'error');
+
 }
 
 function handleToast(color) {
@@ -91,7 +106,28 @@ function handleCopyURL(palette) {
     grid-gap: 40px 30px;
     padding-bottom: 70px;
 }
+.content-text {
+    text-align: center;
+    font-size: 18px;
+}
 .custom-buttons {
     display: flex;
+    justify-content: center;
+}
+.custom-buttons > .button {
+    width: max-content;
+    height: 40px;
+    line-height: 39px;
+    border-radius: 7px;
+    margin-right: 8px;
+}
+.custom-buttons > .button:last-child {
+    margin-right: 0;
+}
+.custom-buttons > .no-btn {
+
+}
+.custom-buttons > .yes-btn {
+
 }
 </style>

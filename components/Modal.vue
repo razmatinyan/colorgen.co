@@ -73,7 +73,7 @@ export default {
   display: flex;
   justify-content: center;
   align-items: center;
-  background-color: rgba(0, 0, 0, 0.4);
+  background-color: rgba(0, 0, 0, 0.7);
   backdrop-filter: blur(15px);
   z-index: 1001;
 }
