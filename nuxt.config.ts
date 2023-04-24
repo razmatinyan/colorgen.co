@@ -1,4 +1,5 @@
-// https://nuxt.com/docs/api/configuration/nuxt-config
+import svgLoader from 'vite-svg-loader'
+
 export default defineNuxtConfig({
     typescript: {
         shim: false
@@ -12,6 +13,11 @@ export default defineNuxtConfig({
         public: {
             BASE_URL: 'colorgen.co'
         }
+    },
+    vite: {
+        plugins: [
+          svgLoader(),
+        ],
     },
     app: {
         head: {

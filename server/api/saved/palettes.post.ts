@@ -85,9 +85,11 @@ export default defineEventHandler(async (event: H3Event) => {
         try {
 
             let removed = false;
+            let newSaved = '';
 
             if ( savedPalettes === undefined || savedPalettes === '' ) {
                 deleteCookie(event, 'saved-palettes');
+                newSaved = undfined
                 removed = true;
             } else {
     
@@ -95,6 +97,7 @@ export default defineEventHandler(async (event: H3Event) => {
 
                 if ( savedPalettes.length === 1 ) {
                     deleteCookie(event, 'saved-palettes');
+                    newSaved = undefined
                 } else {
 
                     for ( const [idx, palette] of savedPalettes.entries() ) {
@@ -104,20 +107,21 @@ export default defineEventHandler(async (event: H3Event) => {
                         }
                     }
 
+                    newSaved = savedPalettes;
                     savedPalettes = JSON.stringify(savedPalettes);
-                    
+
                     setCookie(event, 'saved-palettes', savedPalettes, {
                         maxAge: 365 * 24 * 60 * 60
                     });
 
                 }
 
-                return {
-                    status: 200,
-                    action: 'unsaved',
-                    newSaved: JSON.parse(savedPalettes)
-                }
+            }
 
+            return {
+                status: 200,
+                action: 'unsaved',
+                newSaved: newSaved
             }
 
         } catch(e) {

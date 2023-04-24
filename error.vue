@@ -1,12 +1,14 @@
 <template>
     <div id="error" class="cg-content">
         <Header />
-        <img class="image" src="@/assets/404.svg" alt="404">
+        <img class="image" :src="ErrorSVG" alt="404">
         <NuxtLink to="/" class="home-link btn btn-blue btn-medium">Go Back Home</NuxtLink>
     </div>
 </template>
 
 <script setup>
+import ErrorSVG from '@/assets/404.svg?url'
+
 defineProps(['error']);
 </script>
 

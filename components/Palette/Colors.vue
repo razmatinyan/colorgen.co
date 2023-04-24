@@ -26,6 +26,17 @@
                 </div>
             </div>
 
+            <div class="color-option open-in-new">
+                <div class="option-in" @click="$emit('openInNew', props.color)">
+                    <v-tooltip
+                        open-delay="600"
+                        activator="parent"
+                        location="top"
+                    >Open in a new tab</v-tooltip>
+                    <span class="material-icons-outlined">open_in_new</span>
+                </div>
+            </div>
+
             <div class="color-option sort">
                 <div class="option-in sort-handler">
                     <v-tooltip
@@ -121,6 +132,8 @@ function copy() {
     width: auto;
     height: 100%;
     flex-basis: 100%;
+    overflow: hidden;
+    transition: background-color var(--time-02) ease;
 }
 
 .options {
@@ -213,6 +226,32 @@ function copy() {
     transition: all var(--time-02);
     z-index: 3;
 }
+
+.colors-10 .color:first-child .options .color-picker {
+    left: 95%;
+}
+.colors-10 .color:last-child .options .color-picker {
+    left: 5%;
+}
+.colors-9 .color:first-child .options .color-picker {
+    left: 91%;
+}
+.colors-9 .color:last-child .options .color-picker {
+    left: 9%;
+}
+.colors-8 .color:first-child .options .color-picker {
+    left: 86%;
+}
+.colors-8 .color:last-child .options .color-picker {
+    left: 13%;
+}
+.colors-7 .color:first-child .options .color-picker {
+    left: 81%;
+}
+.colors-7 .color:last-child .options .color-picker {
+    left: 18%;
+}
+
 .color.show .options .color-picker {
     opacity: 1;
     visibility: visible;

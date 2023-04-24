@@ -4,6 +4,7 @@ export const generatePalette = (baseColor: string, scheme: string, numColors: nu
     
     let colors;
     const colorArray = [];
+    
     switch(scheme) {
         case "Random":
             colors = $chroma.scale([$chroma.random(), $chroma.random()]).mode('lch').colors(numColors);

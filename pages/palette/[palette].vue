@@ -22,6 +22,38 @@
                     </div>
                 </div>
 
+                <div class="menu-item menu-color menu-custom-color">
+                    <label for="count" class="input-label">Color</label>
+                    <div class="inputs" :class="{ 'show-picker': showForColor }">
+                        <input 
+                            type="text" 
+                            id="count" 
+                            class="custom-color-input"
+                            placeholder="#C3D4EF"
+                            v-model="forColor"
+                        >
+
+                        <span class="chosen-color" @click="showForColor = !showForColor" :style="{ 'background-color': forColor }"></span>
+
+                        <transition name="picker">
+                            <v-app v-if="showForColor">
+                                <v-color-picker 
+                                    class="color-picker"
+                                    :model-value="forColor"
+                                    :modes="['hex']"
+                                    dot-size="20"
+                                    @update:model-value="handleForColor($event)"
+                                ></v-color-picker>
+                            </v-app>
+                        </transition>
+
+                        <div 
+                            class="overlay"
+                            @click="showForColor = !showForColor"
+                        ></div>
+                    </div>
+                </div>
+
                 <div class="menu-item method">
                     <Select 
                         ref="selectChild"
@@ -38,7 +70,7 @@
 				</div>
 
                 <div class="menu-item random-button">
-                    <button id="random-btn" @click="generateRandomPalette" class="btn btn-medium btn-blue btn-min-width-200">Generate</button>
+                    <button id="random-btn" :disabled="disableButton" @click="generateRandomPalette" class="btn btn-medium btn-blue btn-min-width-200">Generate</button>
                 </div>
 
 				<div class="menu-item seperator">
@@ -71,6 +103,7 @@
             <v-app>
                 <draggable
                     class="colors"
+                    :class="'colors-' + count"
                     v-model="state.paletteArray"
                     item-key="id"
                     @start="$event.item.style.opacity = 0, setCursor()"
@@ -95,6 +128,7 @@
                             @done="changeRoute"
                             @copied="handleCopy($event)"
                             @lock="handleLock($event)"
+                            @openInNew="OpenInNewTab($event)"
                         />
                     </template>
                 </draggable>
@@ -143,6 +177,10 @@ const scheme = useState('scheme', () => 'Auto');
 
 const messages = ref([]);
 const selectChild = ref(null);
+const disableButton = ref(false);
+
+const forColor = useState('forColor', () => '');
+const showForColor = ref(false);
 
 const lockedColors = useState('locked', () => []);
 
@@ -187,7 +225,7 @@ function handleCopy(color) {
     messages.value.unshift(
         {
             id: Date.now().toLocaleString(),
-            name: `You copied this color: ${color}`,
+            name: `You copied this color: ${color.toUpperCase()}`,
             type: 'info'
         }
     );
@@ -203,6 +241,19 @@ function handleClickOutside() {
     }
 }
 
+function handleLock(color) {
+    if ( !lockedColors.value.includes(color) ) {
+        lockedColors.value.push(color);
+    } else {
+        let cindex = lockedColors.value.indexOf(color)
+		lockedColors.value.splice(cindex, 1);
+    }
+}
+
+function handleForColor(color) {
+    forColor.value = color
+}
+
 function showToast(message, type) {
     messages.value.unshift(
         {
@@ -215,16 +266,7 @@ function showToast(message, type) {
 
 function handleCopyURL() {
 	copyURL(`${config.public.BASE_URL}${route.fullPath}`);
-	showToast('You copied the current palette URL.', 'info');
-}
-
-function handleLock(color) {
-    if ( !lockedColors.value.includes(color) ) {
-        lockedColors.value.push(color);
-    } else {
-        let cindex = lockedColors.value.indexOf(color)
-		lockedColors.value.splice(cindex, 1);
-    }
+	showToast('You copied current palette URL.', 'info');
 }
 
 function selectedScheme(option) {
@@ -266,6 +308,7 @@ function changeRoute() {
 }
 
 function generateRandomPalette() {
+    disableButton.value = true
 	
 	let schemeRes = '';
 	if ( state.paletteArray.length === lockedColors.value.length && state.paletteArray.length === count.value ) {
@@ -284,11 +327,26 @@ function generateRandomPalette() {
 		else if ( count.value >= 10 ) count.value = 10
 	
 		let colors;
-		const randomType = scheme.value === 'Auto' ? randomNumber(1, 2) : 1;
+		let randomType = scheme.value === 'Auto' ? randomNumber(1, 2) : 1;
 		
+        if ( forColor.value !== '' ) {
+
+			try {
+
+				randomType = 1;
+				forColor.value = $chroma(forColor.value).hex();
+
+				if ( schemeRes === 'Random' ) schemeRes = 'Monochromatic';
+
+			} catch(e) {
+				forColor.value = '';
+			}
+
+		}
+
 		if ( randomType === 1 ) {
 	
-			let inputColor = $chroma.random().hex();
+			let inputColor = forColor.value === '' ? $chroma.random().hex() : forColor.value;
 			colors = generatePalette(inputColor, schemeRes, count.value);
 	
 		} else if ( randomType === 2 ) {
@@ -316,12 +374,47 @@ function generateRandomPalette() {
 			colors = shuffleArrayWithExceptions(colors, lockedColors.value);
 		}
 
+        state.paletteArray = colors
+
 		colors = colors.map(c => c.substring(1)).join('-');
 
-		navigateTo('/palette/'+colors);
+        setTimeout(() => {
+            navigateTo('/palette/'+colors);
+            disableButton.value = false
+        }, 201);
 
 	}
 
+}
+
+function OpenInNewTab(color) {
+	
+	let schemeRes = '';
+	
+    if ( scheme.value === 'Auto' ) {
+        schemeRes = schemes.value[Math.floor((Math.random() * schemes.value.length))];
+    } else {
+        schemeRes = scheme.value; 
+    }
+
+    if ( count.value <= 0 ) count.value = 5
+    else if ( count.value >= 10 ) count.value = 10
+
+    let colors;
+    let inputColor = color;
+
+    colors = generatePalette(inputColor, schemeRes, count.value);
+
+    if ( schemeRes !== 'Monochromatic' && schemeRes !== 'Mono Light' && schemeRes !== 'Mono Dark' && schemeRes !== 'Analogous' ) {
+        colors = shuffleArray(colors);
+    }
+
+    colors = colors.map(c => c.substring(1)).join('-');
+
+    let link = document.createElement('a');
+    link.href = `/palette/${colors}`
+    link.setAttribute('target', '_blank');
+    link.click();
 }
 
 function setNewValue(index, value) {
@@ -406,6 +499,51 @@ function changePalette() {
     z-index: 2;
     user-select: none;
 }
+.menu-color.menu-custom-color > .input-label {
+    left: 48%;
+    transform: translateX(-50%);
+}
+.menu-custom-color .inputs .v-application {
+    position: absolute;
+    top: 48px;
+}
+.menu-custom-color .chosen-color {
+    position: absolute;
+    top: 5px;
+    right: 6px;
+    width: 30px;
+    height: 30px;
+    border-radius: 7px;
+    box-shadow: 0 0 1px 1px rgba(0,0,0,0.1);
+    cursor: pointer;
+}
+
+.overlay {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: 3;
+}
+.inputs.show-picker .overlay {
+    display: block;
+}
+
+.picker-enter-from,
+.picker-leave-to {
+    transform: translateY(-30px);
+    opacity: 0;
+}
+.picker-enter-to {
+    transform: translateY(0);
+    opacity: 1;
+}
+.picker-enter-active,
+.picker-leave-active {
+    transition: all .2s ease;
+}
 
 .menu-color > .inputs {
     position: relative;
@@ -414,6 +552,11 @@ function changePalette() {
     max-width: 100px;
     text-align: center;
     padding: 0 7px 0 0;
+    height: 40px;
+    line-height: 39px;
+}
+.menu-color > .inputs > .custom-color-input {
+    max-width: 150px;
     height: 40px;
     line-height: 39px;
 }

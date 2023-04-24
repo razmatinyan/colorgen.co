@@ -9,7 +9,8 @@
   },
   "devDependencies": {
     "@types/chroma-js": "^2.4.0",
-    "nuxt": "^3.2.3"
+    "nuxt": "^3.2.3",
+    "vite-svg-loader": "^4.0.0"
   },
   "dependencies": {
     "@mdi/font": "^7.2.96",

@@ -17,7 +17,7 @@
                     </div>
                 </div>
                 <div class="hero-right">
-                    <img src="@/assets/home/hero-photo.svg" alt="">
+                    <img :src="HomeSVG" alt="Home Persons">
                 </div>
             </div>
         </section>
@@ -49,6 +49,8 @@
 </template>
 
 <script setup>
+import HomeSVG from '@/assets/home/hero-photo.svg?url'
+
 const { $chroma } = useNuxtApp();
 const schemes = useHomeSchemes();
 const count = useColorCount();

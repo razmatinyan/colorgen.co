@@ -25,8 +25,8 @@
                         open-delay="200"
                         activator="parent"
                         location="top"
-                    >Unsave</v-tooltip>
-                    <span class="material-icons-outlined icon">bookmark_added</span>
+                    >Delete</v-tooltip>
+                    <span class="material-icons-outlined icon">delete</span>
                 </div>
                 <div class="option copy" @click="$emit('copyURL', item.palette)">
                     <v-tooltip
