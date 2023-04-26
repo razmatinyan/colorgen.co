@@ -15,6 +15,9 @@
                         <NuxtLink to="/palette" @click="toggleMenu()">Palette Generator</NuxtLink>
                     </li>
                     <li>
+                        <NuxtLink to="/gradient/" @click="toggleMenu()">Gradient Palette</NuxtLink>
+                    </li>
+                    <li>
                         <NuxtLink to="/saved" @click="toggleMenu()">Saved Palettes</NuxtLink>
                     </li>
                     <li>

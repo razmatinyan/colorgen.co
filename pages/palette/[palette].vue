@@ -4,30 +4,12 @@
         <div class="palette-wrapper">
             <div class="palette-menu">
 
-                <div class="menu-item menu-color">
-                    <label for="count" class="input-label">Count</label>
-                    <div class="inputs">
-                        <input 
-                            type="number" 
-                            id="count" 
-                            class="color-input"
-                            v-model="count"
-                        >
-                        <span class="count-arrow count-plus" @click="count++">
-                            <span class="material-icons-outlined">keyboard_arrow_up</span>
-                        </span>
-                        <span class="count-arrow count-minus" @click="count--">
-                            <span class="material-icons-outlined">keyboard_arrow_down</span>
-                        </span>
-                    </div>
-                </div>
-
                 <div class="menu-item menu-color menu-custom-color">
-                    <label for="count" class="input-label">Color</label>
+                    <label for="forColor" class="input-label">Color</label>
                     <div class="inputs" :class="{ 'show-picker': showForColor }">
                         <input 
                             type="text" 
-                            id="count" 
+                            id="forColor" 
                             class="custom-color-input"
                             placeholder="#C3D4EF"
                             v-model="forColor"
@@ -54,6 +36,24 @@
                     </div>
                 </div>
 
+                <div class="menu-item menu-color">
+                    <label for="count" class="input-label">Count</label>
+                    <div class="inputs">
+                        <input 
+                            type="number" 
+                            id="count" 
+                            class="color-input"
+                            v-model="count"
+                        >
+                        <span class="count-arrow count-plus" @click="count++">
+                            <span class="material-icons-outlined">keyboard_arrow_up</span>
+                        </span>
+                        <span class="count-arrow count-minus" @click="count--">
+                            <span class="material-icons-outlined">keyboard_arrow_down</span>
+                        </span>
+                    </div>
+                </div>
+
                 <div class="menu-item method">
                     <Select 
                         ref="selectChild"
@@ -77,21 +77,21 @@
 					<span></span>
 				</div>
 
-                <div class="menu-item download">
+                <div class="menu-item download flex-btn-mw">
                     <button class="btn btn-medium btn-border btn-flex btn-with-icon" @click="handleDownload">
                         Export
                         <span class="material-icons-outlined btn-icon">file_download</span>
                     </button>
                 </div>
 
-                <div class="menu-item copy-url">
+                <div class="menu-item save-menu flex-btn-mw">
                     <button class="btn btn-medium btn-border btn-flex btn-with-icon" @click="handleSave(palette, action)">
                         {{ action === 'set' ? 'Save' : 'Unsave' }}
-                        <span class="material-icons-outlined btn-icon">{{ action === 'set' ? 'bookmark_add' : 'bookmark_added' }}</span>
+                        <span class="material-icons-outlined btn-icon">{{ action === 'set' ? 'bookmark_border' : 'bookmark' }}</span>
                     </button>
                 </div>
                 
-                <div class="menu-item copy-url">
+                <div class="menu-item copy-url flex-btn-mw">
                     <button class="btn btn-medium btn-border btn-flex btn-with-icon" @click="handleCopyURL">
                         Copy URL
                         <span class="material-icons-outlined btn-icon">link</span>
@@ -471,9 +471,12 @@ function changePalette() {
     height: 40px;
     line-height: 39px;
 }
-.menu-item.copy-url > button {
+.menu-item.flex-btn-mw > button {
     min-width: 125px;
     justify-content: space-between;
+}
+.menu-item .btn-icon {
+    font-size: 23px;
 }
 
 .menu-item.seperator > span[data-v-884bd382] {
