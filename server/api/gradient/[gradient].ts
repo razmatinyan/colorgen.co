@@ -1,24 +1,29 @@
 import chroma from 'chroma-js'
 
 export default defineEventHandler((event) => {
-    const gradient: any = event.context.params?.gradient
-    let gradientValidate: any;
+	const gradient: string = event.context.params?.gradient
+	let gradientArray: array;
 
-    try {
-        gradientValidate = gradient.split('-').map((c: string) => '#' + c);
-    } catch (e) {
-        gradientValidate = gradient.map((c: string) => '#' + c);
-    }
+	try {
 
-    let filtered;
-    if ( gradientValidate.length > 3 ) filtered = gradientValidate.slice(0, -1);
-    else if ( gradientValidate.length == 1 ) {
-        gradientValidate.push(chroma.random().hex());
+		gradientArray = gradient
+							.split('-')
+							.map((c: string) => (c === '' || chroma.valid(`#${c}`) === false ) ? '' : c);
 
-        navigateTo(``)
-    }
-    
-    let final = filtered.map((c: string) => c.substring(1)).join('-');
+		return gradientArray[0] !== '' ? gradientArray : false;
 
-    return final
+	} catch (e) {
+
+		if ( chroma.valid(`#${gradient}`) === true ) {
+
+			gradientArray.push(gradient);
+			gradientArray.push('');
+
+			return gradientArray;
+
+		} else {
+			return false;
+		}
+
+	}
 })

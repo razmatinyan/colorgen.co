@@ -144,6 +144,7 @@ html.modal-opened {
 
 /* Inputs */
 input[type="text"],
+input[type="email"],
 input[type="search"],
 input[type="number"],
 input[type="address"] {
@@ -163,6 +164,7 @@ textarea {
     transition: border var(--time-01);
 }
 input[type="text"]::placeholder,
+input[type="email"]::placeholder,
 input[type="search"]::placeholder,
 input[type="number"]::placeholder,
 input[type="address"]::placeholder,
@@ -170,11 +172,13 @@ textarea::placeholder {
     color: var(--gray);
 }
 input[type="text"]:hover,
+input[type="email"]:hover,
 input[type="search"]:hover,
 input[type="number"]:hover,
 input[type="address"]:hover,
 textarea:hover,
 input[type="text"]:focus,
+input[type="email"]:focus,
 input[type="search"]:focus,
 input[type="number"]:focus,
 input[type="address"]:focus,
@@ -182,6 +186,7 @@ textarea:focus {
     border-color: var(--black);
 }
 input[type="text"].full,
+input[type="email"].full,
 input[type="search"].full,
 input[type="number"].full,
 input[type="address"].full,

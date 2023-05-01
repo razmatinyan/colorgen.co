@@ -15,10 +15,10 @@
                     </div>
 
                     <div class="modal-content">
-                        <div class="content">
+                        <div class="content" v-if="$slots.content">
                             <slot name="content"></slot>
                         </div>
-                        <div class="buttons">
+                        <div class="buttons" v-if="$slots.buttons">
                             <slot name="buttons"></slot>
                         </div>
                     </div>
