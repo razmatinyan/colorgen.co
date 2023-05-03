@@ -1,42 +1,5 @@
-# Nuxt 3 Minimal Starter
+# Colorgen - Color palette generator
 
-Look at the [Nuxt 3 documentation](https://nuxt.com/docs/getting-started/introduction) to learn more.
+Generate beautiful color palettes with my color palette generator. Make gradient palettes or generate palettes for your specific color. Save your favorite ones and download!
 
-## Setup
-
-Make sure to install the dependencies:
-
-```bash
-# yarn
-yarn install
-
-# npm
-npm install
-
-# pnpm
-pnpm install
-```
-
-## Development Server
-
-Start the development server on http://localhost:3000
-
-```bash
-npm run dev
-```
-
-## Production
-
-Build the application for production:
-
-```bash
-npm run build
-```
-
-Locally preview production build:
-
-```bash
-npm run preview
-```
-
-Check out the [deployment documentation](https://nuxt.com/docs/getting-started/deployment) for more information.
+This site is made with Nuxt 3. The main purpose of the website, is to learn/improve Nuxt. If you will review my code and give me some advices about the code, I will be grateful 🙃
