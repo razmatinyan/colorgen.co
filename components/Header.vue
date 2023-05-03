@@ -15,13 +15,13 @@
                         <NuxtLink to="/palette" @click="toggleMenu()">Palette Generator</NuxtLink>
                     </li>
                     <li>
-                        <NuxtLink to="/gradient/" @click="toggleMenu()">Gradient Palette</NuxtLink>
+                        <NuxtLink to="/gradient" @click="toggleMenu()">Gradient Palette</NuxtLink>
                     </li>
                     <li>
                         <NuxtLink to="/saved" @click="toggleMenu()">Saved Palettes</NuxtLink>
                     </li>
                     <li>
-                        <NuxtLink to="/contact" @click="toggleMenu()">Contact Us</NuxtLink>
+                        <NuxtLink to="/contact" @click="toggleMenu()">Contact</NuxtLink>
                     </li>
                 </ul>
             </div>

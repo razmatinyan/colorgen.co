@@ -2,7 +2,7 @@
 	<section id="contact">
 		<div class="container">
 			<h1 class="contact-title big-title text-center">Contact</h1>
-			<p class="contact-descr">We would love to hear from you! If you have any questions, comments, or feedback about our website, please don't hesitate to contact us using the form below.</p>
+			<p class="contact-descr">We would love to hear from you! If you have any questions, comments, or feedback about our website, please don't hesitate to contact us using the form below or write directly to the <a href="mailto:razmatinyan28@gmail.com">razmatinyan28@gmail.com</a></p>
 
 			<div class="form">
 				<form
@@ -108,6 +108,14 @@ function resetForm() {
 	margin-bottom: 34px;
 	color: var(--gray-3);
 	text-align: center;
+}
+.contact-descr > a {
+    display: inline-block;
+    color: inherit;
+    transition: color .2s ease;
+}
+.contact-descr > a:hover {
+    color: var(--blue);
 }
 #form {
 	display: flex;

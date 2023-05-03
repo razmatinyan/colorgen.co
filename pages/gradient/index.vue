@@ -56,7 +56,7 @@ function randomNumber(min, max) {
 	margin: 0 auto 50px auto;
 }
 .person-img {
-	max-width: 600px;
-	margin: 0 auto 50px auto;
+	max-width: 590px;
+	margin: 0 auto;
 }
 </style>
