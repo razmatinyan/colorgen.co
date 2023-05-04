@@ -111,4 +111,39 @@ function randomNumber(min, max) {
 	user-select: none;
 	pointer-events: none;
 }
+
+@media only screen and (max-width: 1599px) {
+	#home {
+		padding-top: 70px;
+		padding-right: 20px;
+	}
+	.hero-right {
+		right: 0;
+		width: 600px;
+	}
+}
+
+@media only screen and (max-width: 1023px) {
+	#home {
+		padding-right: 0;
+		height: auto;
+	}
+	#home > .container {
+		flex-direction: column;
+		height: auto;
+	}
+	.hero-right {
+		position: static;
+		max-width: 600px;
+		width: 100%;
+		transform: translate(0, 0);
+	}
+	.hero-left {
+		margin-bottom: 50px;
+	}
+	.hero-left > .in[data-v-4824f9c4] {
+		margin: 0 auto;
+		text-align: center;
+	}
+}
 </style>

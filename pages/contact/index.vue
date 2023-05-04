@@ -30,15 +30,15 @@
 			</div>
 		</div>
 
-        <Teleport to="body">
-            <Modal ref="modal" :modalTitle="customModalTitle">
-                <template #content>
-                    <p class="content-text">
-                        {{ formResult }}
-                    </p>
-                </template>
-            </Modal>
-        </Teleport>
+		<Teleport to="body">
+			<Modal ref="modal" :modalTitle="customModalTitle">
+				<template #content>
+					<p class="content-text">
+						{{ formResult }}
+					</p>
+				</template>
+			</Modal>
+		</Teleport>
 
 	</section>
 </template>
@@ -97,7 +97,6 @@ function resetForm() {
 <style scoped>
 #contact {
 	padding-top: 70px;
-	padding-bottom: 70px;
 }
 .contact-title {
 	margin-bottom: 34px;
@@ -110,12 +109,12 @@ function resetForm() {
 	text-align: center;
 }
 .contact-descr > a {
-    display: inline-block;
-    color: inherit;
-    transition: color .2s ease;
+	display: inline-block;
+	color: inherit;
+	transition: color .2s ease;
 }
 .contact-descr > a:hover {
-    color: var(--blue);
+	color: var(--blue);
 }
 #form {
 	display: flex;
@@ -158,7 +157,18 @@ function resetForm() {
 }
 
 .content-text {
-    text-align: center;
-    font-size: 18px;
+	text-align: center;
+	font-size: 18px;
+}
+
+@media only screen and (max-width: 480px) {
+	.form-row.first-row {
+		flex-basis: 100%;
+		padding-right: 0;
+	}
+	.form-row.second-row {
+		flex-basis: 100%;
+		padding-left: 0;
+	}
 }
 </style>

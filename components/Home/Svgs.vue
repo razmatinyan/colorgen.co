@@ -26,51 +26,71 @@
 
 <style scoped>
 .blob-1 {
-    position: absolute;
-    top: 300px;
-    left: 40px;
-    transform: translate(0, -50%);
-    max-width: 120px;
-    width: 100%;
-    animation: hueRotate 15s infinite;
+	position: absolute;
+	top: 300px;
+	left: 40px;
+	transform: translate(0, -50%);
+	max-width: 120px;
+	width: 100%;
+	animation: hueRotate 15s infinite;
 }
 .blob-2 {
-    position: absolute;
-    top: 140px;
-    left: 47%;
-    transform: translate(-50%, 0) rotateX(45deg);
-    max-width: 140px;
-    width: 100%;
+	position: absolute;
+	top: 140px;
+	left: 47%;
+	transform: translate(-50%, 0) rotateX(45deg);
+	max-width: 140px;
+	width: 100%;
 }
 .blob-3 {
-    position: absolute;
-    top: 600px;
-    left: 42%;
-    transform: translate(-50%, 0) rotateX(0);
-    max-width: 140px;
-    width: 100%;
-    animation: hueRotate2 10s infinite;
+	position: absolute;
+	top: 600px;
+	left: 42%;
+	transform: translate(-50%, 0) rotateX(0);
+	max-width: 140px;
+	width: 100%;
+	animation: hueRotate2 10s infinite;
 }
 .blob-1,
 .blob-2,
 .blob-3 {
-    filter: blur(20px);
+	filter: blur(20px);
 }
 
 @keyframes hueRotate {
-    from {
-        filter: hue-rotate(0) blur(20px);
-    }
-    to {
-        filter: hue-rotate(360deg) blur(20px);
-    }
+	from {
+		filter: hue-rotate(0) blur(20px);
+	}
+	to {
+		filter: hue-rotate(360deg) blur(20px);
+	}
 }
 @keyframes hueRotate2 {
-    from {
-        filter: hue-rotate(360deg) blur(10px);
-    }
-    to {
-        filter: hue-rotate(0) blur(10px);
-    }
+	from {
+		filter: hue-rotate(360deg) blur(10px);
+	}
+	to {
+		filter: hue-rotate(0) blur(10px);
+	}
+}
+
+@media only screen and (max-width: 1599px) {
+	.blob-3 {
+		top: 486px;
+	}
+}
+@media only screen and (max-width: 1023px) {
+	.blob-1 {
+		top: 344px;
+		left: 25px;
+	}
+	.blob-2 {
+		top: 45px;
+		right: 0;
+		left: unset;
+	}
+	.blob-3 {
+		display: none;
+	}
 }
 </style>

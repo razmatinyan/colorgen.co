@@ -77,4 +77,22 @@ export default {
 .toast-move {
 	transition: transform .4s ease;
 }
+
+
+@media only screen and (max-width: 480px) {
+	.toast {
+		width: 90%;
+	}
+	.toast-enter-from {
+		transform: translateY(400px);
+		opacity: 0;
+	}
+	.toast-enter-to {
+		transform: translateY(0);
+		opacity: 1;
+	}
+	.toast-leave-to {
+		transform: translateY(400px);
+	}
+}
 </style>

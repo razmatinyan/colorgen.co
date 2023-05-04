@@ -37,7 +37,7 @@
 				</div>
 			</div>
 
-			<div class="color-option sort">
+			<div class="color-option sort" v-if="screenSize">
 				<div class="option-in sort-handler">
 					<v-tooltip
 						open-delay="600"
@@ -73,6 +73,7 @@
 			<div class="color-option current-color">
 
 				<v-color-picker 
+					v-if="screenSize"
 					class="color-picker"
 					:model-value="props.modelValue"
 					:modes="['hex', 'rgb', 'hsl']"
@@ -81,13 +82,21 @@
 				></v-color-picker>
 
 				<span 
+					v-if="screenSize"
 					class="color-code" 
 					@click="show = !show"
 				>
 					{{ $chroma(props.color).hex() }}
 				</span>
+				<span 
+					v-if="!screenSize"
+					class="color-code" 
+				>
+					{{ $chroma(props.color).hex() }}
+				</span>
 
-				<div 
+				<div
+					v-if="screenSize"
 					class="overlay"
 					@click="show = !show, $emit('done')"
 				></div>
@@ -98,6 +107,7 @@
 </template>
 
 <script setup>
+const { $chroma } = useNuxtApp();
 const props = defineProps({
 	color: {
 		type: String
@@ -115,8 +125,11 @@ const props = defineProps({
 });
 
 const show = ref(false);
+const screenSize = ref('');
 
-const { $chroma } = useNuxtApp();
+onMounted(() => {
+	screenSize.value = window.innerWidth >= 1023
+})
 
 function copy() {
 	navigator.clipboard.writeText(props.color);

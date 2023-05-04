@@ -66,8 +66,7 @@ function inputListener(e) {
 onMounted(() => {
 	document.querySelector('.custom-color-input').addEventListener('focusout', inputListener)
 })
-
-onUnmounted(() => {
+onBeforeUnmount(() => {
 	document.querySelector('.custom-color-input').removeEventListener('focusout', inputListener)
 })
 </script>

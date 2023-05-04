@@ -63,7 +63,7 @@ const showFooter = computed(() => {
 }
 .social {
 	display: flex;
-    align-items: center;
+	align-items: center;
 }
 .social > a {
 	margin-left: 6px;
@@ -78,7 +78,16 @@ const showFooter = computed(() => {
 .social > a:hover > i {
 	color: var(--blue);
 }
-
-
 .cls-1{fill:red;}.cls-2{fill:blue;}.cls-3{fill:orange;}
+
+
+@media only screen and (max-width: 520px) {
+	.container {
+		flex-direction: column-reverse;
+	}
+	.info {
+		margin-top: 20px;
+		text-align: center;
+	}
+}
 </style>

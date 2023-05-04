@@ -1,5 +1,5 @@
 <template>
-	<section id="palette-static">
+	<section id="palette-static" class="container">
 		<h1 class="palette-title big-title text-center">
 			Gradient Palette
 		</h1>
