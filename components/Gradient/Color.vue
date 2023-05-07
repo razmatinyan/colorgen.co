@@ -13,7 +13,7 @@
 	>
 		<div class="options">
 
-			<div class="color-option open-in-new">
+			<div v-if="screenSize" class="color-option open-in-new">
 				<div class="option-in" @click="$emit('openInNew', props.color)">
 					<v-tooltip
 						open-delay="600"
@@ -27,6 +27,7 @@
 			<div class="color-option copy">
 				<div class="option-in" @click="copy(), $emit('copy', props.color)">
 					<v-tooltip
+						v-if="screenSize"
 						open-delay="600"
 						activator="parent"
 						location="top"
@@ -60,9 +61,16 @@ const props = defineProps({
 	},
 });
 
+const screenSize = ref('');
+
+onMounted(() => {
+	screenSize.value = window.innerWidth >= 1200
+});
+
 function copy() {
 	navigator.clipboard.writeText(props.color);
 }
+
 </script>
 
 <style scoped>
@@ -134,5 +142,78 @@ function copy() {
 	padding: 6px 10px;
 	border-radius: 10px;
 	transition: background var(--time-02);
+}
+
+
+@media only screen and (max-width: 1200px) {
+	.options {
+		flex-direction: row;
+		align-items: center;
+		height: 100%;
+		margin-right: 10px;
+		font-size: 1rem;
+	}
+	.options > .color-option {
+		margin-top: 0;
+		margin-left: 10px;
+	}
+
+	.color-option.current-color {
+		position: absolute;
+		left: 3px;
+		margin-left: 0;
+	}
+	.color .options > .color-option:not(.color-option.current-color) {
+		opacity: 1;
+		visibility: visible;
+	}
+	.light-color .options .option-in:hover,
+	.light-color.color.show .options .option-in {
+		background: transparent;
+	}
+	.dark-color .options .option-in:hover,
+	.dark-color.color.show .options .option-in {
+		background: transparent;
+	}
+
+	.light-color .options .color-code:hover,
+	.light-color.color.show .options .color-code {
+		background: transparent;
+	}
+	.dark-color .options .color-code:hover,
+	.dark-color.color.show .options .color-code {
+		background: transparent;
+	}
+
+	.colors-1 .color {
+		height: 100%;
+	}
+	.colors-2 .color {
+		height: 50%;
+	}
+	.colors-3 .color {
+		height: 33.333%;
+	}
+	.colors-4 .color {
+		height: 25%;
+	}
+	.colors-5 .color {
+		height: 20%;
+	}
+	.colors-6 .color {
+		height: 16.667%;
+	}
+	.colors-7 .color {
+		height: 14.2857%;
+	}
+	.colors-8 .color {
+		height: 12.5%;
+	}
+	.colors-9 .color {
+		height: 11.1111%;
+	}
+	.colors-10 .color {
+		height: 10%;
+	}
 }
 </style>

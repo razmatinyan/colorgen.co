@@ -42,7 +42,7 @@ export default defineNuxtConfig({
 	alias: {
 		"assets": "/<rootDir>/assets"
 	},
-	css: ["material-icons/iconfont/outlined.css", "vuetify/styles/main.css", "~/assets/reset.css", "~/assets/fonts.css", "~/assets/main.css"],
+	css: ["material-icons/iconfont/outlined.css", "vuetify/styles/main.css", "~/assets/reset.css", "~/assets/fonts.css", "~/assets/main.css", "~/assets/media.css"],
 	build: {
 		transpile: ["vuetify"],
 	},

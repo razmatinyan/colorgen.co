@@ -10,5 +10,9 @@ export const downloadColors = (element: any, fileName: String = 'palette') => {
         link.href = canvas.toDataURL(`image/png`);
         link.target = '_blank';
         link.click();
+
+        setTimeout(() => {
+            link.remove();
+        }, 10000);
     });
 }

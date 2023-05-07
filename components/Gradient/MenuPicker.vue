@@ -81,4 +81,31 @@ onBeforeUnmount(() => {
 	height: 100%;
 	z-index: 2;
 }
+
+@media only screen and (max-width: 1200px) {
+	.menu-custom-color {
+		position: initial;
+	}
+	.menu-custom-color > .inputs {
+		position: initial;
+	}
+	.menu-color > .input-label {
+		display: none;
+	}
+	.menu-color > .inputs > .custom-color-input {
+		display: none;
+	}
+
+	.menu-custom-color .chosen-color {
+		right: auto;
+		top: 50%;
+		transform: translate(0, -50%);
+	}
+	.first-color .chosen-color {
+		left: 10px;
+	}
+	.second-color .chosen-color {
+		left: 50px;
+	}
+}
 </style>

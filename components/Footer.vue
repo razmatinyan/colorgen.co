@@ -84,6 +84,7 @@ const showFooter = computed(() => {
 @media only screen and (max-width: 520px) {
 	.container {
 		flex-direction: column-reverse;
+		padding: 0 20px;
 	}
 	.info {
 		margin-top: 20px;

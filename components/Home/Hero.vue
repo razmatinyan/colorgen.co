@@ -114,7 +114,7 @@ function randomNumber(min, max) {
 
 @media only screen and (max-width: 1599px) {
 	#home {
-		padding-top: 70px;
+		padding-top: 56px;
 		padding-right: 20px;
 	}
 	.hero-right {

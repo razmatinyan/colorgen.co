@@ -51,7 +51,7 @@ function toggleMenu() {
 	display: none;
 	align-items: center;
 	justify-content: center;
-	max-width: 30px;
+	max-width: 20px;
 	width: 100%;
 	height: 30px;
 	z-index: 3;
@@ -59,8 +59,8 @@ function toggleMenu() {
 .burger {
 	position: relative;
 	width: 100%;
-	height: 4px;
-	background: var(--black);
+	height: 3px;
+	background: var(--text-black);
 	border-radius: 4px;
 	transition: transform 75ms cubic-bezier(.55,.055,.675,.19);
 }
@@ -69,17 +69,17 @@ function toggleMenu() {
 	content: '';
 	display: block;
 	width: 100%;
-	height: 4px;
+	height: 3px;
 	position: absolute;
 	background: var(--text-black);
-	border-radius: 2px;
+	border-radius: 4px;
 }
 .burger::before {
-	top: -10px;
+	top: -8px;
 	transition: top 75ms ease .12s,opacity 75ms ease;
 }
 .burger::after {
-	bottom: -10px;
+	bottom: -8px;
 	transition: bottom 75ms ease .12s,transform 75ms cubic-bezier(.55,.055,.675,.19);
 }
 
@@ -153,9 +153,15 @@ function toggleMenu() {
 	color: #0066ff;
 }
 
-@media (max-width: 769px) {
-	.nav[data-v-a81738bd] {
-		padding: 10px 20px;
+@media only screen and (max-width: 769px) {
+	#header {
+		height: 56px;
+	}
+	.nav {
+		padding: 8px 20px;
+	}
+	.logo-wrapper > a > img {
+		max-width: 56px;
 	}
 	.burger-menu {
 		display: flex;

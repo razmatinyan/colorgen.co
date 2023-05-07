@@ -15,7 +15,7 @@
 	>
 		<div class="options">
 
-			<div class="color-option remove">
+			<div v-if="screenSize" class="color-option remove">
 				<div class="option-in remove-handler" @click="$emit('delete')">
 					<v-tooltip
 						open-delay="600"
@@ -26,7 +26,7 @@
 				</div>
 			</div>
 
-			<div class="color-option open-in-new">
+			<div v-if="screenSize" class="color-option open-in-new">
 				<div class="option-in" @click="$emit('openInNew', props.color)">
 					<v-tooltip
 						open-delay="600"
@@ -37,20 +37,22 @@
 				</div>
 			</div>
 
-			<div class="color-option sort" v-if="screenSize">
+			<div class="color-option sort">
 				<div class="option-in sort-handler">
 					<v-tooltip
+						v-if="screenSize"
 						open-delay="600"
 						activator="parent"
 						location="top"
 					>Move</v-tooltip>
-					<span class="material-icons-outlined">sync_alt</span>
+					<span class="material-icons-outlined">{{ screenSize ? 'sync_alt' : 'open_in_full' }}</span>
 				</div>
 			</div>
 
 			<div class="color-option copy">
 				<div class="option-in" @click="copy(), $emit('copied', props.color)">
 					<v-tooltip
+						v-if="screenSize"
 						open-delay="600"
 						activator="parent"
 						location="top"
@@ -62,6 +64,7 @@
 			<div class="color-option lock">
 				<div class="option-in" @click="lock = !lock, $emit('lock', props.color)">
 					<v-tooltip
+						v-if="screenSize"
 						open-delay="600"
 						activator="parent"
 						location="top"
@@ -128,7 +131,7 @@ const show = ref(false);
 const screenSize = ref('');
 
 onMounted(() => {
-	screenSize.value = window.innerWidth >= 1023
+	screenSize.value = window.innerWidth >= 1200
 })
 
 function copy() {
@@ -145,11 +148,11 @@ function copy() {
 	width: auto;
 	height: 100%;
 	flex-basis: 100%;
-	overflow: hidden;
 	transition: background-color var(--time-02) ease;
 }
 
 .options {
+	position: relative;
 	display: flex;
 	flex-direction: column;
 	justify-content: flex-end;
@@ -298,5 +301,94 @@ function copy() {
 }
 .color.show .overlay {
 	display: block;
+}
+
+@media only screen and (max-width: 1200px) {
+	.options {
+		flex-direction: row;
+		align-items: center;
+		height: 100%;
+		margin-right: 10px;
+		font-size: 1rem;
+	}
+	.options > .color-option {
+		margin-top: 0;
+		margin-left: 10px;
+	}
+
+	.color-option.current-color {
+		position: absolute;
+		left: 10px;
+		margin-left: 0;
+	}
+	.color .options > .color-option:not(.color-option.current-color, .locked .color-option.lock) {
+		opacity: 1;
+		visibility: visible;
+	}
+	.options .option-in.sort-handler > span {
+		transform: rotate(-45deg);
+	}
+
+	.light-color .options .option-in:hover,
+	.light-color.color.show .options .option-in {
+		background: transparent;
+	}
+	.dark-color .options .option-in:hover,
+	.dark-color.color.show .options .option-in {
+		background: transparent;
+	}
+
+	.light-color .options .color-code:hover,
+	.light-color.color.show .options .color-code {
+		background: transparent;
+	}
+	.dark-color .options .color-code:hover,
+	.dark-color.color.show .options .color-code {
+		background: transparent;
+	}
+
+	.colors-1 .color {
+		height: 100%;
+	}
+	.colors-2 .color {
+		height: 50%;
+	}
+	.colors-3 .color {
+		height: 33.333%;
+	}
+	.colors-4 .color {
+		height: 25%;
+	}
+	.colors-5 .color {
+		height: 20%;
+	}
+	.colors-6 .color {
+		height: 16.667%;
+	}
+	.colors-7 .color {
+		height: 14.2857%;
+	}
+	.colors-8 .color {
+		height: 12.5%;
+	}
+	.colors-9 .color {
+		height: 11.1111%;
+	}
+	.colors-10 .color {
+		height: 10%;
+	}
+}
+
+@media only screen and (max-width: 480px) {
+	.options {
+		font-size: .9rem;
+		margin-right: 14px;
+	}
+	.option-in .material-icons-outlined {
+		font-size: 20px;
+	}
+	.options > .color-option:not(.current-color) {
+		margin-left: 10px;
+	}
 }
 </style>

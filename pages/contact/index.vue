@@ -161,6 +161,12 @@ function resetForm() {
 	font-size: 18px;
 }
 
+@media only screen and (max-width: 769px) {
+	#contact {
+		padding-top: 56px;
+	}
+}
+
 @media only screen and (max-width: 480px) {
 	.form-row.first-row {
 		flex-basis: 100%;

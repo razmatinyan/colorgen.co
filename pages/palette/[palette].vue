@@ -79,28 +79,28 @@
 
 				<div class="menu-item download flex-btn-mw">
 					<button class="btn btn-medium btn-border btn-flex btn-with-icon" @click="handleDownload">
-						Export
+						<span class="text">Export</span>
 						<span class="material-icons-outlined btn-icon">file_download</span>
 					</button>
 				</div>
 
 				<div class="menu-item save-menu flex-btn-mw">
 					<button class="btn btn-medium btn-border btn-flex btn-with-icon" @click="handleSave(palette, action)">
-						{{ action === 'set' ? 'Save' : 'Unsave' }}
+						<span class="text">{{ action === 'set' ? 'Save' : 'Unsave' }}</span>
 						<span class="material-icons-outlined btn-icon">{{ action === 'set' ? 'bookmark_border' : 'bookmark' }}</span>
 					</button>
 				</div>
 				
 				<div class="menu-item copy-url flex-btn-mw">
 					<button class="btn btn-medium btn-border btn-flex btn-with-icon" @click="handleCopyURL">
-						Copy URL
+						<span class="text">Copy URL</span>
 						<span class="material-icons-outlined btn-icon">link</span>
 					</button>
 				</div>
 
 			</div>
 
-			<v-app>
+			<v-app v-if="screenSize">
 				<draggable
 					class="colors"
 					:class="'colors-' + count"
@@ -116,7 +116,7 @@
 					animation="200"
 				>
 					<template #item="{ color, index }">
-						<PaletteColors
+						<PaletteColor
 							v-model:modelValue="state.paletteArray[index]"
 							:default="color"
 							:key="index"
@@ -133,6 +133,38 @@
 					</template>
 				</draggable>
 			</v-app>
+
+			<draggable v-else
+				class="colors"
+				:class="'colors-' + count"
+				v-model="state.paletteArray"
+				item-key="id"
+				@start="$event.item.style.opacity = 0, setCursor()"
+				@end="$event.item.style.opacity = 1, removeCursor()"
+				@update="handleDragUpdate"
+				forceFallback="true"
+				direction="horizontal"
+				dragClass="dragging"
+				handle=".sort-handler"
+				animation="200"
+			>
+				<template #item="{ color, index }">
+					<PaletteColor
+						v-model:modelValue="state.paletteArray[index]"
+						:default="color"
+						:key="index"
+						:color="state.paletteArray[index]"
+						:number="index"
+						:lock="lockedColors.includes(state.paletteArray[index])"
+						@color-change="setNewValue(index, $event)"
+						@delete="deleteColor(state.paletteArray[index])"
+						@done="changeRoute"
+						@copied="handleCopy($event)"
+						@lock="handleLock($event)"
+						@openInNew="OpenInNewTab($event)"
+					/>
+				</template>
+			</draggable>
 		</div>
 
 		<Teleport to="body">
@@ -183,12 +215,14 @@ const forColor = useState('forColor', () => '');
 const showForColor = ref(false);
 
 const lockedColors = useState('locked', () => []);
+const screenSize = ref('');
 
 onMounted(() => {
 	document.addEventListener('keydown', handleSpaceBar);
+	screenSize.value = window.innerWidth >= 1200
 });
 
-onUnmounted(() => {
+onBeforeUnmount(() => {
 	document.removeEventListener('keydown', handleSpaceBar);
 });
 
@@ -603,5 +637,90 @@ function randomNumber(min, max) {
 	display: flex;
 	width: 100%;
 	height: 100%;
+}
+
+@media only screen and (max-width: 1200px) {
+	#palette {
+		overflow-y: auto;
+	}
+	.colors {
+		display: block;
+	}
+	.palette-wrapper {
+		height: calc(100% - 128px);
+		overflow-y: auto;
+	}
+
+	/* Menu */
+	.palette-menu {
+		position: fixed;
+		left: 0;
+		bottom: 0;
+		width: 100%;
+		justify-content: flex-end;
+		padding: 10px;
+		z-index: 2;
+		background: #fff;
+		box-shadow: rgba(0, 0, 0, 0.075) 0 -1px;
+	}
+	.menu-item {
+		margin-right: 10px;
+	}
+	.menu-color,
+	.method,
+	.seperator {
+		display: none;
+	}
+	.menu-item .text {
+		display: none;
+	}
+	.menu-item.flex-btn-mw > button {
+		min-width: auto;
+		justify-content: space-between;
+	}
+	.btn-with-icon {
+		padding: 0 7px;
+	}
+	.btn-icon {
+		margin-left: 0;
+	}
+	.random-button {
+		margin-right: 0;
+		position: absolute;
+		left: 50%;
+		transform: translate(-50%, 0);
+	}
+	#random-btn.btn-min-width-200 {
+		min-width: auto;
+	}
+	#random-btn.btn-blue {
+		color: var(--text-black);
+		font-weight: 500;
+		background: #fff;
+		border: 1px solid var(--gray);
+		transition: border var(--time-01);
+	}
+	.menu-item > button {
+		height: 36px;
+		line-height: 35px;
+	}
+	/* Menu */
+}
+
+@media only screen and (max-width: 769px) {
+	#palette {
+		top: 56px;
+	}
+	.palette-wrapper {
+		height: calc(100% - 114px);
+		overflow-y: auto;
+	}
+}
+
+@media only screen and (max-width: 600px) {
+	.random-button {
+		left: 10px;
+		transform: translate(0, 0);
+	}
 }
 </style>

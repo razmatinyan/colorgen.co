@@ -59,4 +59,10 @@ function randomNumber(min, max) {
 	max-width: 590px;
 	margin: 0 auto;
 }
+
+@media only screen and (max-width: 769px) {
+	#palette-static {
+		padding-top: 56px;
+	}
+}
 </style>

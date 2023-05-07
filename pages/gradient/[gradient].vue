@@ -5,6 +5,7 @@
 			<div class="palette-menu">
 
 				<GradientMenuPicker 
+					class="first-color"
 					:label="'Start Color'"
 					v-model:item="startColor"
 					@update:item="startColor = $event"
@@ -13,6 +14,7 @@
 				/>
 
 				<GradientMenuPicker 
+					class="second-color"
 					:label="'End Color'"
 					v-model:item="endColor"
 					@update:item="endColor = $event"
@@ -20,7 +22,7 @@
 					@done="changeRoute"
 				/>
 
-				<div class="menu-item menu-color">
+				<div class="menu-item menu-color menu-count">
 					<label for="count" class="input-label">Count</label>
 					<div class="inputs">
 						<input 
@@ -40,28 +42,28 @@
 
 				<div class="menu-item download flex-btn-mw">
 					<button class="btn btn-medium btn-border btn-flex btn-with-icon" @click="handleDownload">
-						Export
+						<span class="text">Export</span>
 						<span class="material-icons-outlined btn-icon">file_download</span>
 					</button>
 				</div>
 
 				<div class="menu-item save-menu flex-btn-mw">
 					<button class="btn btn-medium btn-border btn-flex btn-with-icon" @click="handleSave(state.colors, action)">
-						{{ action === 'set' ? 'Save' : 'Unsave' }}
+						<span class="text">{{ action === 'set' ? 'Save' : 'Unsave' }}</span>
 						<span class="material-icons-outlined btn-icon">{{ action === 'set' ? 'bookmark_border' : 'bookmark' }}</span>
 					</button>
 				</div>
 				
 				<div class="menu-item copy-url flex-btn-mw">
 					<button class="btn btn-medium btn-border btn-flex btn-with-icon" @click="handleCopyURL">
-						Copy URL
+						<span class="text">Copy URL</span>
 						<span class="material-icons-outlined btn-icon">link</span>
 					</button>
 				</div>
 
 			</div>
 
-			<div class="colors">
+			<div class="colors" :class="'colors-' + count">
 				<GradientColor
 					v-for="(color, index) in state.colors"
 					:key="index"
@@ -140,9 +142,9 @@ function changeGradient() {
 changeGradient()
 
 function changeRoute() {
-    if ( startColor.value !== '' ) {
-        navigateTo(`/gradient/${startColor.value.substring(1).toLowerCase()}-${endColor.value.substring(1).toLowerCase()}`);
-    }
+	if ( startColor.value !== '' ) {
+		navigateTo(`/gradient/${startColor.value.substring(1).toLowerCase()}-${endColor.value.substring(1).toLowerCase()}`);
+	}
 }
 
 function handleCountChange(action) {
@@ -373,5 +375,74 @@ function showToast(message, type) {
 	display: flex;
 	width: 100%;
 	height: 100%;
+}
+
+
+@media only screen and (max-width: 1200px) {
+	#palette {
+		overflow-y: auto;
+	}
+	.colors {
+		display: block;
+	}
+	.palette-wrapper {
+		height: calc(100% - 128px);
+		overflow-y: auto;
+	}
+
+	/* Menu */
+	.palette-menu {
+		position: fixed;
+		left: 0;
+		bottom: 0;
+		width: 100%;
+		justify-content: flex-end;
+		padding: 10px;
+		z-index: 2;
+		background: #fff;
+		box-shadow: rgba(0, 0, 0, 0.075) 0 -1px;
+	}
+	.menu-item {
+		margin-right: 10px;
+	}
+	.menu-count,
+	.method,
+	.seperator {
+		display: none;
+	}
+	.menu-item .text {
+		display: none;
+	}
+	.menu-item.flex-btn-mw > button {
+		min-width: auto;
+		justify-content: space-between;
+	}
+	.btn-with-icon {
+		padding: 0 7px;
+	}
+	.btn-icon {
+		margin-left: 0;
+	}
+	.menu-item > button {
+		height: 36px;
+		line-height: 35px;
+	}
+
+	.menu-custom-color .inputs .v-application {
+		position: fixed;
+		top: auto;
+		left: 10px;
+		bottom: 71px;
+		height: auto;
+	}
+	/* Menu */
+}
+@media only screen and (max-width: 769px) {
+	#gradient {
+		top: 56px;
+	}
+	.palette-wrapper {
+		height: calc(100% - 114px);
+	}
 }
 </style>
