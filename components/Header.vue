@@ -125,6 +125,7 @@ function toggleMenu() {
 .logo-wrapper > a > img {
 	max-width: 70px;
 	width: 100%;
+	user-select: none;
 }
 .menu {
 
