@@ -17,7 +17,7 @@
 </template>
 
 <script setup>
-import Person from '@/assets/gradient/person.svg?url'
+import Person from '@/assets/gradient/Person.svg?url'
 
 useHead({
 	link: [
