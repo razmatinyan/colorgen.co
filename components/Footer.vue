@@ -19,6 +19,7 @@
 </template>
 
 <script setup>
+import '@mdi/font/css/materialdesignicons.css'
 import { VIcon } from 'vuetify/components/VIcon';
 
 const route = useRoute();

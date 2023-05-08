@@ -1,5 +1,7 @@
 import svgLoader from 'vite-svg-loader'
 
+// TODO: Add rel canonical to all pages using useHead composable. 
+
 export default defineNuxtConfig({
 	typescript: {
 		shim: false
@@ -11,7 +13,8 @@ export default defineNuxtConfig({
 	},
 	runtimeConfig: {
 		public: {
-			BASE_URL: 'colorgen.co'
+			BASE_URL: 'colorgen.co',
+			gtagID: process.env.GTAG_ID
 		}
 	},
 	vite: {
@@ -31,11 +34,26 @@ export default defineNuxtConfig({
 				},
 				{
 					name: "keywords",
-					content: "color palette generator, create color schemes, random color palettes, online color tool, color combination tool, design tool, ColorGen"
-				}
+					content: "Color Palette, Palette, Generator, Design, Color combination, Color Schemes, Colorgen"
+				},
+				{
+					hid: "og:image",
+					property: "og:image",
+					content: "/og-image.jpg"
+				},
+				{
+					hid: "og:site_name",
+					property: "og:site_name",
+					content: "Colorgen"
+				},
+				{
+					hid: "og:type",
+					property: "og:type",
+					content: "website"
+				},
 			],
 			link: [
-				{ rel: 'icon', type: 'image/x-icon', href: '/cg-only.svg' }
+				{ rel: 'icon', type: 'image/x-icon', href: '/cg-only.svg' },
 			],
 		},
 	},

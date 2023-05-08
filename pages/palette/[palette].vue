@@ -190,6 +190,15 @@ const state = reactive({
 	paletteArray: palette.split('-').map(c => '#' + c),
 });
 
+useSeoMeta({
+	title: `Color Palette - ${palette.toUpperCase()} | colorgen.co`,
+	description: `Explore this stunning color palette featuring shades of ${palette.toUpperCase()}. Explore the possibilities and unleash your creativity with this stunning color palette.`,
+	keywords: 'Color Palette, Palette, Generator, Design, Color combination, Color Schemes, Colorgen',
+	ogTitle: `Color Palette - ${palette.toUpperCase()} | colorgen.co`,
+	ogDescription: `Explore this stunning color palette featuring shades of ${palette.toUpperCase()}. Explore the possibilities and unleash your creativity with this stunning color palette.`,
+	ogUrl: `https://colorgen.co/palette/${palette}`,
+})
+
 const action = ref('set');
 if ( savedPalettes.value !== undefined ) {
 	for( let saved in savedPalettes.value ) {

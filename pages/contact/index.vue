@@ -44,6 +44,15 @@
 </template>
 
 <script setup>
+useSeoMeta({
+	title: 'Contact | colorgen.co',
+	description: "We would love to hear from you! If you have any questions, comments, or feedback about our website, please don't hesitate to contact us using the form.",
+	keywords: 'Color Palette, Contact, Generate, Generator, Colorgen',
+	ogTitle: 'Contact | colorgen.co',
+	ogDescription: "We would love to hear from you! If you have any questions, comments, or feedback about our website, please don't hesitate to contact us using the form.",
+	ogUrl: `https://colorgen.co/contact`,
+})
+
 const modal = ref('');
 const customModalTitle = ref('');
 const name = ref('');

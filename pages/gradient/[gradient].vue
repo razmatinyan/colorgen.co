@@ -117,6 +117,15 @@ if ( savedPalettes.value !== undefined ) {
 const startColor = useState('startColor', () => state.gradient[0]);
 const endColor = useState('endColor', () => state.gradient[1]);
 
+useSeoMeta({
+	title: `Gradient Color Palette - ${state.gradient[0]}-${state.gradient[1]} | colorgen.co`,
+	description: `Explore this stunning gradient color palette featuring shades between ${state.gradient[0]} and ${state.gradient[1]}. Explore the possibilities and unleash your creativity with this stunning color palette.`,
+	keywords: 'Color Palette, Palette, Generator, Design, Color combination, Color Schemes, Colorgen',
+	ogTitle: `Gradient Color Palette - ${state.gradient[0]}-${state.gradient[1]} | colorgen.co`,
+	ogDescription: `Explore this stunning gradient color palette featuring shades between ${state.gradient[0]} and ${state.gradient[1]}. Explore the possibilities and unleash your creativity with this stunning color palette.`,
+	ogUrl: `https://colorgen.co/gradient/${state.gradient[0].substring(1)}-${state.gradient[1].substring(1)}`,
+})
+
 const count = useState('gradientCount', () => '5');
 
 async function handleSave(palette, saveAction) {

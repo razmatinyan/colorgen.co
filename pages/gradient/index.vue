@@ -19,6 +19,15 @@
 <script setup>
 import Person from '@/assets/gradient/person.svg?url'
 
+useSeoMeta({
+	title: 'Create Stunning Gradient Color Palettes with Our Easy-To-Use Generator | colorgen.co',
+	description: 'Discover the perfect color combination for your next project with our color palette generator. Our easy-to-use tool lets you customize each color, so you can achieve the perfect blend for your design.',
+	keywords: 'Gradient Color Palette, Palette, gradient, gradient colors, Generate, Generator, Colorgen',
+	ogTitle: 'Create Stunning Gradient Color Palettes with Our Easy-To-Use Generator | colorgen.co',
+	ogDescription: 'Discover the perfect color combination for your next project with our color palette generator. Our easy-to-use tool lets you customize each color, so you can achieve the perfect blend for your design.',
+	ogUrl: `https://colorgen.co/gradient`,
+})
+
 const { $chroma } = useNuxtApp();
 const schemes = useHomeSchemes();
 const count = useColorCount();

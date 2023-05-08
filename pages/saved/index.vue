@@ -46,6 +46,15 @@
 </template>
 
 <script setup>
+useSeoMeta({
+	title: 'Saved Palettes | colorgen.co',
+	description: "Discover through your favorite color palettes and download them for future use.",
+	keywords: 'Color Palette, Saved, Palettes, Generate, Download, Generator, Colorgen',
+	ogTitle: 'Saved Palettes | colorgen.co',
+	ogDescription: "Discover through your favorite color palettes and download them for future use.",
+	ogUrl: `https://colorgen.co/saved`,
+})
+
 const savedPalettes = useCookie('saved-palettes');
 const modal = ref('');
 const messages = ref([]);

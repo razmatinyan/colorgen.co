@@ -113,10 +113,13 @@ function toggleMenu() {
 	display: flex;
 	justify-content: space-between;
 	align-items: center;
+	height: 100%;
 	padding-top: 10px;
 	padding-bottom: 10px;
 }
 .logo-wrapper {
+	display: flex;
+	align-items: center;
 	flex: 1 1 auto;
 }
 .logo-wrapper > a {

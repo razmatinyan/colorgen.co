@@ -79,6 +79,7 @@
 		top: 486px;
 	}
 }
+
 @media only screen and (max-width: 1023px) {
 	.blob-1 {
 		top: 344px;
@@ -91,6 +92,13 @@
 	}
 	.blob-3 {
 		display: none;
+	}
+}
+
+@media only screen and (max-width: 380px) {
+	.blob-1 {
+		top: 433px;
+		left: 25px;
 	}
 }
 </style>
