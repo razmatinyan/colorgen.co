@@ -25,6 +25,9 @@
 </template>
 
 <style scoped>
+.svgs {
+	position: relative;
+}
 .blob-1 {
 	position: absolute;
 	top: 300px;

@@ -20,5 +20,7 @@ useSeoMeta({
 <style scoped>
 .home-wrapper {
 	position: relative;
+	overflow: hidden;
+	z-index: 10;
 }
 </style>
