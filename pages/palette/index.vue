@@ -19,6 +19,15 @@
 <script setup>
 import Person from '@/assets/palette/person.svg?url'
 
+useHead({
+	link: [
+		{
+			rel: 'canonical',
+			href: 'https://colorgen.co/palette'
+		},
+	]
+})
+
 useSeoMeta({
 	title: 'Create Custom Color Palettes with Our Easy-to-Use Generator | colorgen.co',
 	description: 'Discover the perfect color combination for your next project with our color palette generator. Our easy-to-use tool lets you customize each color, so you can achieve the perfect blend for your design.',

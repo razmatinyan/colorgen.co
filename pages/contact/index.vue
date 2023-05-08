@@ -44,6 +44,15 @@
 </template>
 
 <script setup>
+useHead({
+	link: [
+		{
+			rel: 'canonical',
+			href: 'https://colorgen.co/contact'
+		},
+	]
+})
+
 useSeoMeta({
 	title: 'Contact | colorgen.co',
 	description: "We would love to hear from you! If you have any questions, comments, or feedback about our website, please don't hesitate to contact us using the form.",

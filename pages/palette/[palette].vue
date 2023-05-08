@@ -190,6 +190,15 @@ const state = reactive({
 	paletteArray: palette.split('-').map(c => '#' + c),
 });
 
+useHead({
+	link: [
+		{
+			rel: 'canonical',
+			href: `https://colorgen.co/palette/${palette.toUpperCase()}`
+		},
+	]
+})
+
 useSeoMeta({
 	title: `Color Palette - ${palette.toUpperCase()} | colorgen.co`,
 	description: `Explore this stunning color palette featuring shades of ${palette.toUpperCase()}. Explore the possibilities and unleash your creativity with this stunning color palette.`,

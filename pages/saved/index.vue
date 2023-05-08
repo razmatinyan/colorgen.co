@@ -46,6 +46,15 @@
 </template>
 
 <script setup>
+useHead({
+	link: [
+		{
+			rel: 'canonical',
+			href: 'https://colorgen.co/palette/saved'
+		},
+	]
+})
+
 useSeoMeta({
 	title: 'Saved Palettes | colorgen.co',
 	description: "Discover through your favorite color palettes and download them for future use.",

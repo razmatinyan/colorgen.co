@@ -40,7 +40,6 @@
 			<div class="color-option sort">
 				<div class="option-in sort-handler">
 					<v-tooltip
-						v-if="screenSize"
 						open-delay="600"
 						activator="parent"
 						location="top"
@@ -52,7 +51,6 @@
 			<div class="color-option copy">
 				<div class="option-in" @click="copy(), $emit('copied', props.color)">
 					<v-tooltip
-						v-if="screenSize"
 						open-delay="600"
 						activator="parent"
 						location="top"
@@ -64,7 +62,6 @@
 			<div class="color-option lock">
 				<div class="option-in" @click="lock = !lock, $emit('lock', props.color)">
 					<v-tooltip
-						v-if="screenSize"
 						open-delay="600"
 						activator="parent"
 						location="top"
@@ -92,7 +89,7 @@
 					{{ $chroma(props.color).hex() }}
 				</span>
 				<span 
-					v-if="!screenSize"
+					v-else
 					class="color-code" 
 				>
 					{{ $chroma(props.color).hex() }}

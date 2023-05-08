@@ -27,7 +27,6 @@
 			<div class="color-option copy">
 				<div class="option-in" @click="copy(), $emit('copy', props.color)">
 					<v-tooltip
-						v-if="screenSize"
 						open-delay="600"
 						activator="parent"
 						location="top"
