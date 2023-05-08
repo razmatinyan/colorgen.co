@@ -67,7 +67,7 @@ function randomNumber(min, max) {
 	position: relative;
 	height: 600px;
 	padding-top: 150px;
-	z-index: 1;
+	z-index: 4;
 }
 #home > .container {
 	height: 100%;

@@ -24,9 +24,12 @@ export default defineNuxtConfig({
 	},
 	app: {
 		head: {
+			htmlAttrs: {
+				lang: 'en'
+			},
 			title: 'Color Palette Generator - Create Stunning Color Schemes Online | colorgen.co',
 			charset: 'utf-8',
-			viewport: 'user-scalable=0, initial-scale=1.0, maximum-scale=1.0, width=device-width',
+			viewport: 'width=device-width, initial-scale=1.0',
 			meta: [
 				{
 					name: "description",

@@ -7,10 +7,10 @@
 				</p>
 			</div>
 			<div class="social">
-				<a target="__blank" href="https://github.com/razmatinyan">
+				<a target="_blank" href="https://github.com/razmatinyan" aria-label="Github">
 					<v-icon icon="mdi-github"></v-icon>
 				</a>
-				<a target="__blank" href="https://www.instagram.com/raz28m/">
+				<a target="_blank" href="https://www.instagram.com/raz28m/" aria-label="Instagram">
 					<v-icon icon="mdi-instagram"></v-icon>
 				</a>
 			</div>

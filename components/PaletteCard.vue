@@ -22,6 +22,7 @@
 			<div class="options">
 				<div v-if="showDelete" class="option unsave" @click="$emit('unsave', item.palette)">
 					<v-tooltip
+						aria-label="Delete"
 						open-delay="200"
 						activator="parent"
 						location="top"
@@ -30,6 +31,7 @@
 				</div>
 				<div class="option copy" @click="$emit('copyURL', item.palette)">
 					<v-tooltip
+						aria-label="Copy URL"
 						open-delay="200"
 						activator="parent"
 						location="top"
@@ -38,6 +40,7 @@
 				</div>
 				<div class="option open">
 					<v-tooltip
+						aria-label="Open Palette"
 						open-delay="200"
 						activator="parent"
 						location="top"
@@ -57,10 +60,10 @@ const props = defineProps({
 	item: {
 		type: Object
 	},
-    showDelete: {
-        type: Boolean,
-        default: true
-    }
+	showDelete: {
+		type: Boolean,
+		default: true
+	}
 });
 
 const { $chroma } = useNuxtApp();

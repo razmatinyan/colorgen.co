@@ -33,6 +33,7 @@
 	max-width: 120px;
 	width: 100%;
 	animation: hueRotate 15s infinite;
+	z-index: -1;
 }
 .blob-2 {
 	position: absolute;
@@ -41,6 +42,7 @@
 	transform: translate(-50%, 0) rotateX(45deg);
 	max-width: 140px;
 	width: 100%;
+	z-index: -1;
 }
 .blob-3 {
 	position: absolute;
@@ -50,6 +52,7 @@
 	max-width: 140px;
 	width: 100%;
 	animation: hueRotate2 10s infinite;
+	z-index: -1;
 }
 .blob-1,
 .blob-2,

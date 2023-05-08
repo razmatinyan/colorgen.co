@@ -18,6 +18,7 @@
 			<div v-if="screenSize" class="color-option remove">
 				<div class="option-in remove-handler" @click="$emit('delete')">
 					<v-tooltip
+						aria-label="Remove"
 						open-delay="600"
 						activator="parent"
 						location="top"
@@ -29,6 +30,7 @@
 			<div v-if="screenSize" class="color-option open-in-new">
 				<div class="option-in" @click="$emit('openInNew', props.color)">
 					<v-tooltip
+						aria-label="Open in a new tab"
 						open-delay="600"
 						activator="parent"
 						location="top"
@@ -40,6 +42,7 @@
 			<div class="color-option sort">
 				<div class="option-in sort-handler">
 					<v-tooltip
+						aria-label="Move"
 						open-delay="600"
 						activator="parent"
 						location="top"
@@ -51,6 +54,7 @@
 			<div class="color-option copy">
 				<div class="option-in" @click="copy(), $emit('copied', props.color)">
 					<v-tooltip
+						aria-label="Copy"
 						open-delay="600"
 						activator="parent"
 						location="top"
@@ -62,6 +66,7 @@
 			<div class="color-option lock">
 				<div class="option-in" @click="lock = !lock, $emit('lock', props.color)">
 					<v-tooltip
+						aria-label="Lock/Unlock"
 						open-delay="600"
 						activator="parent"
 						location="top"

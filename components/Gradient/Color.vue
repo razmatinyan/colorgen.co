@@ -16,6 +16,7 @@
 			<div v-if="screenSize" class="color-option open-in-new">
 				<div class="option-in" @click="$emit('openInNew', props.color)">
 					<v-tooltip
+						aria-label="Open in palette generator"
 						open-delay="600"
 						activator="parent"
 						location="top"
@@ -27,6 +28,7 @@
 			<div class="color-option copy">
 				<div class="option-in" @click="copy(), $emit('copy', props.color)">
 					<v-tooltip
+						aria-label="Copy"
 						open-delay="600"
 						activator="parent"
 						location="top"

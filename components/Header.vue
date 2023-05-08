@@ -54,7 +54,7 @@ function toggleMenu() {
 	max-width: 20px;
 	width: 100%;
 	height: 30px;
-	z-index: 3;
+	z-index: 1002;
 }
 .burger {
 	position: relative;
@@ -189,7 +189,7 @@ function toggleMenu() {
 		visibility: hidden;
 		box-shadow: -2px 0 8px rgb(0 0 0 / 20%);
 		transition: all .5s cubic-bezier(.7,0,.2,1);
-		z-index: 2;
+		z-index: 1001;
 	}
 	.show-menu .menu {
 		right: 0;
