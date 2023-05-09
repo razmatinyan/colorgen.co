@@ -58,7 +58,7 @@ function generateRandomPalette() {
 }
 
 function randomNumber(min, max) {
-  return Math.floor(Math.random() * (max - min + 1) + min)
+	return Math.floor(Math.random() * (max - min + 1) + min)
 }
 </script>
 
@@ -141,7 +141,7 @@ function randomNumber(min, max) {
 	.hero-left {
 		margin-bottom: 50px;
 	}
-	.hero-left > .in[data-v-4824f9c4] {
+	.hero-left > .in {
 		margin: 0 auto;
 		text-align: center;
 	}

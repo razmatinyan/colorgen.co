@@ -27,6 +27,7 @@
 <style scoped>
 .svgs {
 	position: relative;
+	z-index: -1;
 }
 .blob-1 {
 	position: absolute;

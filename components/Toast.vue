@@ -50,7 +50,7 @@ export default {
 	position: fixed;
 	bottom: 20px;
 	right: 20px;
-	z-index: 10;
+	z-index: 1000;
 }
 .messages-list {
 	display: flex;

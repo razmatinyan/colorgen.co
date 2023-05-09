@@ -523,7 +523,7 @@ function randomNumber(min, max) {
 	font-size: 23px;
 }
 
-.menu-item.seperator > span[data-v-884bd382] {
+.menu-item.seperator > span {
 	width: 1px;
 	height: 30px;
 	background: rgba(0, 0, 0, 0.1);
