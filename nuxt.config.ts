@@ -22,6 +22,30 @@ export default defineNuxtConfig({
 			svgLoader(),
 		],
 	},
+	modules: [
+		'nuxt-simple-sitemap',
+		'nuxt-simple-robots',
+	],
+	sitemap: {
+		siteUrl: 'https://colorgen.co/',
+		include: [
+			'/',
+			'/gradient',
+			'/palette',
+			'/contact',
+		],
+		exclude: [
+			'/saved'
+		]
+	},
+	robots: {
+		siteUrl: 'https://colorgen.co/',
+		indexable: true,
+		disallow: ['/saved', '/saved/**'],
+	},
+	routeRules: {
+		'/saved/': { index: false },
+	},
 	app: {
 		head: {
 			htmlAttrs: {
