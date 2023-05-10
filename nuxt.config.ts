@@ -51,13 +51,13 @@ export default defineNuxtConfig({
 			htmlAttrs: {
 				lang: 'en'
 			},
-			title: 'Color Palette Generator - Create Stunning Color Schemes Online | colorgen.co',
+			title: 'ColorGen - Create Stunning Color Palettes | colorgen.co',
 			charset: 'utf-8',
 			viewport: 'width=device-width, initial-scale=1.0',
 			meta: [
 				{
 					name: "description",
-					content: "Our Color Palette Generator makes it easy to create stunning color schemes for your designs. With endless combinations of colors to choose from, you can experiment with random palettes or select your own colors to achieve the perfect look. Whether you're a designer or simply want to add some color to your project, our online tool is the perfect solution. Try our Color Palette Generator today and start creating eye-catching designs in no time!"
+					content: "Our Color Palette Generator makes easy to create stunning color schemes for your designs. With endless combinations of colors, you can experiment with random palettes or select your own color to achieve the perfect look."
 				},
 				{
 					name: "keywords",
