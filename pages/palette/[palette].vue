@@ -433,7 +433,7 @@ function generateRandomPalette() {
 		setTimeout(() => {
 			navigateTo('/palette/'+colors);
 			disableButton.value = false
-		}, 201);
+		}, 101);
 
 	}
 
@@ -497,11 +497,14 @@ function randomNumber(min, max) {
 	height: 100%;
 }
 .palette-menu {
+	position: relative;
 	display: flex;
 	justify-content: center;
 	align-items: center;
 	padding: 14px 30px;
 	border-bottom: 1px solid #e5e5e5;
+	background: #fff;
+	z-index: 2;
 }
 
 .menu-item {
@@ -652,9 +655,11 @@ function randomNumber(min, max) {
 }
 
 .colors {
+	position: relative;
 	display: flex;
 	width: 100%;
 	height: 100%;
+	z-index: 1;
 }
 
 @media only screen and (max-width: 1200px) {

@@ -150,7 +150,7 @@ function copy() {
 	width: auto;
 	height: 100%;
 	flex-basis: 100%;
-	transition: background-color var(--time-02) ease;
+	transition: background-color var(--time-01) ease;
 }
 
 .options {
