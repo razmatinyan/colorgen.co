@@ -3,7 +3,7 @@
 		<nav :class="{ 'show-menu': showMenu }" class="nav paddings">
 			<div class="logo-wrapper">
 				<NuxtLink to="/">
-					<img src="/logo.svg" alt="CG - ColorGen">
+					<img src="/logo.svg" alt="CG - ColorGen" width="70" height="43">
 				</NuxtLink>
 			</div>
 			<div class="menu">
@@ -16,6 +16,9 @@
 					</li>
 					<li>
 						<NuxtLink to="/gradient" @click="toggleMenu()">Gradient Palette</NuxtLink>
+					</li>
+					<li>
+						<NuxtLink to="/image-colors" @click="toggleMenu()">Image Colors</NuxtLink>
 					</li>
 					<li>
 						<NuxtLink to="/saved" @click="toggleMenu()">Saved Palettes</NuxtLink>

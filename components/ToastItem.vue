@@ -1,49 +1,49 @@
 <template>
-    <div 
-        class="toast-content"
-        :class="[type]"
-    >
-        <div class="content-text">
-            <span v-if="type === 'info'" class="material-icons-outlined icon">info</span>
-            <span v-else-if="type === 'success'" class="material-icons-outlined icon">check_circle_outline</span>
-            <span v-else-if="type === 'error'" class="material-icons-outlined icon">report</span>
-            <span v-else-if="type === 'warn'" class="material-icons-outlined icon">report_problem</span>
+	<div 
+		class="toast-content"
+		:class="[type]"
+	>
+		<div class="content-text">
+			<span v-if="type === 'info'" class="material-icons-outlined icon">info</span>
+			<span v-else-if="type === 'success'" class="material-icons-outlined icon">check_circle_outline</span>
+			<span v-else-if="type === 'error'" class="material-icons-outlined icon">report</span>
+			<span v-else-if="type === 'warn'" class="material-icons-outlined icon">report_problem</span>
 
-            <span class="name">{{ name }}</span>
-        </div>
-        <span class="material-icons-outlined close" @click="$emit('hideToast', index)">close</span>
-    </div>
+			<span class="name">{{ name }}</span>
+		</div>
+		<span class="material-icons-outlined close" @click="$emit('hideToast', index)">close</span>
+	</div>
 </template>
 
 <script>
 export default {
-    name: 'ToastItem',
+	name: 'ToastItem',
 	emits: ['hideToast'],
 	props: {
 		index: {
-            type: Number
-        },
-        type: {
-            type: String,
-            default: 'info'
-        },
-        name: {
-            type: String,
-        },
-        timeout: {
-            type: Number,
-        }
+			type: Number
+		},
+		type: {
+			type: String,
+			default: 'info'
+		},
+		name: {
+			type: String,
+		},
+		timeout: {
+			type: Number,
+		}
 	},
 	methods: {
 		hideWithDelay() {
-            setTimeout(() => {
-                this.$emit('hideToast');
-            }, this.timeout);
+			setTimeout(() => {
+				this.$emit('hideToast');
+			}, this.timeout);
 		},
 	},
-    mounted() {
-        this.hideWithDelay();
-    }
+	mounted() {
+		this.hideWithDelay();
+	}
 }
 </script>
 

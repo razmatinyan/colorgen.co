@@ -1,0 +1,19 @@
+.fade-transition-enter-active {
+	transition-duration: 0.3s !important;
+	transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1) !important;
+}
+.fade-transition-leave-active {
+	transition-duration: 0.3s !important;
+	transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1) !important;
+}
+.fade-transition-move {
+	transition-duration: 0.5s !important;
+	transition-property: transform !important;
+	transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1) !important;
+}
+.fade-transition-enter-from, .fade-transition-leave-to {
+	opacity: 0 !important;
+}
+.fade-transition-enter-active, .fade-transition-leave-active {
+	transition-property: opacity !important;
+}

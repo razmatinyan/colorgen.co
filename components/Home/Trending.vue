@@ -43,7 +43,7 @@ function handleToast(color) {
 }
 
 function handleCopyURL(palette) {
-	navigator.clipboard.writeText('https://colorgen.co/palette/' + palette);
+	copyURL('https://colorgen.co/palette/' + palette);
 
 	showToast(`You copied palette URL`, 'info');
 }

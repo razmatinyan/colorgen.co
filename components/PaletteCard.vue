@@ -1,8 +1,9 @@
 <template>
 	<div class="palette">
 		<div class="colors">
-			<div class="color"
+			<PaletteCardColor
 				v-for="(color, index) in item.palette.split('-')"
+				:color="color"
 				:key="index"
 				:class="{
 					'dark-color': $chroma('#' + color).luminance() >= 0.5,
@@ -12,16 +13,15 @@
 					'background-color': '#' + color,
 					'color': $chroma('#' + color).luminance() >= 0.5 ? 'var(--text-black)' : '#fff'
 				}"
-				@click="copy('#' + color)"
-			>
-				<span class="code">{{ '#' + color }}</span>
-			</div>
+				@onCopy="copy('#' + color)"
+			/>
 		</div>
 		<div class="palette-info">
 			<span class="palette-name"></span>
 			<div class="options">
 				<div v-if="showDelete" class="option unsave" @click="$emit('unsave', item.palette)">
 					<v-tooltip
+						transition="fade-transition"
 						aria-label="Delete"
 						open-delay="200"
 						activator="parent"
@@ -31,6 +31,7 @@
 				</div>
 				<div class="option copy" @click="$emit('copyURL', item.palette)">
 					<v-tooltip
+						transition="fade-transition"
 						aria-label="Copy URL"
 						open-delay="200"
 						activator="parent"
@@ -40,6 +41,7 @@
 				</div>
 				<div class="option open">
 					<v-tooltip
+						transition="fade-transition"
 						aria-label="Open Palette"
 						open-delay="200"
 						activator="parent"
@@ -58,7 +60,7 @@
 const emit = defineEmits(['copied', 'copyURL', 'unsave']);
 const props = defineProps({
 	item: {
-		type: Object
+		type: [Object, Array]
 	},
 	showDelete: {
 		type: Boolean,
@@ -67,9 +69,11 @@ const props = defineProps({
 });
 
 const { $chroma } = useNuxtApp();
+const showCheck = ref(false);
+const checkIcon = '<span class="material-icons-outlined">done_all</span>';
 
 function copy(color) {
-	navigator.clipboard.writeText(color);
+	copyURL(color);
 	emit('copied', color);
 }
 </script>
@@ -85,34 +89,6 @@ function copy(color) {
 	height: 130px;
 	border-radius: 20px;
 	overflow: hidden;
-}
-.color {
-	position: relative;
-	flex-basis: 1px;
-	flex-grow: 1;
-	box-shadow: inset rgba(0, 0, 0, 0.05) 0 1px, inset rgba(0, 0, 0, 0.05) 0 -1px;
-	transition: all var(--time-01) ease;
-	overflow: hidden;
-	cursor: pointer;
-}
-.color:hover {
-	flex-basis: 90px;
-}
-.code {
-	position: absolute;
-	top: 50%;
-	display: block;
-	width: 100%;
-	text-align: center;
-	text-transform: uppercase;
-	font-weight: 500;
-	opacity: 0;
-	transform: translateY(-50%);
-	transition: all var(--time-01) ease;
-	z-index: 3;
-}
-.color:hover .code {
-	opacity: 1;
 }
 
 .palette-info {

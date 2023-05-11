@@ -5,14 +5,14 @@ import { VTooltip } from 'vuetify/components/VTooltip';
 import * as directives from 'vuetify/directives'
 
 export default defineNuxtPlugin(nuxt => {
-    const vuetify = createVuetify({
-        ssr: true,
-        components: {
-            VApp,
-            VColorPicker,
-            VTooltip
-        },
-        directives
-    });
-    nuxt.vueApp.use(vuetify);
+	const vuetify = createVuetify({
+		ssr: true,
+		components: {
+			VApp,
+			VColorPicker,
+			VTooltip
+		},
+		directives
+	});
+	nuxt.vueApp.use(vuetify);
 })
