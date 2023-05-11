@@ -430,10 +430,8 @@ function generateRandomPalette() {
 
 		colors = colors.map(c => c.substring(1)).join('-');
 
-		setTimeout(() => {
-			navigateTo('/palette/'+colors);
-			disableButton.value = false
-		}, 101);
+        navigateTo('/palette/'+colors);
+        disableButton.value = false
 
 	}
 

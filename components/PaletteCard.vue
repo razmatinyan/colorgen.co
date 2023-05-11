@@ -22,6 +22,7 @@
 			<div class="options">
 				<div v-if="showDelete" class="option unsave" @click="$emit('unsave', item.palette)">
 					<v-tooltip
+						transition="fade-transition"
 						aria-label="Delete"
 						open-delay="200"
 						activator="parent"
@@ -31,6 +32,7 @@
 				</div>
 				<div class="option copy" @click="$emit('copyURL', item.palette)">
 					<v-tooltip
+						transition="fade-transition"
 						aria-label="Copy URL"
 						open-delay="200"
 						activator="parent"
@@ -40,6 +42,7 @@
 				</div>
 				<div class="option open">
 					<v-tooltip
+						transition="fade-transition"
 						aria-label="Open Palette"
 						open-delay="200"
 						activator="parent"
@@ -58,7 +61,7 @@
 const emit = defineEmits(['copied', 'copyURL', 'unsave']);
 const props = defineProps({
 	item: {
-		type: Object
+		type: [Object, Array]
 	},
 	showDelete: {
 		type: Boolean,

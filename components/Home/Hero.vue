@@ -15,7 +15,7 @@
 				</div>
 			</div>
 			<div class="hero-right">
-				<img :src="HomeSVG" alt="Home Persons">
+				<img :src="HomeSVG" alt="Home Persons" width="840">
 			</div>
 		</div>
 	</section>

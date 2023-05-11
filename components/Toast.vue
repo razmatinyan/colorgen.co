@@ -58,7 +58,7 @@ export default {
 }
 
 .toast-enter-from {
-	transform: translateX(400px);
+	transform: translateX(500px);
 	opacity: 0;
 }
 .toast-enter-to {
@@ -72,7 +72,7 @@ export default {
 	transition: all .7s cubic-bezier(.7, 0, .3, 1);
 }
 .toast-leave-to {
-	transform: translateX(400px);
+	transform: translateX(500px);
 }
 .toast-move {
 	transition: transform .4s ease;
