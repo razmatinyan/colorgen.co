@@ -112,7 +112,7 @@ function handleToast(color) {
 	showToast(`You copied this color: ${color.toUpperCase()}`, 'info');
 }
 function handleCopyURL(palette) {
-	navigator.clipboard.writeText('https://colorgen.co/palette/' + palette);
+	copyURL('https://colorgen.co/palette/' + palette);
 
 	showToast(`You copied palette URL`, 'info');
 }
@@ -180,7 +180,7 @@ function randomNumber(min, max) {
 .custom-buttons > .button {
 	min-width: 150px;
 	width: max-content;
-	height: 40px;
+	height: 39px;
 	line-height: 39px;
 	border-radius: 7px;
 	margin-right: 8px;

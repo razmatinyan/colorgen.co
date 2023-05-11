@@ -142,7 +142,7 @@ onMounted(() => {
 })
 
 function copy() {
-	navigator.clipboard.writeText(props.color);
+	copyURL(props.color);
 }
 </script>
 

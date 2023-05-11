@@ -4,7 +4,7 @@
 			<h1 class="image-title big-title text-center">Image Colors</h1>
 			
 			<p class="image-descr">
-				Extract the dominant colors from your images with our Image Color Extractor tool.
+				Extract the color palette from your images with our Image Color Extractor tool.
 			</p>
 
 			<div class="dropzone-wrapper">
@@ -51,11 +51,11 @@ useHead({
 });
 
 useSeoMeta({
-	title: 'Extract Dominant Colors From The Image | colorgen.co',
-	description: "Effortlessly extract the dominant colors from your images with our Image Color Extractor tool. Enhance your design palette with the main colors of your photos. Try it now for free!",
-	keywords: 'image color extractor, dominant colors, main colors, palette generator, generate palette, Colorgen',
-	ogTitle: 'Extract Dominant Colors From The Image | colorgen.co',
-	ogDescription: "Effortlessly extract the dominant colors from your images with our Image Color Extractor tool. Enhance your design palette with the main colors of your photos. Try it now for free!",
+	title: 'Extract Color Palette From The Image | colorgen.co',
+	description: "Effortlessly extract color palette from your images with our Image Color Extractor tool. Enhance your design palette with the main colors of your photos. Try it now for free!",
+	keywords: 'image color extractor, color palette, main colors, palette generator, generate palette, Colorgen',
+	ogTitle: 'Extract Color Palette From The Image | colorgen.co',
+	ogDescription: "Effortlessly extract color palette from your images with our Image Color Extractor tool. Enhance your design palette with the main colors of your photos. Try it now for free!",
 	ogUrl: `https://colorgen.co/image-colors`,
 })
 
@@ -90,7 +90,7 @@ const handleImageShow = (file) => {
 	
 		fileReader.onload = () => {
 			image.onload = () => {
-				const result = colorThief.getPalette(document.querySelector('#image'), 6);
+				const result = colorThief.getPalette(document.querySelector('#image'), 8);
 	
 				const paletteString = result
 										.map(c =>  $chroma(`rgb(${c[0]}, ${c[1]}, ${c[2]})`).hex().substring(1))
@@ -134,8 +134,7 @@ function handleToast(color) {
 }
 
 function handleCopyURL(palette) {
-	navigator.clipboard.writeText('https://colorgen.co/palette/' + palette);
-
+	copyURL('https://colorgen.co/palette/' + palette);
 	showToast(`You copied palette URL`, 'info');
 }
 
