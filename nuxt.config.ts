@@ -32,6 +32,7 @@ export default defineNuxtConfig({
 			'/',
 			'/gradient',
 			'/palette',
+			'/image-colors',
 			'/contact',
 		],
 		exclude: [
@@ -41,7 +42,7 @@ export default defineNuxtConfig({
 	robots: {
 		siteUrl: 'https://colorgen.co/',
 		indexable: true,
-		disallow: ['/saved', '/saved/**'],
+		disallow: ['/saved', '/saved/*'],
 	},
 	routeRules: {
 		'/saved/': { index: false },
