@@ -8,23 +8,40 @@
 			</div>
 			<div class="menu">
 				<ul class="menu-list reset">
-					<li>
-						<NuxtLink to="/" @click="toggleMenu()">Home</NuxtLink>
+					<li class="has-dropdown tools-dropdown__wrapper">
+						<span class="link is-droppable">Tools <span class="material-icons-outlined menu-icon">expand_more</span></span>
+						<ul class="reset dropdown tools-dropdown">
+							<li class="dropdown-li">
+								<NuxtLink class="link link-1" to="/palette" @click="toggleMenu()">
+									<div class="link-icon">
+										<img :src="PaletteSVG" alt="Palette Generator">
+									</div>
+									<span class="link-text">Palette Generator</span>
+								</NuxtLink>
+							</li>
+							<li class="dropdown-li">
+								<NuxtLink class="link link-2" to="/gradient" @click="toggleMenu()">
+									<div class="link-icon">
+										<img :src="GradientSVG" alt="Gradient Palette">
+									</div>
+									<span class="link-text">Gradient Palette</span>
+								</NuxtLink>
+							</li>
+							<li class="dropdown-li">
+								<NuxtLink class="link link-3" to="/image-colors" @click="toggleMenu()">
+									<div class="link-icon">
+										<img :src="ImgPickerSVG" alt="Image Colors">
+									</div>
+									<span class="link-text">Image Colors</span>
+								</NuxtLink>
+							</li>
+						</ul>
 					</li>
 					<li>
-						<NuxtLink to="/palette" @click="toggleMenu()">Palette Generator</NuxtLink>
+						<NuxtLink class="link" to="/saved" @click="toggleMenu()">Saved Palettes</NuxtLink>
 					</li>
 					<li>
-						<NuxtLink to="/gradient" @click="toggleMenu()">Gradient Palette</NuxtLink>
-					</li>
-					<li>
-						<NuxtLink to="/image-colors" @click="toggleMenu()">Image Colors</NuxtLink>
-					</li>
-					<li>
-						<NuxtLink to="/saved" @click="toggleMenu()">Saved Palettes</NuxtLink>
-					</li>
-					<li>
-						<NuxtLink to="/contact" @click="toggleMenu()">Contact</NuxtLink>
+						<NuxtLink class="link" to="/contact" @click="toggleMenu()">Contact</NuxtLink>
 					</li>
 				</ul>
 			</div>
@@ -37,6 +54,10 @@
 </template>
 
 <script setup>
+import PaletteSVG from '@/assets/header/palette.svg?url'
+import GradientSVG from '@/assets/header/gradient.svg?url'
+import ImgPickerSVG from '@/assets/header/image-picker.svg?url'
+
 let showMenu = ref(false);
 
 function toggleMenu() {
@@ -133,30 +154,125 @@ function toggleMenu() {
 	width: 100%;
 	user-select: none;
 }
-.menu {
 
+/* Dropdown Menu */
+.has-dropdown {
+	
 }
+.has-dropdown .link.is-droppable {
+	display: flex;
+	align-items: center;
+}
+.has-dropdown .is-droppable .menu-icon {
+	font-size: 14px;
+	margin-left: 2px;
+}
+
+.dropdown {
+	position: absolute;
+	top: 43px;
+	left: -200px;
+	background: #fff;
+	padding: 20px;
+	border-radius: 10px;
+	box-shadow: rgba(0, 0, 0, 0.05) 0 0 0 1px, rgba(0, 0, 0, 0.12) 0 4px 30px 0px;
+	opacity: 0;
+	visibility: hidden;
+	transform: translateY(-10px);
+	will-change: transform, opacity;
+	transition: all .2s ease;
+}
+.has-dropdown:hover .dropdown {
+	opacity: 1;
+	visibility: visible;
+	transform: translateY(0);
+}
+.has-dropdown:hover .link {
+	color: var(--blue);
+}
+.dropdown.tools-dropdown {
+	width: 400px;
+}
+.dropdown.tools-dropdown::after {
+    content: '';
+    position: absolute;
+    top: -9px;
+    left: 53%;
+    transform: rotate(45deg);
+    width: 16px;
+    height: 16px;
+    background: #fff;
+    border-left: 1px solid #ededed;
+    border-top: 1px solid #ededed;
+}
+.dropdown .link {
+	display: flex;
+	align-items: center;
+	text-decoration: none;
+	padding: 10px;
+	border-radius: 10px;
+	transition: background .2s ease;
+}
+.dropdown .link-1:hover {
+	background: #eef4fd;
+}
+.dropdown .link-1:hover > .link-text {
+	color: #0066ff;
+}
+.dropdown .link.link-2:hover {
+	background: #fff5f5;
+}
+.dropdown .link.link-2:hover > .link-text {
+	color: #ff6868;
+}
+.dropdown .link.link-3:hover {
+	background: #f8f3fd;
+}
+.dropdown .link.link-3:hover > .link-text {
+	color: var(--purple);
+}
+.dropdown .link-icon {
+	width: 51px;
+	height: 51px;
+	margin-right: 20px;
+}
+.dropdown .link-icon > img {
+	width: 100%;
+	height: 100%;
+}
+.dropdown .link-text {
+	color: var(--text-black);
+	font-size: 20px;
+	font-weight: 500;
+	transition: color .2s ease;
+}
+/* Dropdown Menu */
+
 .menu > ul {
 	display: flex;
 }
 .menu > ul > li {
+	position: relative;
 	margin-right: 20px;
 }
 .menu > ul > li:last-child {
 	margin-right: 0;
 }
-.menu > ul > li > a {
+.menu > ul > li > .link {
+	display: block;
+	padding: 10px 0;
 	color: var(--text-black);
+	font-weight: 500;
 	text-decoration: none;
 	white-space: nowrap;
 	text-overflow: ellipsis;
 	overflow: hidden;
 	transition: color .1s;
 }
-.menu > ul > li > a:hover {
+.menu > ul > li > .link:hover {
 	color: var(--blue);
 }
-.menu > ul > li > a.router-link-exact-active {
+.menu > ul > li > .link.router-link-exact-active {
 	color: #0066ff;
 }
 
@@ -179,7 +295,7 @@ function toggleMenu() {
 		right: -360px;
 		bottom: 0;
 		height: 100%;
-		padding: 80px 0 30px 0;
+		padding: 80px 0 30px 30px;
 		display: flex;
 		flex-direction: column;
 		justify-content: center;
@@ -202,6 +318,7 @@ function toggleMenu() {
 	}
 	.menu > ul {
 		flex-direction: column;
+		align-items: flex-start;
 	}
 	.menu > ul > li {
 		margin-right: 0;
@@ -211,9 +328,53 @@ function toggleMenu() {
 	.menu > ul > li:last-child {
 		margin-bottom: 0;
 	}
-	.menu > ul > li > a {
+	.menu > ul > li > .link {
 		font-size: 22px;
+		padding: 0;
 	}
+
+	/* Dropdown Menu */
+	.has-dropdown.tools-dropdown__wrapper > .link {
+		display: none;
+	}
+	.dropdown {
+		position: initial;
+		top: 0;
+		left: 0;
+		background: #fff;
+		padding: 0;
+		border-radius: 0;
+		box-shadow: none;
+		opacity: 1;
+		visibility: visible;
+		transform: translateY(0);
+		transition: all .2s ease;
+	}
+	.dropdown.tools-dropdown {
+		width: auto;
+	}
+	.dropdown.tools-dropdown::after {
+		display: none;
+	}
+	.dropdown .link {
+		padding: 0;
+	}
+	.dropdown-li:not(:last-child) {
+		margin-bottom: 20px;
+	}
+	.dropdown .link-icon {
+		display: none;
+	}
+	.dropdown .link-text {
+		font-size: 22px;
+		font-weight: 400;
+	}
+	/* Dropdown Menu */
+
+	.menu > ul > li > .link {
+		font-weight: 400;
+	}
+
 	.menu-overlay {
 		position: fixed;
 		top: 0;

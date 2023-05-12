@@ -9,7 +9,7 @@
 			<span v-else-if="type === 'error'" class="material-icons-outlined icon">report</span>
 			<span v-else-if="type === 'warn'" class="material-icons-outlined icon">report_problem</span>
 
-			<span class="name">{{ name }}</span>
+			<span class="name" v-html="name" />
 		</div>
 		<span class="material-icons-outlined close" @click="$emit('hideToast', index)">close</span>
 	</div>

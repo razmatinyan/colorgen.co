@@ -79,6 +79,10 @@ export default defineNuxtConfig({
 					property: "og:type",
 					content: "website"
 				},
+				{
+					name: "google-site-verification",
+					content: "_nkR76E889L8-Gs_AQOTLSCNwkS4PKh40ZgsIoL028w"
+				},
 			],
 			link: [
 				{ rel: 'icon', type: 'image/x-icon', href: '/cg-only.svg' },

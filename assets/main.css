@@ -16,6 +16,8 @@
 	--red-hover: #e10049;
 	--green: #17b507;
 	--green-hover: #01a904;
+	--purple: #6563ff;
+	--purple-hover: #514fff;
 
 	--section-padding: clamp(5em, 21vh, 12em);
 	--container-padding: clamp(2.5em, 8vw, 8em);
@@ -288,6 +290,13 @@ input[type=number] {
 .btn-green:hover {
 	background: var(--green-hover);
 }
+.btn-purple {
+	background: var(--purple);
+	color: #fff;
+}
+.btn-purple:hover {
+	background: var(--purple-hover);
+}
 .btn-min-width {
 	min-width: 230px;
 }
@@ -370,4 +379,9 @@ input[type=number] {
 	height: 10px;
 	background: var(--black);
 	z-index: -1;
+}
+
+.toast-content .name > a {
+	color: #fff;
+	text-decoration: underline;
 }
