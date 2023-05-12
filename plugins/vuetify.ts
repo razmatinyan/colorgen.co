@@ -6,6 +6,7 @@ import * as directives from 'vuetify/directives'
 
 export default defineNuxtPlugin(nuxt => {
 	const vuetify = createVuetify({
+		theme: false,
 		ssr: true,
 		components: {
 			VApp,

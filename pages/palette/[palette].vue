@@ -253,7 +253,10 @@ async function handleSave(palette, saveAction) {
 		}
 	});
 
-	if ( res.action === 'saved' ) action.value = 'delete'
+	if ( res.action === 'saved' ) {
+		action.value = 'delete';
+		showToast('Palette has been <a href="/saved">saved</a>', 'info');
+	}
 	else if ( res.action === 'unsaved' ) action.value = 'set'
 	else if ( res.status === 400 ) showToast('Something went wrong!', 'error');
 }
@@ -430,8 +433,8 @@ function generateRandomPalette() {
 
 		colors = colors.map(c => c.substring(1)).join('-');
 
-        navigateTo('/palette/'+colors);
-        disableButton.value = false
+		navigateTo('/palette/'+colors);
+		disableButton.value = false
 
 	}
 

@@ -12,13 +12,11 @@
 			<button id="random-btn" :disabled="disableButton" @click="generateRandomPalette" class="gnr-btn btn btn-medium btn-blue btn-min-width-200">Start Generate</button>
 		</div>
 
-		<img class="person-img" :src="Person" alt="Person">
+		<PaletteSvgPerson />
 	</section>
 </template>
 
 <script setup>
-import Person from '@/assets/palette/person.svg?url'
-
 useHead({
 	link: [
 		{
@@ -92,10 +90,6 @@ function randomNumber(min, max) {
 .gnr-btn {
 	max-width: 200px;
 	margin: 0 auto 50px auto;
-}
-.person-img {
-	max-width: 500px;
-	margin: 0 auto;
 }
 
 @media only screen and (max-width: 769px) {

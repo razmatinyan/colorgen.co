@@ -4,17 +4,21 @@
 		@dragleave.prevent="toggleActive"
 		@dragover.prevent
 		@drop.prevent="toggleActive"
+		@click="triggerInput"
+		:class="{ 'active': active }"
 		class="dropzone"
 	>
-		<span>Drag and Drop File</span>
-		<span>OR</span>
+		<div class="in">
+			<span>Drag and Drop File</span>
+			<span>OR</span>
 
-		<label for="dropzoneFile" class="select-btn btn btn-green btn-width btn-medium btn-flex" v-html="btnText" />
+			<span class="select-btn btn btn-purple btn-width btn-medium btn-flex" v-html="btnText" />
 
-		<input type="file" id="dropzoneFile" class="dropzoneFile" @change="handleChange" />
+			<input type="file" id="dropzoneFile" class="dropzoneFile" @change="handleChange" />
 
-		<div class="drop-overlay" :class="{ 'drop-active': active }">
-			<span class="material-icons-outlined">cloud_upload</span>
+			<div class="drop-overlay" :class="{ 'drop-active': active }">
+				<span class="material-icons-outlined">cloud_upload</span>
+			</div>
 		</div>
 	</div>
 </template>
@@ -30,6 +34,9 @@ export default {
 	methods: {
 		toggleActive() {
 			this.active = !this.active
+		},
+		triggerInput() {
+			document.getElementById('dropzoneFile').click();
 		},
 		handleChange() {
 			this.btnText = '<div class="btn-loader"></div>'
@@ -47,14 +54,28 @@ export default {
 	max-width: 600px;
 	width: 100%;
 	height: 250px;
+	padding: 10px;
+	border: 2px dashed #9cb6ff;
+	border-radius: 10px;
+	background-color: #fff;
+	transition: all 0.2s ease;
+	cursor: pointer;
+	user-select: none;
+}
+.dropzone:hover,
+.dropzone.active {
+	border-color: var(--purple);
+}
+.dropzone > .in {
+	position: relative;
 	display: flex;
 	flex-direction: column;
 	justify-content: center;
 	align-items: center;
 	row-gap: 16px;
-	border: 2px dashed var(--green);
-	background-color: #fff;
-	transition: 0.3s ease all;
+	height: 100%;
+	background: rgb(0 20 255 / 8%);
+	border-radius: 10px;
 }
 input {
 	display: none;
@@ -62,7 +83,7 @@ input {
 .active-dropzone {
 	color: #fff;
 	border-color: #fff;
-	background-color: var(--green);
+	background-color: var(--purple);
 }
 .select-btn {
 	height: 40px;
@@ -74,7 +95,8 @@ input {
 	left: 0;
 	width: 100%;
 	height: 100%;
-	background: rgba(23, 181, 7, .9);
+	background: rgba(101, 99, 255, .9);
+	border-radius: 10px;
 	transition: all var(--time-02) ease;
 	opacity: 0;
 	visibility: hidden;

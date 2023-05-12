@@ -11,14 +11,12 @@
 		<div class="palette-btn-wrap">
 			<button id="random-btn" :disabled="disableButton" @click="openGradientMaker" class="gnr-btn btn btn-medium btn-blue btn-min-width-200">Try it now</button>
 		</div>
-
-		<img class="person-img" :src="Person" alt="Person">
+		
+		<GradientSvgPerson />
 	</section>
 </template>
 
 <script setup>
-import Person from '@/assets/gradient/Person.svg?url'
-
 useHead({
 	link: [
 		{
@@ -73,14 +71,11 @@ function randomNumber(min, max) {
 	max-width: 200px;
 	margin: 0 auto 50px auto;
 }
-.person-img {
-	max-width: 590px;
-	margin: 0 auto;
-}
 
 @media only screen and (max-width: 769px) {
 	#palette-static {
 		padding-top: 56px;
 	}
 }
+
 </style>
