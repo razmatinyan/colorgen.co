@@ -194,16 +194,16 @@ function toggleMenu() {
 	width: 400px;
 }
 .dropdown.tools-dropdown::after {
-    content: '';
-    position: absolute;
-    top: -9px;
-    left: 53%;
-    transform: rotate(45deg);
-    width: 16px;
-    height: 16px;
-    background: #fff;
-    border-left: 1px solid #ededed;
-    border-top: 1px solid #ededed;
+	content: '';
+	position: absolute;
+	top: -9px;
+	left: 53%;
+	transform: rotate(45deg);
+	width: 16px;
+	height: 16px;
+	background: #fff;
+	border-left: 1px solid #ededed;
+	border-top: 1px solid #ededed;
 }
 .dropdown .link {
 	display: flex;
@@ -268,6 +268,7 @@ function toggleMenu() {
 	text-overflow: ellipsis;
 	overflow: hidden;
 	transition: color .1s;
+	cursor: pointer;
 }
 .menu > ul > li > .link:hover {
 	color: var(--blue);

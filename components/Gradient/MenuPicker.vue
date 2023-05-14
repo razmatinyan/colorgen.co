@@ -72,6 +72,63 @@ onBeforeUnmount(() => {
 </script>
 
 <style scoped>
+.menu-color {
+	position: relative;
+}
+.menu-color > .input-label {
+	display: block;
+	color: var(--text-black);
+	font-size: 12px;
+	position: absolute;
+	top: -8px;
+	left: 28px;
+	background: #fff;
+	z-index: 2;
+	user-select: none;
+}
+.menu-color.menu-custom-color > .input-label {
+	left: 48%;
+	transform: translateX(-50%);
+}
+.menu-custom-color .inputs .v-application {
+	position: absolute;
+	top: 48px;
+}
+.menu-custom-color .chosen-color {
+	position: absolute;
+	top: 5px;
+	right: 6px;
+	width: 30px;
+	height: 30px;
+	border-radius: 7px;
+	box-shadow: 0 0 1px 1px rgba(0,0,0,0.1);
+	cursor: pointer;
+}
+
+
+.picker-enter-from,
+.picker-leave-to {
+	transform: translateY(-30px);
+	opacity: 0;
+}
+.picker-enter-to {
+	transform: translateY(0);
+	opacity: 1;
+}
+.picker-enter-active,
+.picker-leave-active {
+	transition: all .2s ease;
+}
+
+.menu-color > .inputs {
+	position: relative;
+}
+.menu-color > .inputs > .custom-color-input {
+	max-width: 150px;
+	height: 40px;
+	line-height: 39px;
+}
+
 .menupicker-overlay {
 	display: block;
 	position: fixed;

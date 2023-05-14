@@ -36,8 +36,6 @@ useSeoMeta({
 })
 
 const { $chroma } = useNuxtApp();
-const schemes = useHomeSchemes();
-const count = useColorCount();
 const disableButton = ref(false);
 
 function openGradientMaker() {
@@ -46,10 +44,6 @@ function openGradientMaker() {
 	}, 2000);
 
 	navigateTo(`/gradient/${$chroma.random().hex().substring(1)}-${$chroma.random().hex().substring(1)}`);
-}
-
-function randomNumber(min, max) {
-	return Math.floor(Math.random() * (max - min + 1) + min)
 }
 </script>
 
