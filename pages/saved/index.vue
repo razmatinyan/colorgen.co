@@ -199,6 +199,7 @@ function randomNumber(min, max) {
 	margin-top: 34px;
 	margin-bottom: 34px;
 	text-align: center;
+	color: var(--gray-3);
 }
 .gnr-btn {
 	max-width: 200px;

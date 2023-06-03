@@ -1,12 +1,11 @@
 <template>
 	<div class="home-wrapper">
-
-		<HomeSvgs />
-		<HomeHero />
-		<HomeTrending />
-
+			<HomeSvgs />
+			<HomeHero />
+			<HomeGradient />
+			<HomeImage />
+			<HomeTrending />
 	</div>
-
 </template>
 
 <script setup>
@@ -20,6 +19,8 @@ useSeoMeta({
 <style scoped>
 .home-wrapper {
 	position: relative;
+	max-width: 1920px;
+	margin: 0 auto;
 	overflow: hidden;
 	z-index: 10;
 }

@@ -1,8 +1,8 @@
 <template>
 	<section id="trending">
-		<h1 class="title big-title text-center container">
+		<h2 class="title big-title text-center container">
 			Trending Palettes
-		</h1>
+		</h2>
 
 		<div class="palettes container">
 			<PaletteCard 
@@ -52,7 +52,7 @@ function handleCopyURL(palette) {
 
 <style scoped>
 #trending {
-	padding-top: 230px;
+	padding-top: 60px;
 }
 .title {
 	margin-bottom: 70px;
@@ -63,12 +63,6 @@ function handleCopyURL(palette) {
 	grid-gap: 30px;
 }
 
-@media only screen and (max-width: 1599px) {
-	#trending {
-		padding-top: 100px;
-	}
-}
-
 @media only screen and (max-width: 1023px) {
 	.palettes {
 		grid-template-columns: repeat(2, 1fr);
@@ -77,7 +71,7 @@ function handleCopyURL(palette) {
 
 @media only screen and (max-width: 600px) {
 	#trending {
-		padding-top: 60px;
+		padding-top: 40px;
 	}
 	.palettes {
 		grid-template-columns: repeat(1, 1fr);
