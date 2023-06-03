@@ -3,6 +3,7 @@
 			<HomeSvgs />
 			<HomeHero />
 			<HomeGradient />
+			<HomeImage />
 			<HomeTrending />
 	</div>
 </template>
