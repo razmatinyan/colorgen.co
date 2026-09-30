@@ -1,8 +1,8 @@
 import chroma from 'chroma-js'
 
 export default defineEventHandler((event) => {
-	const gradient: string = event.context.params?.gradient
-	let gradientArray: array;
+	const gradient = event.context.params?.gradient ?? ''
+	let gradientArray: string[] = []
 
 	try {
 

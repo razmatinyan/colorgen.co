@@ -1,39 +1,44 @@
-import svgLoader from 'vite-svg-loader'
-
-// TODO: Add rel canonical to all pages using useHead composable. 
+import tailwindcss from '@tailwindcss/vite'
 
 export default defineNuxtConfig({
-	typescript: {
-		shim: false
-	},
-	imports: {
-		dirs: [
-		  'utils/**'
-		]
-	},
+	compatibilityDate: '2026-09-30',
+	devtools: { enabled: false },
 	runtimeConfig: {
 		public: {
-			BASE_URL: 'colorgen.co',
+			BASE_URL: 'https://colorgen.co',
 			gtagID: process.env.GTAG_ID
 		}
 	},
 	vite: {
 		plugins: [
-			svgLoader(),
+			tailwindcss(),
 		],
 	},
 	modules: [
-		'nuxt-simple-sitemap',
-		'nuxt-simple-robots',
+		'@nuxt/icon',
+		'shadcn-nuxt',
+		'@nuxtjs/sitemap',
+		'@nuxtjs/robots',
 	],
+	shadcn: {
+		prefix: '',
+		componentDir: '@/components/ui',
+	},
+	icon: {
+		mode: 'svg',
+		clientBundle: {
+			scan: true,
+		},
+	},
+	site: {
+		url: 'https://colorgen.co',
+		name: 'ColorGen',
+		indexable: true,
+	},
 	sitemap: {
-		siteUrl: 'https://colorgen.co/',
-		include: [
-			'/',
-			'/gradient',
-			'/palette',
-			'/image-colors',
-			'/contact',
+		zeroRuntime: true,
+		xsl: false,
+		urls: [
 			'/palette/326789-78a6c8-e9eef2-e65c4f',
 			'/palette/0295a9-12adc1-fdd037-f5f5f5',
 			'/palette/1c1c1e-ba8f6c-9f9d99-fafaf8-23262b',
@@ -42,16 +47,16 @@ export default defineNuxtConfig({
 			'/palette/2e424d-5b8291-98dad9-eaebed',
 		],
 		exclude: [
-			'/saved'
+			'/saved',
+			'/saved/**',
 		]
 	},
 	robots: {
-		siteUrl: 'https://colorgen.co/',
-		indexable: true,
 		disallow: ['/saved', '/saved/*'],
 	},
 	routeRules: {
-		'/saved/': { index: false },
+		'/saved': { robots: false },
+		'/saved/**': { robots: false },
 	},
 	app: {
 		head: {
@@ -71,17 +76,14 @@ export default defineNuxtConfig({
 					content: "Color Palette, Palette, Generator, Design, Color combination, Color Schemes, Colorgen"
 				},
 				{
-					hid: "og:image",
 					property: "og:image",
 					content: "/og-image.jpg"
 				},
 				{
-					hid: "og:site_name",
 					property: "og:site_name",
 					content: "Colorgen"
 				},
 				{
-					hid: "og:type",
 					property: "og:type",
 					content: "website"
 				},
@@ -95,11 +97,11 @@ export default defineNuxtConfig({
 			],
 		},
 	},
-	css: ["material-icons/iconfont/outlined.css", "~/assets/vuetify_main.css", "~/assets/reset.css", "~/assets/fonts.css", "~/assets/main.css", "~/assets/media.css"],
-	alias: {
-		"assets": "/<rootDir>/assets"
-	},
-	build: {
-		transpile: ["vuetify"],
-	},
+	css: [
+		'~/assets/tailwind.css',
+		'~/assets/reset.css',
+		'~/assets/fonts.css',
+		'~/assets/main.css',
+		'~/assets/media.css',
+	],
 })

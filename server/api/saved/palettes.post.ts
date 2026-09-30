@@ -1,4 +1,4 @@
-import { defineEventHandler, H3Event, parseCookies, setCookie, deleteCookie } from 'h3'
+import { defineEventHandler, type H3Event, setCookie, deleteCookie } from 'h3'
 
 export default defineEventHandler(async (event: H3Event) => {
     const data = await readBody(event);
@@ -44,7 +44,7 @@ export default defineEventHandler(async (event: H3Event) => {
 
         try {
 
-            if ( savedPalettes !== undefined || savedPalettes !== '' ) {
+            if ( savedPalettes !== undefined && savedPalettes !== '' ) {
 
                 savedPalettes = JSON.parse(savedPalettes);
 
@@ -85,11 +85,11 @@ export default defineEventHandler(async (event: H3Event) => {
         try {
 
             let removed = false;
-            let newSaved = '';
+            let newSaved: any = '';
 
             if ( savedPalettes === undefined || savedPalettes === '' ) {
                 deleteCookie(event, 'saved-palettes');
-                newSaved = undfined
+                newSaved = undefined
                 removed = true;
             } else {
     
