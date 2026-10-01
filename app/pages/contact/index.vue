@@ -30,15 +30,16 @@
 			</div>
 		</div>
 
-		<Teleport to="body">
-			<Modal ref="modal" :modalTitle="customModalTitle">
-				<template #content>
-					<p class="content-text">
+		<Dialog v-model:open="resultDialogOpen">
+			<DialogContent class="sm:max-w-[600px]">
+				<DialogHeader>
+					<DialogTitle>{{ customModalTitle }}</DialogTitle>
+					<DialogDescription class="content-text">
 						{{ formResult }}
-					</p>
-				</template>
-			</Modal>
-		</Teleport>
+					</DialogDescription>
+				</DialogHeader>
+			</DialogContent>
+		</Dialog>
 
 	</section>
 </template>
@@ -62,7 +63,7 @@ useSeoMeta({
 	ogUrl: `https://colorgen.co/contact`,
 })
 
-const modal = ref('');
+const resultDialogOpen = ref(false);
 const customModalTitle = ref('');
 const name = ref('');
 const email = ref('');
@@ -71,38 +72,34 @@ const disableButton = ref(false);
 const formResult = ref('');
 
 async function FormHandler(event) {
+	const form = event.currentTarget;
+	const data = new FormData(form);
+	disableButton.value = true;
 
-	console.log(event);
-
-	var form = document.getElementById(event.target.id);
-	var data = new FormData(event.target);
-
-	fetch(event.target.action, {
-		method: form.method,
-		body: data,
-		headers: {
-			Accept: "application/json",
-		},
-	})
-	.then((response) => {
-		modal.value.showModal = true
+	try {
+		const response = await fetch(form.action, {
+			method: form.method,
+			body: data,
+			headers: {
+				Accept: 'application/json',
+			},
+		});
 
 		if (response.ok) {
-			customModalTitle.value = 'Thank you!'
-			formResult.value = 'We will answer you as soon as possible!'
+			customModalTitle.value = 'Thank you!';
+			formResult.value = 'We will answer you as soon as possible!';
 			resetForm();
 		} else {
-			customModalTitle.title = "Oops..."
-			formResult.value = "There was a problem while submitting your form. Try again later."
+			customModalTitle.value = 'Oops...';
+			formResult.value = 'There was a problem while submitting your form. Try again later.';
 		}
-
-	})
-	.catch((error) => {
-		modal.value.showModal = true
-		customModalTitle.title = "Oops..."
-		formResult.value = "There was a problem while submitting your form. Try again later."
-	});
-	
+	} catch {
+		customModalTitle.value = 'Oops...';
+		formResult.value = 'There was a problem while submitting your form. Try again later.';
+	} finally {
+		disableButton.value = false;
+		resultDialogOpen.value = true;
+	}
 }
 
 function resetForm() {

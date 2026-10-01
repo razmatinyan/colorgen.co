@@ -32,9 +32,6 @@
 			</div>
 		</div>
 
-		<Teleport to="body">
-			<Toast :messages="messages" />
-		</Teleport>
 	</section>
 </template>
 
@@ -60,9 +57,9 @@ useSeoMeta({
 const imgSrc = ref('');
 const colors = ref([]);
 const inputRef = ref(null);
-const messages = ref([]);
 let dropzoneFile = ref('');
 const { $extractPalette } = useNuxtApp();
+const { showToast } = useAppToast();
 
 const drop = (e) => {
 	dropzoneFile.value = e.dataTransfer.files[0];
@@ -118,16 +115,6 @@ const handleImageShow = (file) => {
 
 const scrollToPalette = () => {
 	document.querySelector('.palette-wrapper').scrollIntoView({ behavior: 'smooth' })
-}
-
-function showToast(message, type, color) {
-	messages.value.unshift(
-		{
-			id: Date.now().toLocaleString(),
-			name: message,
-			type: type
-		}
-	);
 }
 
 function handleToast(color) {

@@ -23,24 +23,22 @@
 			</div>
 		</div>
 		
-		<Teleport to="body">
-			<Toast :messages="messages" />
-
-			<Modal ref="modal" :modalTitle="'Delete palette'">
-				<template #content>
-					<p class="content-text">
-						Are you sure you want to delete this palette?
-					</p>
-				</template>
-
-				<template #buttons>
-					<div class="custom-buttons">
-						<button class="button no-btn btn btn-medium btn-border" @click="modal.showContent = false">Cancel</button>
-						<button class="button yes-btn btn btn-medium btn-red" @click="handleUnsave(deletePalette)">Delete</button>
-					</div>
-				</template>
-			</Modal>
-		</Teleport>
+		<AlertDialog v-model:open="deleteDialogOpen">
+			<AlertDialogContent>
+				<AlertDialogHeader>
+					<AlertDialogTitle>Delete palette</AlertDialogTitle>
+					<AlertDialogDescription>
+						Are you sure you want to delete this palette? This action cannot be undone.
+					</AlertDialogDescription>
+				</AlertDialogHeader>
+				<AlertDialogFooter>
+					<AlertDialogCancel>Cancel</AlertDialogCancel>
+					<AlertDialogAction variant="destructive" @click="handleUnsave(deletePalette)">
+						Delete
+					</AlertDialogAction>
+				</AlertDialogFooter>
+			</AlertDialogContent>
+		</AlertDialog>
 
 	</section>
 </template>
@@ -65,27 +63,13 @@ useSeoMeta({
 })
 
 const savedPalettes = useCookie('saved-palettes');
-const modal = ref('');
-const messages = ref([]);
 const deletePalette = ref('');
-
-function showToast(message, type, color) {
-	messages.value.unshift(
-		{
-			id: Date.now().toLocaleString(),
-			name: message,
-			type: type
-		}
-	);
-}
+const deleteDialogOpen = ref(false);
+const { showToast } = useAppToast();
 
 function handleUnsaveModal(palette) {
-	if ( modal.value.showModal === false ) {
-		deletePalette.value = palette
-		modal.value.showModal = true
-	} else {
-		deletePalette.value = '';
-	}
+	deletePalette.value = palette;
+	deleteDialogOpen.value = true;
 }
 
 async function handleUnsave(palette) {
@@ -105,7 +89,7 @@ async function handleUnsave(palette) {
 	}
 	else if ( res.status === 400 ) showToast(res.action, 'error');
 
-	modal.value.showContent = false;
+	deleteDialogOpen.value = false;
 }
 
 function handleToast(color) {
@@ -169,32 +153,6 @@ function randomNumber(min, max) {
 	grid-gap: 40px 30px;
 	margin-top: 70px;
 }
-.content-text {
-	text-align: center;
-	font-size: 18px;
-}
-.custom-buttons {
-	display: flex;
-	justify-content: center;
-}
-.custom-buttons > .button {
-	min-width: 150px;
-	width: max-content;
-	height: 39px;
-	line-height: 39px;
-	border-radius: 7px;
-	margin-right: 8px;
-}
-.custom-buttons > .button:last-child {
-	margin-right: 0;
-}
-.custom-buttons > .no-btn {
-
-}
-.custom-buttons > .yes-btn {
-
-}
-
 .empty-text {
 	margin-top: 34px;
 	margin-bottom: 34px;

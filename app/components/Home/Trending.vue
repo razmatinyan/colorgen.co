@@ -15,10 +15,6 @@
 			/>
 		</div>
 
-		<Teleport to="body">
-			<Toast :messages="messages" />
-		</Teleport>
-
 	</section>
 </template>
 
@@ -26,17 +22,7 @@
 import trendingPalettes from '../../info/trendingPalettes'
 
 const palettes = trendingPalettes;
-const messages = ref([]);
-
-function showToast(message, type, color) {
-	messages.value.unshift(
-		{
-			id: Date.now().toLocaleString(),
-			name: message,
-			type: type
-		}
-	);
-}
+const { showToast } = useAppToast();
 
 function handleToast(color) {
 	showToast(`You copied this color: ${color.toUpperCase()}`, 'info');

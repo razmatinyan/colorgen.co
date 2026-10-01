@@ -19,21 +19,30 @@
 		<div class="palette-info">
 			<span class="palette-name"></span>
 			<div class="options">
-				<AppTooltip v-if="showDelete" text="Delete">
-					<button type="button" class="option unsave" @click="$emit('unsave', item.palette)">
-						<Icon name="lucide:trash-2" class="icon" />
-					</button>
-				</AppTooltip>
-				<AppTooltip text="Copy URL">
-					<button type="button" class="option copy" @click="$emit('copyURL', item.palette)">
-						<Icon name="lucide:copy" class="icon" />
-					</button>
-				</AppTooltip>
-				<AppTooltip text="Open palette">
-					<NuxtLink class="option open" :to="`/palette/${item.palette}`" target="_blank">
-						<Icon name="lucide:external-link" class="icon" />
-					</NuxtLink>
-				</AppTooltip>
+				<Tooltip v-if="showDelete">
+					<TooltipTrigger as-child>
+						<button type="button" class="option unsave" @click="$emit('unsave', item.palette)">
+							<Icon name="lucide:trash-2" class="icon" />
+						</button>
+					</TooltipTrigger>
+					<TooltipContent side="top">Delete</TooltipContent>
+				</Tooltip>
+				<Tooltip>
+					<TooltipTrigger as-child>
+						<button type="button" class="option copy" @click="$emit('copyURL', item.palette)">
+							<Icon name="lucide:copy" class="icon" />
+						</button>
+					</TooltipTrigger>
+					<TooltipContent side="top">Copy URL</TooltipContent>
+				</Tooltip>
+				<Tooltip>
+					<TooltipTrigger as-child>
+						<NuxtLink class="option open" :to="`/palette/${item.palette}`" target="_blank">
+							<Icon name="lucide:external-link" class="icon" />
+						</NuxtLink>
+					</TooltipTrigger>
+					<TooltipContent side="top">Open palette</TooltipContent>
+				</Tooltip>
 			</div>
 		</div>
 	</div>

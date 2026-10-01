@@ -14,19 +14,25 @@
 		<div class="options">
 
 			<div v-if="screenSize" class="color-option open-in-new">
-				<AppTooltip text="Open in palette generator">
-					<div class="option-in" @click="$emit('openInNew', props.color)">
-						<Icon name="lucide:external-link" />
-					</div>
-				</AppTooltip>
+				<Tooltip>
+					<TooltipTrigger as-child>
+						<button type="button" class="option-in" @click="$emit('openInNew', props.color)">
+							<Icon name="lucide:external-link" />
+						</button>
+					</TooltipTrigger>
+					<TooltipContent side="top">Open in palette generator</TooltipContent>
+				</Tooltip>
 			</div>
 
 			<div class="color-option copy">
-				<AppTooltip text="Copy">
-					<div class="option-in" @click="copy(), $emit('copy', props.color)">
-						<Icon name="lucide:copy" />
-					</div>
-				</AppTooltip>
+				<Tooltip>
+					<TooltipTrigger as-child>
+						<button type="button" class="option-in" @click="copy(), $emit('copy', props.color)">
+							<Icon name="lucide:copy" />
+						</button>
+					</TooltipTrigger>
+					<TooltipContent side="top">Copy</TooltipContent>
+				</Tooltip>
 			</div>
 
 			<div class="color-option current-color">
@@ -115,6 +121,10 @@ function copy() {
 	cursor: pointer;
 	transition: background var(--time-02);
 	user-select: none;
+	border: 0;
+	background: transparent;
+	color: inherit;
+	font: inherit;
 }
 
 .light-color .options .option-in:hover {

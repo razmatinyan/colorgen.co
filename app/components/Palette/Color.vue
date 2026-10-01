@@ -15,43 +15,58 @@
 		<div class="options">
 
 			<div v-if="screenSize" class="color-option remove">
-				<AppTooltip text="Remove">
-					<div class="option-in remove-handler" @click="$emit('delete')">
-						<Icon name="lucide:x" />
-					</div>
-				</AppTooltip>
+				<Tooltip>
+					<TooltipTrigger as-child>
+						<button type="button" class="option-in remove-handler" @click="$emit('delete')">
+							<Icon name="lucide:x" />
+						</button>
+					</TooltipTrigger>
+					<TooltipContent side="top">Remove</TooltipContent>
+				</Tooltip>
 			</div>
 
 			<div v-if="screenSize" class="color-option open-in-new">
-				<AppTooltip text="Open in a new tab">
-					<div class="option-in" @click="$emit('openInNew', props.color)">
-						<Icon name="lucide:external-link" />
-					</div>
-				</AppTooltip>
+				<Tooltip>
+					<TooltipTrigger as-child>
+						<button type="button" class="option-in" @click="$emit('openInNew', props.color)">
+							<Icon name="lucide:external-link" />
+						</button>
+					</TooltipTrigger>
+					<TooltipContent side="top">Open in a new tab</TooltipContent>
+				</Tooltip>
 			</div>
 
 			<div class="color-option sort">
-				<AppTooltip text="Move">
-					<div class="option-in sort-handler">
-						<Icon :name="screenSize ? 'lucide:arrow-left-right' : 'lucide:move-diagonal-2'" />
-					</div>
-				</AppTooltip>
+				<Tooltip>
+					<TooltipTrigger as-child>
+						<button type="button" class="option-in sort-handler">
+							<Icon :name="screenSize ? 'lucide:arrow-left-right' : 'lucide:move-diagonal-2'" />
+						</button>
+					</TooltipTrigger>
+					<TooltipContent side="top">Move</TooltipContent>
+				</Tooltip>
 			</div>
 
 			<div class="color-option copy">
-				<AppTooltip text="Copy">
-					<div class="option-in" @click="copy(), $emit('copied', props.color)">
-						<Icon name="lucide:copy" />
-					</div>
-				</AppTooltip>
+				<Tooltip>
+					<TooltipTrigger as-child>
+						<button type="button" class="option-in" @click="copy(), $emit('copied', props.color)">
+							<Icon name="lucide:copy" />
+						</button>
+					</TooltipTrigger>
+					<TooltipContent side="top">Copy</TooltipContent>
+				</Tooltip>
 			</div>
 
 			<div class="color-option lock">
-				<AppTooltip :text="isLocked ? 'Unlock' : 'Lock'">
-					<div class="option-in" @click="toggleLock">
-						<Icon :name="isLocked ? 'lucide:lock' : 'lucide:lock-open'" />
-					</div>
-				</AppTooltip>
+				<Tooltip>
+					<TooltipTrigger as-child>
+						<button type="button" class="option-in" @click="toggleLock">
+							<Icon :name="isLocked ? 'lucide:lock' : 'lucide:lock-open'" />
+						</button>
+					</TooltipTrigger>
+					<TooltipContent side="top">{{ isLocked ? 'Unlock' : 'Lock' }}</TooltipContent>
+				</Tooltip>
 			</div>
 
 			<div class="color-option current-color">
@@ -186,6 +201,10 @@ function toggleLock() {
 	cursor: pointer;
 	transition: background var(--time-02);
 	user-select: none;
+	border: 0;
+	background: transparent;
+	color: inherit;
+	font: inherit;
 }
 .color-option > .option-in.sort-handler {
 	cursor: grab;

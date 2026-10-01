@@ -75,16 +75,6 @@
 			</div>
 		</div>
 
-		<Teleport to="body">
-			<Toast 
-				:messages="messages"
-			/>
-			
-			<div 
-				class="overlay"
-			></div>
-		</Teleport>
-
 	</article>
 </template>
 
@@ -93,8 +83,8 @@ const route = useRoute();
 const { data } = await useFetch(`/api/gradient/${route.params.gradient}`);
 const { $chroma } = useNuxtApp();
 const config = useRuntimeConfig();
-const messages = ref([]);
 const savedPalettes = useCookie('saved-palettes');
+const { showToast } = useAppToast();
 
 const gradient = data.value;
 const newColors = ref([]);
@@ -148,7 +138,12 @@ async function handleSave(palette, saveAction) {
 
 	if ( res.action === 'saved' ) {
 		action.value = 'delete'
-		showToast('Palette has been <a href="/saved">saved</a>', 'info');
+		showToast('Palette has been saved.', 'success', {
+			action: {
+				label: 'View saved',
+				onClick: () => navigateTo('/saved'),
+			},
+		});
 	}
 	else if ( res.action === 'unsaved' ) action.value = 'set'
 	else if ( res.status === 400 ) showToast('Something went wrong!', 'error');
@@ -208,23 +203,7 @@ function handleCopyURL() {
 }
 
 function handleCopy(color) {
-	messages.value.unshift(
-		{
-			id: Date.now().toLocaleString(),
-			name: `You copied this color: ${color.toUpperCase()}`,
-			type: 'info'
-		}
-	);
-}
-
-function showToast(message, type) {
-	messages.value.unshift(
-		{
-			id: Date.now().toLocaleString(),
-			name: message,
-			type: type
-		}
-	);
+	showToast(`You copied this color: ${color.toUpperCase()}`, 'info');
 }
 </script>
 
@@ -303,16 +282,6 @@ function showToast(message, type) {
 .menu-color.menu-custom-color > .input-label {
 	left: 48%;
 	transform: translateX(-50%);
-}
-
-.overlay {
-	display: none;
-	position: fixed;
-	top: 0;
-	left: 0;
-	width: 100%;
-	height: 100%;
-	z-index: 3;
 }
 
 .menu-color .count-arrow {

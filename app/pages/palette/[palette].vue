@@ -44,14 +44,17 @@
 				</div>
 
 				<div class="menu-item method">
-					<Select 
-						ref="selectChild"
-						:options="schemes"
-						@select="selectedScheme($event)"
-						:selected="selected"
-						:customOptions="['Auto']"
-						v-click-outside="handleClickOutside"
-					/>
+					<Select v-model="selected" @update:model-value="selectedScheme">
+						<SelectTrigger class="h-10 min-w-52 rounded-[10px] border-[var(--gray)] bg-white px-5 text-base hover:border-[var(--black)]">
+							<SelectValue placeholder="Generate Method" />
+						</SelectTrigger>
+						<SelectContent position="popper" class="max-h-96">
+							<SelectItem value="Auto">Auto</SelectItem>
+							<SelectItem v-for="option in schemes" :key="option" :value="option">
+								{{ option }}
+							</SelectItem>
+						</SelectContent>
+					</Select>
 				</div>
 				
 				<div class="menu-item seperator">
@@ -122,12 +125,6 @@
 			</draggable>
 		</div>
 
-		<Teleport to="body">
-			<Toast 
-				:messages="messages"
-			/>
-		</Teleport>
-
 	</article>
 </template>
 
@@ -175,14 +172,13 @@ if ( savedPalettes.value !== undefined ) {
 
 const count = useColorCount(state.paletteArray.length);
 const schemes = useHomeSchemes();
-const selected = useState('selected', () => '');
+const selected = useState('selected', () => 'Auto');
 
 const randomScheme = schemes.value[Math.floor((Math.random() * schemes.value.length))];
 const scheme = useState('scheme', () => 'Auto');
 
-const messages = ref([]);
-const selectChild = ref(null);
 const disableButton = ref(false);
+const { showToast } = useAppToast();
 
 const forColor = useState('forColor', () => '');
 
@@ -207,7 +203,12 @@ async function handleSave(palette, saveAction) {
 
 	if ( res.action === 'saved' ) {
 		action.value = 'delete';
-		showToast('Palette has been <a href="/saved">saved</a>', 'info');
+		showToast('Palette has been saved.', 'success', {
+			action: {
+				label: 'View saved',
+				onClick: () => navigateTo('/saved'),
+			},
+		});
 	}
 	else if ( res.action === 'unsaved' ) action.value = 'set'
 	else if ( res.status === 400 ) showToast('Something went wrong!', 'error');
@@ -229,23 +230,11 @@ async function handleDragUpdate() {
 }
 
 function handleCopy(color) {
-	messages.value.unshift(
-		{
-			id: Date.now().toLocaleString(),
-			name: `You copied this color: ${color.toUpperCase()}`,
-			type: 'info'
-		}
-	);
+	showToast(`You copied this color: ${color.toUpperCase()}`, 'info');
 }
 
 function handleSpaceBar(event) {
 	if ( event.code === 'Space' ) generateRandomPalette();
-}
-
-function handleClickOutside() {
-	if ( selectChild.value.showOptions === true ) {
-		selectChild.value.showOptions = false
-	}
 }
 
 function handleLock(color) {
@@ -255,16 +244,6 @@ function handleLock(color) {
 		let cindex = lockedColors.value.indexOf(color)
 		lockedColors.value.splice(cindex, 1);
 	}
-}
-
-function showToast(message, type) {
-	messages.value.unshift(
-		{
-			id: Date.now().toLocaleString(),
-			name: message,
-			type: type
-		}
-	);
 }
 
 function handleCopyURL() {

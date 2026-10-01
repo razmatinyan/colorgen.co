@@ -1,3 +1,19 @@
-export const copyURL = (text: string) => {
-    if ( navigator.clipboard !== undefined ) navigator.clipboard.writeText(text);
+export const copyURL = async (text: string): Promise<boolean> => {
+    if (import.meta.server) return false;
+
+    try {
+        await navigator.clipboard.writeText(text);
+        return true;
+    } catch {
+        const input = document.createElement('textarea');
+        input.value = text;
+        input.style.position = 'fixed';
+        input.style.opacity = '0';
+        document.body.appendChild(input);
+        input.select();
+
+        const copied = document.execCommand('copy');
+        input.remove();
+        return copied;
+    }
 }
