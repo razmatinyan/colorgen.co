@@ -3,6 +3,7 @@ import type { DialogContentEmits, DialogContentProps } from 'reka-ui'
 
 import type { HTMLAttributes } from 'vue'
 import { reactiveOmit } from '@vueuse/core'
+import { cn } from '@/lib/utils'
 import {
   DialogClose,
   DialogContent,
@@ -10,7 +11,6 @@ import {
   DialogPortal,
   useForwardPropsEmits,
 } from 'reka-ui'
-import { cn } from '@/lib/utils'
 
 defineOptions({
   inheritAttrs: false,
@@ -50,7 +50,7 @@ const forwarded = useForwardPropsEmits(delegatedProps, emits)
         <DialogClose
           class="absolute top-4 right-4 p-0.5 transition-colors rounded-md hover:bg-secondary"
         >
-          <Icon name="lucide:x" class="size-4" />
+          <Icon name="lucide:x" class="w-4 h-4" />
           <span class="sr-only">Close</span>
         </DialogClose>
       </DialogContent>

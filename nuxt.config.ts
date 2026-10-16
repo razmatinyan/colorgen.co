@@ -19,7 +19,20 @@ export default defineNuxtConfig({
 		'shadcn-nuxt',
 		'@nuxtjs/sitemap',
 		'@nuxtjs/robots',
+		'@nuxtjs/color-mode',
+		'@nuxt/fonts',
 	],
+	colorMode: {
+		classSuffix: '',
+		preference: 'system',
+		fallback: 'light',
+		storageKey: 'colorgen-color-mode',
+	},
+	fonts: {
+		families: [
+			{ name: 'Inter', provider: 'google', weights: [400, 500, 600, 700] },
+		],
+	},
 	shadcn: {
 		prefix: '',
 		componentDir: '@/components/ui',
@@ -49,14 +62,16 @@ export default defineNuxtConfig({
 		exclude: [
 			'/saved',
 			'/saved/**',
+			'/prototype/**',
 		]
 	},
 	robots: {
-		disallow: ['/saved', '/saved/*'],
+		disallow: ['/saved', '/saved/*', '/prototype/*'],
 	},
 	routeRules: {
 		'/saved': { robots: false },
 		'/saved/**': { robots: false },
+		'/prototype/**': { robots: false },
 	},
 	app: {
 		head: {
@@ -93,15 +108,9 @@ export default defineNuxtConfig({
 				},
 			],
 			link: [
-				{ rel: 'icon', type: 'image/x-icon', href: '/cg-only.svg' },
+				{ rel: 'icon', type: 'image/svg+xml', href: '/cg-only.svg' },
 			],
 		},
 	},
-	css: [
-		'~/assets/tailwind.css',
-		'~/assets/reset.css',
-		'~/assets/fonts.css',
-		'~/assets/main.css',
-		'~/assets/media.css',
-	],
+	css: ['~/assets/css/tailwind.css'],
 })
