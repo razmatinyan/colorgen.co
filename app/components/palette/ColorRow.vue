@@ -1,12 +1,12 @@
 <script setup lang="ts">
-import { palettePrototypeKey, scaleOf, toHex, type ProtoColor } from '~/prototype/palette'
+import { paletteGeneratorKey, scaleOf, toHex, type PaletteColor } from '~/lib/palette'
 
-const props = defineProps<{ color: ProtoColor }>()
-const proto = inject(palettePrototypeKey)!
+const props = defineProps<{ color: PaletteColor }>()
+const palette = inject(paletteGeneratorKey)!
 
 const hex = computed(() => toHex(props.color).toUpperCase())
 const scale = computed(() => scaleOf(props.color))
-const isOpen = computed(() => proto.selectedId.value === props.color.id)
+const isOpen = computed(() => palette.selectedId.value === props.color.id)
 const panelId = useId()
 </script>
 
@@ -18,7 +18,7 @@ const panelId = useId()
 				class="flex min-w-0 flex-1 items-center gap-3 rounded-xl p-2.5 text-left outline-none focus-visible:ring-3 focus-visible:ring-ring/50"
 				:aria-expanded="isOpen"
 				:aria-controls="panelId"
-				@click="proto.toggleOpen(color.id)"
+				@click="palette.toggleOpen(color.id)"
 			>
 				<span class="size-10 shrink-0 rounded-lg ring-1 ring-foreground/10 ring-inset transition-colors duration-300" :style="{ background: hex }" />
 				<span class="min-w-0 flex-1">
@@ -38,7 +38,7 @@ const panelId = useId()
 						:aria-label="color.locked ? `Unlock ${color.role}` : `Keep ${color.role} when generating`"
 						:aria-pressed="color.locked"
 						:class="color.locked ? 'text-foreground' : 'text-muted-foreground'"
-						@click="proto.toggleLock(color.id)"
+						@click="palette.toggleLock(color.id)"
 					>
 						<Icon :name="color.locked ? 'lucide:lock' : 'lucide:lock-open'" />
 					</Button>
@@ -51,7 +51,7 @@ const panelId = useId()
 			<div class="mx-2.5 mb-4 flex h-2 overflow-hidden rounded-full" aria-hidden="true">
 				<span v-for="step in scale" :key="step" class="flex-1" :style="{ background: step }" />
 			</div>
-			<PrototypeColorEditor :color="color" />
+			<PaletteColorEditor :color="color" />
 		</div>
 	</div>
 </template>

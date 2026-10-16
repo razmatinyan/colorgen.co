@@ -1,21 +1,49 @@
 <script setup lang="ts">
-// PROTOTYPE — design review for the rebuilt palette tool. Not indexed; delete after Phase 2.
-import { onKeyStroke, useClipboard } from '@vueuse/core'
-import { harmonies, palettePrototypeKey, readableOn, toHex, usePalettePrototype } from '~/prototype/palette'
+import { onKeyStroke, useClipboard, useDebounceFn } from '@vueuse/core'
+import { harmonies, paletteGeneratorKey, parseColorsParam, readableOn, toColorsParam, toHex, usePaletteGenerator } from '~/lib/palette'
 
-definePageMeta({ layout: 'tool' })
-useSeoMeta({ title: 'Palette prototype | colorgen.co', robots: 'noindex, nofollow' })
+// A static key keeps the page mounted while the colors in the URL change.
+definePageMeta({ layout: 'tool', key: 'palette' })
 
-const proto = usePalettePrototype()
-provide(palettePrototypeKey, proto)
+const route = useRoute()
+const router = useRouter()
+const colorsParam = computed(() => (typeof route.params.colors === 'string' ? route.params.colors : undefined))
+const initialColors = parseColorsParam(colorsParam.value)
+
+// Malformed share links fall back to the empty generator instead of rendering a broken state.
+if (colorsParam.value && !initialColors) {
+	await navigateTo('/palette', { replace: true, redirectCode: 301 })
+}
+
+const palette = usePaletteGenerator(initialColors)
+provide(paletteGeneratorKey, palette)
+
+// Keep the URL shareable: every change is reflected in /palette/<colors> without adding history entries.
+const syncUrl = useDebounceFn((param: string) => {
+	if (param !== colorsParam.value) router.replace({ params: { colors: param } })
+}, 250)
+watch(palette.hexes, () => syncUrl(toColorsParam(palette.colors.value)))
+
+const siteUrl = 'https://colorgen.co'
+useSeoMeta({
+	title: () => (colorsParam.value
+		? `Palette ${colorsParam.value.split('-').map(hex => `#${hex.toUpperCase()}`).join(', ')} | colorgen.co`
+		: 'Color Palette Generator with Live UI Preview | colorgen.co'),
+	description: 'Generate harmonious color palettes in OKLCH, fine-tune every color, check text contrast, and preview them on real UI components. Free, no sign-up.',
+	ogTitle: 'Color Palette Generator with Live UI Preview | colorgen.co',
+	ogUrl: () => `${siteUrl}${route.path}`,
+})
+useHead({
+	link: [{ rel: 'canonical', href: () => `${siteUrl}${route.path}` }],
+})
 
 const { copy } = useClipboard({ legacy: true })
 const { showToast } = useAppToast()
 const previewMode = ref<'light' | 'dark'>('light')
-const style = computed(() => harmonies.find(option => option.value === proto.harmony.value)!)
+const style = computed(() => harmonies.find(option => option.value === palette.harmony.value)!)
 
 // The logo mark adopts the palette's primary color.
-const primaryHex = computed(() => toHex(proto.colors.value[0]!))
+const primaryHex = computed(() => toHex(palette.colors.value[0]!))
 useHead({
 	htmlAttrs: {
 		style: computed(() => `--brand: ${primaryHex.value}; --brand-foreground: ${readableOn(primaryHex.value)}`),
@@ -23,13 +51,13 @@ useHead({
 })
 
 async function exportCss() {
-	await copy(proto.cssExport())
+	await copy(palette.cssExport())
 	showToast('CSS variables copied', 'success', { description: 'Every color with 11 shades, ready to paste.' })
 }
 
 async function copySelected() {
-	if (!proto.selected.value) return
-	const hex = toHex(proto.selected.value).toUpperCase()
+	if (!palette.selected.value) return
+	const hex = toHex(palette.selected.value).toUpperCase()
 	await copy(hex)
 	showToast(`Copied ${hex}`, 'success')
 }
@@ -42,10 +70,10 @@ function isInteractive(event: KeyboardEvent) {
 onKeyStroke(' ', (event) => {
 	if (isInteractive(event)) return
 	event.preventDefault()
-	proto.generate()
+	palette.generate()
 })
 onKeyStroke(['l', 'L'], (event) => {
-	if (!isInteractive(event) && proto.selected.value) proto.toggleLock(proto.selected.value.id)
+	if (!isInteractive(event) && palette.selected.value) palette.toggleLock(palette.selected.value.id)
 })
 onKeyStroke(['c', 'C'], (event) => {
 	if (!isInteractive(event) && !event.metaKey && !event.ctrlKey) copySelected()
@@ -53,13 +81,13 @@ onKeyStroke(['c', 'C'], (event) => {
 onKeyStroke(['ArrowDown', 'ArrowUp'], (event) => {
 	if (isInteractive(event)) return
 	event.preventDefault()
-	proto.select(event.key === 'ArrowDown' ? 1 : -1)
+	palette.select(event.key === 'ArrowDown' ? 1 : -1)
 })
 onKeyStroke(['z', 'Z'], (event) => {
 	if (!(event.metaKey || event.ctrlKey) || isInteractive(event)) return
 	event.preventDefault()
-	if (event.shiftKey) proto.redo()
-	else proto.undo()
+	if (event.shiftKey) palette.redo()
+	else palette.undo()
 })
 </script>
 
@@ -76,7 +104,7 @@ onKeyStroke(['z', 'Z'], (event) => {
 				<div class="mr-1 flex items-center">
 					<Tooltip>
 						<TooltipTrigger as-child>
-							<Button variant="ghost" size="icon" aria-label="Undo" :disabled="!proto.canUndo.value" @click="proto.undo()">
+							<Button variant="ghost" size="icon" aria-label="Undo" :disabled="!palette.canUndo.value" @click="palette.undo()">
 								<Icon name="lucide:undo-2" />
 							</Button>
 						</TooltipTrigger>
@@ -84,7 +112,7 @@ onKeyStroke(['z', 'Z'], (event) => {
 					</Tooltip>
 					<Tooltip>
 						<TooltipTrigger as-child>
-							<Button variant="ghost" size="icon" aria-label="Redo" :disabled="!proto.canRedo.value" @click="proto.redo()">
+							<Button variant="ghost" size="icon" aria-label="Redo" :disabled="!palette.canRedo.value" @click="palette.redo()">
 								<Icon name="lucide:redo-2" />
 							</Button>
 						</TooltipTrigger>
@@ -110,7 +138,7 @@ onKeyStroke(['z', 'Z'], (event) => {
 					</TooltipTrigger>
 					<TooltipContent>Copy all colors as CSS variables</TooltipContent>
 				</Tooltip>
-				<Button @click="proto.generate()">
+				<Button @click="palette.generate()">
 					<Icon name="lucide:shuffle" data-icon="inline-start" /> Generate
 					<Kbd class="ml-1 hidden bg-primary-foreground/15 text-primary-foreground/80 sm:inline-flex">Space</Kbd>
 				</Button>
@@ -127,7 +155,7 @@ onKeyStroke(['z', 'Z'], (event) => {
 				<CardContent class="flex min-h-0 flex-1 flex-col gap-5 overflow-x-hidden lg:overflow-y-auto">
 					<div class="grid gap-2">
 						<label for="style" class="text-sm font-medium">Style</label>
-						<Select v-model="proto.harmony.value">
+						<Select v-model="palette.harmony.value">
 							<SelectTrigger id="style" class="w-full">
 								<SelectValue>{{ style.label }}</SelectValue>
 							</SelectTrigger>
@@ -144,7 +172,7 @@ onKeyStroke(['z', 'Z'], (event) => {
 					</div>
 
 					<div class="-mx-2 grid gap-1">
-						<PrototypePaletteRow v-for="color in proto.colors.value" :key="color.id" :color="color" />
+						<PaletteColorRow v-for="color in palette.colors.value" :key="color.id" :color="color" />
 					</div>
 				</CardContent>
 			</Card>
@@ -175,7 +203,7 @@ onKeyStroke(['z', 'Z'], (event) => {
 					</CardAction>
 				</CardHeader>
 				<CardContent class="min-h-0 flex-1 lg:overflow-y-auto">
-					<PrototypePreview :mode="previewMode" />
+					<PalettePreview :mode="previewMode" />
 				</CardContent>
 			</Card>
 		</div>

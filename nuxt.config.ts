@@ -62,16 +62,14 @@ export default defineNuxtConfig({
 		exclude: [
 			'/saved',
 			'/saved/**',
-			'/prototype/**',
 		]
 	},
 	robots: {
-		disallow: ['/saved', '/saved/*', '/prototype/*'],
+		disallow: ['/saved', '/saved/*'],
 	},
 	routeRules: {
 		'/saved': { robots: false },
 		'/saved/**': { robots: false },
-		'/prototype/**': { robots: false },
 	},
 	app: {
 		head: {

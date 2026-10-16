@@ -1,12 +1,12 @@
 <script setup lang="ts">
-import { palettePrototypeKey, readableOn, scaleOf, toHex } from '~/prototype/palette'
+import { paletteGeneratorKey, readableOn, scaleOf, toHex } from '~/lib/palette'
 
 const props = defineProps<{ mode: 'light' | 'dark' }>()
-const proto = inject(palettePrototypeKey)!
+const palette = inject(paletteGeneratorKey)!
 
 /** Maps the palette onto a small semantic token set, the way the Theme tool will. */
 const tokens = computed(() => {
-	const [primary, secondary, accent, highlight, neutral] = proto.colors.value
+	const [primary, secondary, accent, highlight, neutral] = palette.colors.value
 	const n = scaleOf(neutral!)
 	const p = scaleOf(primary!)
 	const s = scaleOf(secondary!)

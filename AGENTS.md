@@ -48,7 +48,7 @@ Post-v1 (in rough order): color converter, image extractor rebuild, gradient/mes
 - **@nuxtjs/sitemap**, **@nuxtjs/robots**
 - Node 22
 
-Legacy dependencies still installed until their pages are rebuilt: `chroma-js`, `colorthief`, `html2canvas`, `vuedraggable`. Do not use them in new code.
+Legacy dependencies still installed until their pages are rebuilt: `chroma-js`, `colorthief`, `html2canvas`. Do not use them in new code.
 
 ```bash
 npm run dev        # dev server
@@ -93,15 +93,15 @@ Status legend: ✅ exists · 🚧 planned · 🗑️ legacy, to be removed durin
 | `app/layouts/tool.vue` | Header + full-height workspace, no footer (tool pages, `definePageMeta({ layout: 'tool' })`) | ✅ |
 | `app/pages/` | Routes (see below). Pages compose components; no color math in pages. | ✅ |
 | `app/assets/css/tailwind.css` | Tailwind entry, all design tokens (light + dark, OKLCH). Explained in `docs/design-system.md` | ✅ |
-| `app/prototype/` + `app/components/prototype/` + `app/pages/prototype/` | **Temporary** design-review prototype of the palette tool (`/prototype/palette`, noindex): sidebar of colors with inline editing (`PaletteRow` → `ColorEditor`) and a `Preview` gallery of common UI elements (masonry of shadcn-style cards) in the palette. Delete once the real palette tool ships (Phase 2). Never import from real code. | ✅ temporary |
+| `app/lib/palette.ts` | Palette generator state (`usePaletteGenerator`: colors, roles, locks, undo/redo, styles) and URL helpers (`parseColorsParam` / `toColorsParam`). Its color math is interim and untested — Phase 1 moves it into `app/lib/color/` | ✅ |
+| `app/components/palette/` | Palette tool UI: `ColorRow` (sidebar item that expands inline), `ColorEditor` (sliders, copy formats, readability), `Preview` (gallery of UI elements in the palette). State comes from `usePaletteGenerator` via `provide`/`inject` (`paletteGeneratorKey`) | ✅ |
 | `app/utils/` | Legacy helpers (`generatePalette`, `downloadColors`, …) — logic moves to `app/lib/` | 🗑️ |
-| `app/components/{Home,Palette,Gradient}/`, `PaletteCard*.vue`, `ColorPicker.vue`, `DropZone.vue` | Legacy page components. Unstyled since the legacy CSS was removed; replaced as each page is rebuilt | 🗑️ |
+| `app/components/{Home,Gradient}/`, `PaletteCard*.vue`, `ColorPicker.vue`, `DropZone.vue` | Legacy page components. Unstyled since the legacy CSS was removed; replaced as each page is rebuilt | 🗑️ |
 | `app/info/trendingPalettes.js` | Legacy hardcoded data | 🗑️ |
 | `docs/design-system.md` | Design system intent: concept, tokens, typography, layout, motion, interaction | ✅ |
 | `app/plugins/chroma.ts`, `colorthief.client.ts` | Legacy color libs exposed via `$chroma` / `$colorthief` | 🗑️ |
 | `app/plugins/gtag.js` | Google Analytics | ✅ |
 | `server/api/saved/palettes.post.ts` | Cookie-based saved palettes | 🗑️ replaced by client-side `useLibrary` |
-| `server/api/palette/[palette].ts` | Echoes its param; unused | 🗑️ |
 | `server/api/gradient/[gradient].ts` | Gradient param parsing | 🗑️ |
 | `tests/` or co-located `*.test.ts` in `app/lib/` | Vitest unit tests | 🚧 |
 
@@ -112,7 +112,7 @@ Existing public URLs are kept so search rankings survive the rebuild.
 | Route | Tool | Status |
 |---|---|---|
 | `/` | Landing — tool-first, links into every tool | ✅ (redesign 🚧) |
-| `/palette`, `/palette/[colors]` | Palette generator; colors in URL as `hex-hex-hex` (no `#`) | ✅ (rebuild 🚧) |
+| `/palette`, `/palette/<colors>` | Palette generator (`pages/palette/[[colors]].vue`; static page key so URL updates don't remount). Colors live in the URL as `hex-hex-hex` (no `#`), synced with `router.replace` (debounced, no history entries); malformed params 301 to `/palette`; canonical = current path | ✅ |
 | `/scale`, `/scale/[hex]` | Shade scale generator | 🚧 |
 | `/theme` | Theme builder (state in query string) | 🚧 |
 | `/contrast`, `/contrast/[fg]-[bg]` | Contrast checker + fixer | 🚧 |
@@ -121,7 +121,6 @@ Existing public URLs are kept so search rankings survive the rebuild.
 | `/image-colors` | Image color extractor | ✅ (rebuild post-v1) |
 | `/saved` | Local library of saved palettes/themes (noindex) | ✅ (rebuild 🚧) |
 | `/contact` | Contact | ✅ |
-| `/prototype/palette` | Design-review prototype (noindex, excluded from sitemap/robots) | ✅ temporary |
 
 ### Data flow & state
 
@@ -171,7 +170,7 @@ The chrome is neutral and quiet; the user's colors are the content. Visual style
 
 - `utils/generatePalette.ts`: harmony math in HSL (perceptually uneven); "Split Complementary" is just complementary in LAB; "Random" ignores the base color; calls `useNuxtApp()` from a util. → `lib/color/` in OKLCH.
 - Saved palettes stored in a cookie through `server/api/saved/palettes.post.ts`: ~4KB limit, sent with every request, entries matched by string equality, `status` returned in the body instead of HTTP status codes. → client-side `useLibrary()`.
-- `server/api/gradient/[gradient].ts` parses a URL param on the server, costing a network round-trip for pure string parsing. `server/api/palette/[palette].ts` just echoes its param. → shared pure parser in `lib/`, no API.
+- `server/api/gradient/[gradient].ts` parses a URL param on the server, costing a network round-trip for pure string parsing. → shared pure parser in `lib/`, no API.
 - Composables: `useHomeSchemes` stores a `computed` inside `useState` (not serializable); `useColorCount` is a global `useState` key that leak state between pages; `Number` wrapper type. → per-tool state synced to the URL.
 - Plugins exposing libraries (`$chroma`, `$extractPalette`) instead of importing modules. → direct imports from `lib/`.
 - `utils/copyURL.ts` copies any text but is named for URLs. → `useClipboard` from VueUse. `utils/downloadColors.ts` screenshots DOM via `html2canvas` + `querySelector` strings. → generated SVG/PNG from data.

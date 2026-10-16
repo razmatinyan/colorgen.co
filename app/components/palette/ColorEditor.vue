@@ -1,9 +1,9 @@
 <script setup lang="ts">
 import { useClipboard } from '@vueuse/core'
-import { contrast, formats, palettePrototypeKey, scaleOf, toHex, type ProtoColor } from '~/prototype/palette'
+import { contrast, formats, paletteGeneratorKey, scaleOf, toHex, type PaletteColor } from '~/lib/palette'
 
-const props = defineProps<{ color: ProtoColor }>()
-const proto = inject(palettePrototypeKey)!
+const props = defineProps<{ color: PaletteColor }>()
+const palette = inject(paletteGeneratorKey)!
 const { copy } = useClipboard({ legacy: true })
 const { showToast } = useAppToast()
 
@@ -12,7 +12,7 @@ const hex = computed(() => toHex(props.color))
 function channel(key: 'l' | 'c' | 'h') {
 	return computed({
 		get: () => props.color[key],
-		set: value => proto.update(props.color.id, { [key]: value }),
+		set: value => palette.update(props.color.id, { [key]: value }),
 	})
 }
 const lightness = channel('l')
@@ -30,7 +30,7 @@ const tracks = computed(() => {
 })
 
 const checks = computed(() => {
-	const page = scaleOf(proto.colors.value.at(-1)!)[0]!
+	const page = scaleOf(palette.colors.value.at(-1)!)[0]!
 	return [
 		{ label: 'On white', against: '#ffffff' },
 		{ label: 'On black', against: '#000000' },
@@ -58,9 +58,9 @@ async function copyValue(value: string) {
 <template>
 	<div class="grid grid-cols-1 gap-5 px-2.5 pt-1 pb-3">
 		<div class="grid gap-4">
-			<ColorGradientSlider v-model="lightness" label="Lightness" :min="0" :max="1" :track="tracks.l" :format="v => `${Math.round(v * 100)}%`" @commit="proto.snapshot()" />
-			<ColorGradientSlider v-model="intensity" label="Intensity" :min="0" :max="0.37" :track="tracks.c" :format="v => `${Math.round((v / 0.37) * 100)}%`" @commit="proto.snapshot()" />
-			<ColorGradientSlider v-model="hue" label="Hue" :min="0" :max="360" :step="0.1" :track="tracks.h" :format="v => `${Math.round(v)}°`" @commit="proto.snapshot()" />
+			<ColorGradientSlider v-model="lightness" label="Lightness" :min="0" :max="1" :track="tracks.l" :format="v => `${Math.round(v * 100)}%`" @commit="palette.snapshot()" />
+			<ColorGradientSlider v-model="intensity" label="Intensity" :min="0" :max="0.37" :track="tracks.c" :format="v => `${Math.round((v / 0.37) * 100)}%`" @commit="palette.snapshot()" />
+			<ColorGradientSlider v-model="hue" label="Hue" :min="0" :max="360" :step="0.1" :track="tracks.h" :format="v => `${Math.round(v)}°`" @commit="palette.snapshot()" />
 		</div>
 
 		<section class="grid grid-cols-1 gap-2">

@@ -1,14 +1,14 @@
 /**
- * PROTOTYPE ONLY — backs /prototype/palette for design review.
- * Color math here is intentionally minimal; the real implementation lives in
- * app/lib/color/ (Phase 1) and this file is deleted once the palette tool is rebuilt.
+ * Palette generator state and color helpers for /palette.
+ * The color math here is interim and untested; Phase 1 moves it into the tested
+ * engine in app/lib/color/ and this module keeps only the generator state.
  */
-import { clampChroma, formatHex, formatHsl, formatRgb, wcagContrast } from 'culori'
+import { clampChroma, converter, formatHex, formatHsl, formatRgb, parse, wcagContrast } from 'culori'
 import { computed, ref, toRaw, type InjectionKey } from 'vue'
 
 export type Harmony = 'analogous' | 'complementary' | 'split' | 'triadic' | 'tetradic' | 'mono'
 
-export interface ProtoColor {
+export interface PaletteColor {
 	id: string
 	role: string
 	/** Plain-language explanation of where the color is used. */
@@ -66,7 +66,7 @@ export function toCss(color: { l: number, c: number, h: number }) {
 	return `oklch(${(l * 100).toFixed(1)}% ${c.toFixed(3)} ${(h ?? 0).toFixed(1)})`
 }
 
-export function formats(color: ProtoColor) {
+export function formats(color: PaletteColor) {
 	const mapped = inGamut(color)
 	return [
 		{ label: 'HEX', value: formatHex(mapped).toUpperCase() },
@@ -92,7 +92,7 @@ export function readableOn(hex: string) {
 	return contrast(hex, '#ffffff') >= contrast(hex, '#111114') ? '#ffffff' : '#111114'
 }
 
-const initial: Omit<ProtoColor, 'id' | 'locked'>[] = [
+const initial: Omit<PaletteColor, 'id' | 'locked'>[] = [
 	{ role: 'Primary', hint: 'Buttons, toggles, active items', l: 0.52, c: 0.13, h: 250 },
 	{ role: 'Secondary', hint: 'Secondary buttons, positive numbers', l: 0.68, c: 0.11, h: 190 },
 	{ role: 'Accent', hint: 'Badges and alerts', l: 0.73, c: 0.16, h: 48 },
@@ -100,13 +100,45 @@ const initial: Omit<ProtoColor, 'id' | 'locked'>[] = [
 	{ role: 'Neutral', hint: 'Text, borders, backgrounds', l: 0.28, c: 0.02, h: 255 },
 ]
 
-export function usePalettePrototype() {
-	const colors = ref<ProtoColor[]>(initial.map((color, index) => ({ ...color, id: `c${index}`, locked: false })))
+type Oklch = Pick<PaletteColor, 'l' | 'c' | 'h'>
+
+const toOklch = converter('oklch')
+
+/**
+ * Parses a `/palette/<colors>` route param ("1f6cb0-25aea7-f68443", no `#`).
+ * Returns null unless every part is a valid 3- or 6-digit hex color.
+ */
+export function parseColorsParam(param: string | undefined): Oklch[] | null {
+	if (!param) return null
+	const parts = param.toLowerCase().split('-')
+	if (!parts.every(part => /^(?:[0-9a-f]{3}|[0-9a-f]{6})$/.test(part))) return null
+	return parts.map((part) => {
+		const { l, c, h } = toOklch(parse(`#${part}`))!
+		return { l, c, h: h ?? 0 }
+	})
+}
+
+/** Serializes colors to the `/palette/<colors>` route param. */
+export function toColorsParam(colors: Oklch[]) {
+	return colors.map(color => toHex(color).slice(1)).join('-')
+}
+
+/**
+ * @param initialColors Colors from the URL. Fills roles in order; roles without a
+ * color keep their defaults, extra colors are ignored.
+ */
+export function usePaletteGenerator(initialColors: Oklch[] | null = null) {
+	const colors = ref<PaletteColor[]>(initial.map((color, index) => ({
+		...color,
+		...initialColors?.[index],
+		id: `c${index}`,
+		locked: false,
+	})))
 	/** The expanded color in the sidebar; null when all are collapsed. */
 	const selectedId = ref<string | null>(colors.value[0]!.id)
 	const harmony = ref<Harmony>('analogous')
-	const history = ref<ProtoColor[][]>([])
-	const future = ref<ProtoColor[][]>([])
+	const history = ref<PaletteColor[][]>([])
+	const future = ref<PaletteColor[][]>([])
 
 	const selected = computed(() => colors.value.find(color => color.id === selectedId.value) ?? null)
 	const hexes = computed(() => colors.value.map(toHex))
@@ -152,7 +184,7 @@ export function usePalettePrototype() {
 		if (color) color.locked = !color.locked
 	}
 
-	function update(id: string, patch: Partial<Pick<ProtoColor, 'l' | 'c' | 'h'>>) {
+	function update(id: string, patch: Partial<Pick<PaletteColor, 'l' | 'c' | 'h'>>) {
 		const color = colors.value.find(item => item.id === id)
 		if (color) Object.assign(color, patch)
 	}
@@ -198,5 +230,5 @@ export function usePalettePrototype() {
 	}
 }
 
-export type PalettePrototype = ReturnType<typeof usePalettePrototype>
-export const palettePrototypeKey: InjectionKey<PalettePrototype> = Symbol('palette-prototype')
+export type PaletteGenerator = ReturnType<typeof usePaletteGenerator>
+export const paletteGeneratorKey: InjectionKey<PaletteGenerator> = Symbol('palette-generator')
