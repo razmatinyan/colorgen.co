@@ -9,16 +9,14 @@ export const shuffleArray = <T>(array: T[]): T[] => {
 }
 
 export const shuffleArrayWithExceptions = <T>(array: T[], referenceArray: readonly T[]): T[] => {
-    const shuffledArray = [...array]; // Create a shallow copy of the original array
+    const shuffledArray = [...array];
   
     for (let i = shuffledArray.length - 1; i > 0; i--) {
-        // Check if the current element is in the referenceArray
         if (referenceArray.includes(shuffledArray[i]!)) {
-            continue; // Skip shuffling if current element is in referenceArray
+            continue;
         }
 
         const j = Math.floor(Math.random() * (i + 1));
-        // Check if the target element is in the referenceArray
         if (!referenceArray.includes(shuffledArray[j]!)) {
             const current = shuffledArray[i]!;
             shuffledArray[i] = shuffledArray[j]!;

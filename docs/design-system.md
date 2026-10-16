@@ -85,8 +85,8 @@ Plain words, not color science, in the main UI:
 
 | Say | Not |
 |---|---|
-| Style (with a one-line description per option) | Harmony |
 | Lightness · Intensity · Hue (shown as %, %, °) | L · C · H, Chroma |
+| No harmony/style picker — Generate picks a harmony internally | Harmony, Style, Triadic, … |
 | Readable as text? | Contrast ratio, WCAG (still shown as AA/AAA labels) |
 | A short "used for" hint under every role name (Primary → "Buttons, links, active states") | Bare role names |
 

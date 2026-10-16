@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { useClipboard } from '@vueuse/core'
-import { contrast, formats, paletteGeneratorKey, scaleOf, toHex, type PaletteColor } from '~/lib/palette'
+import { formatColor, scaleHexes, toHex, wcagLevel, wcagRatio, type ColorFormat, type WcagLevel } from '~/lib/color'
+import { paletteGeneratorKey, type PaletteColor } from '~/composables/usePaletteGenerator'
 
 const props = defineProps<{ color: PaletteColor }>()
 const palette = inject(paletteGeneratorKey)!
@@ -29,23 +30,41 @@ const tracks = computed(() => {
 	}
 })
 
+const copyFormats: { format: ColorFormat, label: string }[] = [
+	{ format: 'hex', label: 'HEX' },
+	{ format: 'rgb', label: 'RGB' },
+	{ format: 'hsl', label: 'HSL' },
+	{ format: 'oklch', label: 'OKLCH' },
+]
+
+const copyValues = computed(() => copyFormats.map(({ format, label }) => ({
+	label,
+	value: format === 'hex' ? hex.value.toUpperCase() : formatColor(props.color, format),
+})))
+
 const checks = computed(() => {
-	const page = scaleOf(palette.colors.value.at(-1)!)[0]!
+	const pageBackground = scaleHexes(palette.colors.value.at(-1)!)[0]!
 	return [
 		{ label: 'On white', against: '#ffffff' },
 		{ label: 'On black', against: '#000000' },
-		{ label: 'On page background', against: page },
+		{ label: 'On page background', against: pageBackground },
 	].map((check) => {
-		const ratio = contrast(hex.value, check.against)
-		const level = ratio >= 7 ? 'AAA' : ratio >= 4.5 ? 'AA' : ratio >= 3 ? 'Large' : 'Fail'
-		return { ...check, ratio, level }
+		const ratio = wcagRatio(hex.value, check.against)
+		return { ...check, ratio, level: wcagLevel(ratio) }
 	})
 })
 
-const levelClass: Record<string, string> = {
+const levelLabel: Record<WcagLevel, string> = {
+	'AAA': 'AAA',
+	'AA': 'AA',
+	'AA Large': 'Large',
+	'Fail': 'Fail',
+}
+
+const levelClass: Record<WcagLevel, string> = {
 	'AAA': 'bg-success/15 text-success',
 	'AA': 'bg-success/15 text-success',
-	'Large': 'bg-warning/25 text-foreground',
+	'AA Large': 'bg-warning/25 text-foreground',
 	'Fail': 'bg-destructive/10 text-destructive',
 }
 
@@ -66,7 +85,7 @@ async function copyValue(value: string) {
 		<section class="grid grid-cols-1 gap-2">
 			<h3 class="text-sm font-medium">Copy as</h3>
 			<div class="grid grid-cols-4 gap-1.5">
-				<Tooltip v-for="item in formats(color)" :key="item.label">
+				<Tooltip v-for="item in copyValues" :key="item.label">
 					<TooltipTrigger as-child>
 						<Button variant="outline" size="sm" class="bg-background dark:bg-input/30" @click="copyValue(item.value)">
 							{{ item.label }}
@@ -88,7 +107,7 @@ async function copyValue(value: string) {
 				>
 					<span class="text-lg font-semibold" :style="{ color: hex }">Aa</span>
 					<Badge variant="secondary" :class="levelClass[check.level]" class="bg-background/90 dark:bg-background/90">
-						{{ check.level }} · {{ check.ratio.toFixed(1) }}
+						{{ levelLabel[check.level] }} · {{ check.ratio.toFixed(1) }}
 					</Badge>
 					<span class="sr-only">{{ check.label }}</span>
 				</li>

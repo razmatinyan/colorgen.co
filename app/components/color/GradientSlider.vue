@@ -4,9 +4,7 @@ const props = withDefaults(defineProps<{
 	min: number
 	max: number
 	step?: number
-	/** CSS background for the track, e.g. a linear-gradient through the channel's range. */
 	track: string
-	/** Formats the numeric readout. */
 	format?: (value: number) => string
 }>(), {
 	step: 0.001,
@@ -43,7 +41,6 @@ const readout = computed(() => props.format(model.value))
 </template>
 
 <style scoped>
-/* Range thumbs/tracks need vendor pseudo-elements, which utilities can't target. */
 .gradient-slider::-webkit-slider-runnable-track {
 	height: 0.625rem;
 	border-radius: 9999px;

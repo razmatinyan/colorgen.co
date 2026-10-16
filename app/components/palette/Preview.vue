@@ -1,17 +1,17 @@
 <script setup lang="ts">
-import { paletteGeneratorKey, readableOn, scaleOf, toHex } from '~/lib/palette'
+import { readableTextColor, scaleHexes, toHex } from '~/lib/color'
+import { paletteGeneratorKey } from '~/composables/usePaletteGenerator'
 
 const props = defineProps<{ mode: 'light' | 'dark' }>()
 const palette = inject(paletteGeneratorKey)!
 
-/** Maps the palette onto a small semantic token set, the way the Theme tool will. */
 const tokens = computed(() => {
 	const [primary, secondary, accent, highlight, neutral] = palette.colors.value
-	const n = scaleOf(neutral!)
-	const p = scaleOf(primary!)
-	const s = scaleOf(secondary!)
-	const a = scaleOf(accent!)
-	const hi = scaleOf(highlight!)
+	const n = scaleHexes(neutral!)
+	const p = scaleHexes(primary!)
+	const s = scaleHexes(secondary!)
+	const a = scaleHexes(accent!)
+	const hi = scaleHexes(highlight!)
 	const dark = props.mode === 'dark'
 
 	const primaryColor = dark ? p[4]! : toHex(primary!)
@@ -25,14 +25,13 @@ const tokens = computed(() => {
 		'--pv-muted': dark ? n[4] : n[6],
 		'--pv-border': dark ? n[8] : n[2],
 		'--pv-primary': primaryColor,
-		'--pv-on-primary': readableOn(primaryColor),
+		'--pv-on-primary': readableTextColor(primaryColor),
 		'--pv-secondary': secondaryColor,
-		'--pv-on-secondary': readableOn(secondaryColor),
+		'--pv-on-secondary': readableTextColor(secondaryColor),
 		'--pv-accent': accentColor,
-		'--pv-on-accent': readableOn(accentColor),
+		'--pv-on-accent': readableTextColor(accentColor),
 		'--pv-highlight': dark ? hi[8] : toHex(highlight!),
 		'--pv-on-highlight': dark ? hi[1] : hi[9],
-		// Bar chart uses tints of primary, light to dark.
 		'--pv-bar-1': dark ? p[7] : p[2],
 		'--pv-bar-2': dark ? p[5] : p[4],
 		'--pv-bar-3': dark ? p[6] : p[3],
@@ -96,7 +95,6 @@ const team = [
 		:style="tokens"
 	>
 		<div class="columns-1 gap-4 @xl:columns-2 @4xl:columns-3">
-			<!-- Controls -->
 			<div :class="card" class="grid gap-4">
 				<div class="flex flex-wrap gap-2">
 					<span class="inline-flex h-9 items-center gap-1.5 rounded-full bg-(--pv-primary) px-4 text-sm font-medium text-(--pv-on-primary)">
@@ -123,7 +121,6 @@ const team = [
 				</div>
 			</div>
 
-			<!-- Bar chart -->
 			<div :class="card" class="grid gap-4">
 				<div>
 					<p class="font-medium">Contribution history</p>
@@ -150,7 +147,6 @@ const team = [
 				<span class="flex h-9 items-center justify-center rounded-full text-sm font-medium ring-1 ring-(--pv-border) ring-inset">View full report</span>
 			</div>
 
-			<!-- Form -->
 			<div :class="card" class="grid gap-4">
 				<div>
 					<p class="font-medium">Create a project</p>
@@ -176,7 +172,6 @@ const team = [
 				</div>
 			</div>
 
-			<!-- Balance -->
 			<div :class="card" class="grid gap-3">
 				<p class="text-sm text-(--pv-muted)">Available balance</p>
 				<p class="text-3xl font-semibold tracking-tight tabular-nums">$1,211.29</p>
@@ -191,7 +186,6 @@ const team = [
 				</div>
 			</div>
 
-			<!-- Navigation -->
 			<div :class="card" class="grid gap-4 p-3">
 				<div v-for="group in navGroups" :key="group.title" class="grid gap-0.5">
 					<p class="px-2.5 pb-1 text-xs text-(--pv-muted)">{{ group.title }}</p>
@@ -209,7 +203,6 @@ const team = [
 				</div>
 			</div>
 
-			<!-- Analytics -->
 			<div :class="card" class="grid gap-3 overflow-hidden pb-0">
 				<div class="flex items-start justify-between gap-3">
 					<div>
@@ -227,7 +220,6 @@ const team = [
 				</svg>
 			</div>
 
-			<!-- Chat -->
 			<div :class="card" class="grid gap-4">
 				<div class="flex items-center justify-between">
 					<div>
@@ -246,7 +238,6 @@ const team = [
 				</div>
 			</div>
 
-			<!-- Notifications -->
 			<div :class="card" class="grid gap-4">
 				<div>
 					<p class="font-medium">Notifications</p>
@@ -266,7 +257,6 @@ const team = [
 				</div>
 			</div>
 
-			<!-- Empty state -->
 			<div :class="card" class="flex flex-col items-center gap-3 py-8 text-center">
 				<span class="grid size-11 place-items-center rounded-full" :style="soft('--pv-primary', 14)">
 					<Icon name="lucide:plus" class="size-5 text-(--pv-primary)" />
@@ -278,7 +268,6 @@ const team = [
 				<span class="rounded-full bg-(--pv-primary) px-4 py-1.5 text-sm font-medium text-(--pv-on-primary)">Get started</span>
 			</div>
 
-			<!-- Team -->
 			<div :class="card" class="grid gap-4">
 				<div>
 					<p class="font-medium">Team members</p>

@@ -1,11 +1,12 @@
 <script setup lang="ts">
-import { paletteGeneratorKey, scaleOf, toHex, type PaletteColor } from '~/lib/palette'
+import { scaleHexes, toHex } from '~/lib/color'
+import { paletteGeneratorKey, type PaletteColor } from '~/composables/usePaletteGenerator'
 
 const props = defineProps<{ color: PaletteColor }>()
 const palette = inject(paletteGeneratorKey)!
 
 const hex = computed(() => toHex(props.color).toUpperCase())
-const scale = computed(() => scaleOf(props.color))
+const scale = computed(() => scaleHexes(props.color))
 const isOpen = computed(() => palette.selectedId.value === props.color.id)
 const panelId = useId()
 </script>

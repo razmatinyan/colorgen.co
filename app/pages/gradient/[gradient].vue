@@ -164,7 +164,6 @@ function changeRoute() {
 }
 
 function handleCountChange(action) {
-
 	if ( action === 'plus' ) count.value++
 	else if ( action === 'minus' ) count.value--
 
@@ -334,7 +333,6 @@ function handleCopy(color) {
 	height: 100%;
 }
 
-
 @media only screen and (max-width: 1200px) {
 	#palette {
 		overflow-y: auto;
@@ -347,7 +345,6 @@ function handleCopy(color) {
 		overflow-y: auto;
 	}
 
-	/* Menu */
 	.palette-menu {
 		position: fixed;
 		left: 0;
@@ -385,7 +382,6 @@ function handleCopy(color) {
 		line-height: 35px;
 	}
 
-	/* Menu */
 }
 @media only screen and (max-width: 769px) {
 	#gradient {

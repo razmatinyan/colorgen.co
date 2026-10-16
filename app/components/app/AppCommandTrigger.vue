@@ -1,7 +1,6 @@
 <script setup lang="ts">
 const { show } = useCommandMenu()
 
-// Platform is only known on the client; default to Ctrl and switch after mount.
 const isMac = ref(false)
 onMounted(() => {
 	isMac.value = /Mac|iPhone|iPad/.test(navigator.userAgent)

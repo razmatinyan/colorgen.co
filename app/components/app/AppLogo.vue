@@ -1,8 +1,3 @@
-<script setup lang="ts">
-// The mark is a three-step tonal scale drawn in the active brand color, so the
-// logo follows whatever palette the user is working on.
-</script>
-
 <template>
 	<span class="inline-flex items-center gap-2">
 		<svg viewBox="0 0 20 20" class="size-5" aria-hidden="true">

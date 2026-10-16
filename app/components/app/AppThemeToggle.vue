@@ -19,7 +19,6 @@ function cycle() {
 	<Tooltip>
 		<TooltipTrigger as-child>
 			<Button variant="ghost" size="icon" :aria-label="current.label" @click="cycle">
-				<!-- Preference is only known on the client; render a stable icon during SSR. -->
 				<ClientOnly>
 					<Icon :name="current.icon" class="size-4" />
 					<template #fallback>

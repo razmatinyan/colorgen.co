@@ -4,7 +4,6 @@ export interface ToolLink {
 	description: string
 	to: string
 	icon: string
-	/** Planned tools are listed in navigation but not yet routable. */
 	status: 'live' | 'planned'
 }
 

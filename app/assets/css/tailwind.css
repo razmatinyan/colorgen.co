@@ -17,12 +17,6 @@
   }
 }
 
-/*
- * Design tokens — see docs/design-system.md.
- * Chrome is pure neutral (shadcn "maia" style) so it never competes with user colors.
- * `--brand` is the only saturated token; it's overridden at runtime with the active
- * palette's primary color and is used sparingly (logo mark).
- */
 :root {
   --brand: oklch(0.64 0.2 38);
   --brand-foreground: oklch(0.985 0 0);
@@ -174,11 +168,6 @@
     letter-spacing: var(--tracking-heading);
   }
 
-  /*
-   * Scrollbars: thumb only — no arrow buttons, no visible track.
-   * Chromium/Safari get the ::-webkit-scrollbar pseudo-elements. The standard properties are
-   * limited to Firefox, because Chromium ignores the pseudo-elements once they're set.
-   */
   @supports not selector(::-webkit-scrollbar) {
     * {
       scrollbar-width: thin;

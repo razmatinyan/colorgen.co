@@ -1,8 +1,9 @@
 <script setup lang="ts">
 import { onKeyStroke, useClipboard, useDebounceFn } from '@vueuse/core'
-import { harmonies, paletteGeneratorKey, parseColorsParam, readableOn, toColorsParam, toHex, usePaletteGenerator } from '~/lib/palette'
+import { readableTextColor, toHex } from '~/lib/color'
+import { parseColorsParam, toColorsParam } from '~/lib/palette-url'
+import { paletteGeneratorKey, usePaletteGenerator } from '~/composables/usePaletteGenerator'
 
-// A static key keeps the page mounted while the colors in the URL change.
 definePageMeta({ layout: 'tool', key: 'palette' })
 
 const route = useRoute()
@@ -10,7 +11,6 @@ const router = useRouter()
 const colorsParam = computed(() => (typeof route.params.colors === 'string' ? route.params.colors : undefined))
 const initialColors = parseColorsParam(colorsParam.value)
 
-// Malformed share links fall back to the empty generator instead of rendering a broken state.
 if (colorsParam.value && !initialColors) {
 	await navigateTo('/palette', { replace: true, redirectCode: 301 })
 }
@@ -18,7 +18,6 @@ if (colorsParam.value && !initialColors) {
 const palette = usePaletteGenerator(initialColors)
 provide(paletteGeneratorKey, palette)
 
-// Keep the URL shareable: every change is reflected in /palette/<colors> without adding history entries.
 const syncUrl = useDebounceFn((param: string) => {
 	if (param !== colorsParam.value) router.replace({ params: { colors: param } })
 }, 250)
@@ -40,13 +39,11 @@ useHead({
 const { copy } = useClipboard({ legacy: true })
 const { showToast } = useAppToast()
 const previewMode = ref<'light' | 'dark'>('light')
-const style = computed(() => harmonies.find(option => option.value === palette.harmony.value)!)
 
-// The logo mark adopts the palette's primary color.
 const primaryHex = computed(() => toHex(palette.colors.value[0]!))
 useHead({
 	htmlAttrs: {
-		style: computed(() => `--brand: ${primaryHex.value}; --brand-foreground: ${readableOn(primaryHex.value)}`),
+		style: computed(() => `--brand: ${primaryHex.value}; --brand-foreground: ${readableTextColor(primaryHex.value)}`),
 	},
 })
 
@@ -93,7 +90,6 @@ onKeyStroke(['z', 'Z'], (event) => {
 
 <template>
 	<div class="flex min-h-0 flex-1 flex-col gap-4 p-4 sm:px-6">
-		<!-- Toolbar -->
 		<div class="flex flex-wrap items-center gap-x-6 gap-y-3">
 			<div>
 				<h1 class="text-xl font-semibold">Palette generator</h1>
@@ -145,7 +141,6 @@ onKeyStroke(['z', 'Z'], (event) => {
 			</div>
 		</div>
 
-		<!-- Workspace: sidebar (colors + inline editing) and preview -->
 		<div class="grid min-h-0 flex-1 grid-cols-[minmax(0,1fr)] content-start gap-4 lg:grid-cols-[23rem_minmax(0,1fr)] lg:content-stretch">
 			<Card size="sm" class="min-h-0">
 				<CardHeader>
@@ -153,24 +148,6 @@ onKeyStroke(['z', 'Z'], (event) => {
 					<CardDescription>Click a color to edit it. Lock the ones you want to keep.</CardDescription>
 				</CardHeader>
 				<CardContent class="flex min-h-0 flex-1 flex-col gap-5 overflow-x-hidden lg:overflow-y-auto">
-					<div class="grid gap-2">
-						<label for="style" class="text-sm font-medium">Style</label>
-						<Select v-model="palette.harmony.value">
-							<SelectTrigger id="style" class="w-full">
-								<SelectValue>{{ style.label }}</SelectValue>
-							</SelectTrigger>
-							<SelectContent>
-								<SelectItem v-for="option in harmonies" :key="option.value" :value="option.value" class="items-start">
-									<span class="grid gap-0.5">
-										<span>{{ option.label }}</span>
-										<span class="text-muted-foreground">{{ option.description }}</span>
-									</span>
-								</SelectItem>
-							</SelectContent>
-						</Select>
-						<p class="text-sm text-muted-foreground">{{ style.description }}</p>
-					</div>
-
 					<div class="-mx-2 grid gap-1">
 						<PaletteColorRow v-for="color in palette.colors.value" :key="color.id" :color="color" />
 					</div>
