@@ -68,6 +68,8 @@ The CLI currently emits two things that must be fixed after every `add`:
 
 It may also prepend a Google Fonts `@import` and a duplicate `@layer base` to `tailwind.css` — remove them (fonts are self-hosted by `@nuxt/fonts`).
 
+After adding components, **restart the dev server** — the shadcn module only registers `app/components/ui/*` folders at startup. Until then the new components render as unknown HTML elements (look for "Failed to resolve component" warnings), while `nuxt typecheck` still passes.
+
 ---
 
 ## 3. Architecture
@@ -81,10 +83,10 @@ Status legend: ✅ exists · 🚧 planned · 🗑️ legacy, to be removed durin
 | `app/lib/color/` | **Color engine.** Pure TS, no Vue, no Nuxt, no DOM. Parsing, conversion, gamut mapping, harmonies, scales, contrast (WCAG/APCA), CVD simulation, naming. Fully unit-tested. | 🚧 |
 | `app/lib/export/` | Pure formatters: CSS vars, Tailwind v4 `@theme`, shadcn theme, SCSS, W3C design-tokens JSON, SVG, ASE. | 🚧 |
 | `app/lib/utils.ts` | shadcn `cn()` helper | ✅ |
-| `app/lib/tools.ts` | Tool registry (label, route, icon, live/planned) — drives header nav and, later, the command menu and landing page | ✅ |
-| `app/composables/` | Vue glue: URL state, persistence (`useLibrary`), keyboard shortcuts. `useAppToast` ✅; the rest of the current contents 🗑️ | ✅ |
+| `app/lib/tools.ts` | Tool registry (label, route, icon, live/planned) — drives header nav, the command menu and, later, the landing page | ✅ |
+| `app/composables/` | Vue glue: URL state, persistence (`useLibrary`), keyboard shortcuts. `useAppToast` ✅, `useCommandMenu` ✅ (shared ⌘K open state); `useColorCount` / `useHomeSchemes` 🗑️ | ✅ |
 | `app/components/ui/` | shadcn-vue primitives (generated) | ✅ |
-| `app/components/app/` | App shell: `AppHeader` (tool nav, mobile popover menu), `AppLogo` (mark follows `--brand`), `AppThemeToggle` (system → light → dark), `AppFooter`. Command menu (⌘K) 🚧 | ✅ |
+| `app/components/app/` | App shell: `AppHeader` (tool nav, mobile popover menu), `AppLogo` (mark follows `--brand`), `AppThemeToggle` (system → light → dark), `AppFooter`, `AppCommandTrigger` (search pill in the header) and `AppCommandMenu` (global ⌘K / Ctrl+K dialog, mounted once in `app.vue`: tools, theme, links) | ✅ |
 | `app/components/color/` | Reusable color widgets. `ColorGradientSlider` ✅ (channel slider with gradient track); swatch, color input, contrast badge 🚧 | ✅ |
 | `app/components/<tool>/` | Tool-specific components, one folder per tool (`palette/`, `scale/`, `theme/`, `contrast/`, …) | 🚧 |
 | `app/layouts/default.vue` | Header + content + footer (content pages) | ✅ |
@@ -170,11 +172,10 @@ The chrome is neutral and quiet; the user's colors are the content. Visual style
 - `utils/generatePalette.ts`: harmony math in HSL (perceptually uneven); "Split Complementary" is just complementary in LAB; "Random" ignores the base color; calls `useNuxtApp()` from a util. → `lib/color/` in OKLCH.
 - Saved palettes stored in a cookie through `server/api/saved/palettes.post.ts`: ~4KB limit, sent with every request, entries matched by string equality, `status` returned in the body instead of HTTP status codes. → client-side `useLibrary()`.
 - `server/api/gradient/[gradient].ts` parses a URL param on the server, costing a network round-trip for pure string parsing. `server/api/palette/[palette].ts` just echoes its param. → shared pure parser in `lib/`, no API.
-- Composables: `useHomeSchemes` stores a `computed` inside `useState` (not serializable); `useColorCount` / `useFirstColor` / `useSecondColor` are global `useState` keys that leak state between pages; `Number` wrapper type. → per-tool state synced to the URL.
+- Composables: `useHomeSchemes` stores a `computed` inside `useState` (not serializable); `useColorCount` is a global `useState` key that leak state between pages; `Number` wrapper type. → per-tool state synced to the URL.
 - Plugins exposing libraries (`$chroma`, `$extractPalette`) instead of importing modules. → direct imports from `lib/`.
-- `utils/copyURL.ts` copies any text but is named for URLs. → `useClipboard` from VueUse. `utils/detectColorType.ts` regex parsing. → engine parser. `utils/downloadColors.ts` screenshots DOM via `html2canvas` + `querySelector` strings. → generated SVG/PNG from data.
+- `utils/copyURL.ts` copies any text but is named for URLs. → `useClipboard` from VueUse. `utils/downloadColors.ts` screenshots DOM via `html2canvas` + `querySelector` strings. → generated SVG/PNG from data.
 - Mixed `.js`/`.ts` (`plugins/gtag.js`, `info/trendingPalettes.js`), legacy SFCs without `lang="ts"`, PascalCase component folders (`Home/`, `Palette/`, `Gradient/`). → TypeScript only; lowercase tool folders.
-- `/saved` canonical points to `/palette/saved`.
 - `npm audit` reports high/critical vulnerabilities in the dependency tree — review after legacy deps are removed.
 
 - Vue SFCs: `<script setup lang="ts">`, Composition API, typed props/emits. No Options API, no new `.js` files.

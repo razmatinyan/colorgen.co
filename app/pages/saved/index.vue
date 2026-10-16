@@ -48,7 +48,7 @@ useHead({
 	link: [
 		{
 			rel: 'canonical',
-			href: 'https://colorgen.co/palette/saved'
+			href: 'https://colorgen.co/saved'
 		},
 	]
 })

@@ -41,6 +41,7 @@ const navItem = 'inline-flex h-8 items-center rounded-4xl px-3 text-sm font-medi
 			</nav>
 
 			<div class="ml-auto flex items-center gap-1">
+				<AppCommandTrigger />
 				<NuxtLink
 					to="/saved"
 					:class="[navItem, 'hidden sm:inline-flex', isActive('/saved') ? 'bg-muted text-foreground' : 'text-muted-foreground hover:bg-muted/60 hover:text-foreground']"

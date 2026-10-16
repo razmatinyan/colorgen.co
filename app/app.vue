@@ -3,6 +3,7 @@
 		<NuxtLayout>
 			<NuxtPage />
 		</NuxtLayout>
+		<AppCommandMenu />
 		<Toaster position="bottom-right" rich-colors close-button />
 	</TooltipProvider>
 </template>
