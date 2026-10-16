@@ -8,13 +8,19 @@ Guidance for AI coding agents (and humans) working in this repository. This file
 
 ## 1. Product
 
-**ColorGen** (working name — a rebrand is under consideration) is a color-system toolkit for **developers and UI designers**.
+**ColorGen** (working name — a rebrand is under consideration) helps **developers and UI designers get the colors for their design systems**.
 
-Every tool feeds one pipeline:
+The job to be done: *"I'm building a product. I need a complete, accessible color system for its UI — light and dark — in a format I can paste into code or Figma."*
+
+The core product is the **design system builder**, one flow:
 
 ```
-pick / generate  →  refine  →  check accessibility  →  preview on real UI  →  export as code
+brand color  →  scales (brand, neutral, status)  →  semantic tokens (light + dark)  →  readability check  →  preview  →  export
 ```
+
+Around it sit **standalone tools** (palette, shade scale, contrast checker, converter, `/color/[hex]` pages, later gradient and image). Each is useful on its own, shares the color engine, and can send its result into the builder ("Use in builder").
+
+Users start from one of three places: **a brand color they already have** (main entry), **nothing** (needs a good starting color — the only place random generation belongs), or **an existing system to fix** (import, then fix contrast / add dark mode / fill missing scales).
 
 ### Decisions (fixed unless the owner changes them)
 
@@ -25,16 +31,19 @@ pick / generate  →  refine  →  check accessibility  →  preview on real UI 
 | Accounts | None in v1. Everything is client-side. Login may come later — keep persistence behind one composable so a sync backend can be added without touching tools. |
 | Monetization | None. No ads, no paywalls, no "pro" gating. |
 | Design | Original identity. Must **not** resemble Coolors (no full-bleed vertical color stripes as the primary UI). Professional design system, dark + light mode. |
+| Product shape | One **design system builder** as the core, **plus** standalone tools. Not a single tool, not a loose collection of unrelated tools. |
+| System colors | **Brand** (primary, optionally more brand colors) + **neutral** (brand-tinted) + **status** (success, warning, danger, info). Every color is a full 50–950 scale. Not the 5-role mood-board model (primary/secondary/accent/highlight/neutral). |
+| Exports | All four in v1: **Tailwind v4 + shadcn**, **plain CSS variables** (`:root` + `.dark`), **Figma variables** (JSON with light/dark modes), **W3C design tokens JSON**. |
+| Generation | No "pick a harmony/style" UI. Random generation is never the main path — it only helps users who have no starting color, and should offer several good options to choose from rather than one roll of the dice. |
 
 ### v1 scope
 
-1. Palette generator — rebuilt on OKLCH, new UI
-2. Scale (shade) generator — color → 50…950 scale
-3. Theme builder — palette → semantic tokens, light/dark, live UI preview, shadcn/Tailwind export
-4. Contrast checker + fixer — WCAG 2.2 and APCA
-5. `/color/[hex]` pages — programmatic SEO pages for every color
+1. **Design system builder** — brand color in; brand, neutral and status scales; semantic tokens for light and dark; readability check with auto-fix; UI gallery preview; all four exports; shareable URL
+2. **Landing page** — starts the builder ("enter your brand color")
+3. **Standalone tools** — shade scale generator, contrast checker (WCAG 2.2 + APCA), color converter, palette tool reworked around "start from your color", each with "Use in builder"
+4. **`/color/[hex]` pages** — programmatic SEO pages that link into the builder
 
-Post-v1 (in rough order): color converter, image extractor rebuild, gradient/mesh generator rebuild, color-blindness simulator, library collections, Figma plugin, browser extension.
+Post-v1 (in rough order): import an existing system, image extractor rebuild, gradient/mesh generator rebuild, color-blindness simulator, library collections, Figma plugin, browser extension.
 
 ---
 
