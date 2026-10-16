@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest'
-import { normalize, parseColor, toOklch, wrapHue } from './parse'
+import { hueDifference, normalize, parseColor, toOklch, wrapHue } from './parse'
 import { toHex } from './format'
 
 describe('parseColor', () => {
@@ -57,5 +57,20 @@ describe('normalize and wrapHue', () => {
 
 	it.each([[370, 10], [-30, 330], [360, 0], [0, 0]])('wraps %d to %d', (input, expected) => {
 		expect(wrapHue(input)).toBe(expected)
+	})
+})
+
+describe('hueDifference', () => {
+	it.each([
+		[10, 30, 20],
+		[30, 10, -20],
+		[350, 10, 20],
+		[10, 350, -20],
+		[27, 250, -137],
+		[250, 27, 137],
+		[0, 0, 0],
+		[720, 0, 0],
+	])('from %d to %d is %d', (from, to, difference) => {
+		expect(hueDifference(from, to)).toBeCloseTo(difference)
 	})
 })

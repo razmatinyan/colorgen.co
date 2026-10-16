@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { onKeyStroke, useClipboard, useDebounceFn } from '@vueuse/core'
 import { readableTextColor, toHex } from '~/lib/color'
+import { isInteractiveTarget } from '~/lib/keyboard'
 import { parseColorsParam, toColorsParam } from '~/lib/palette-url'
 import { paletteGeneratorKey, usePaletteGenerator } from '~/composables/usePaletteGenerator'
 
@@ -39,6 +40,10 @@ useHead({
 const { copy } = useClipboard({ legacy: true })
 const { showToast } = useAppToast()
 const previewMode = ref<'light' | 'dark'>('light')
+const previewModes = [
+	{ value: 'light', label: 'Light', icon: 'lucide:sun' },
+	{ value: 'dark', label: 'Dark', icon: 'lucide:moon' },
+] as const
 
 const primaryHex = computed(() => toHex(palette.colors.value[0]!))
 useHead({
@@ -59,29 +64,24 @@ async function copySelected() {
 	showToast(`Copied ${hex}`, 'success')
 }
 
-function isInteractive(event: KeyboardEvent) {
-	const target = event.target as HTMLElement | null
-	return !!target?.closest('input, textarea, select, button, a, [role="combobox"], [contenteditable="true"]')
-}
-
 onKeyStroke(' ', (event) => {
-	if (isInteractive(event)) return
+	if (isInteractiveTarget(event)) return
 	event.preventDefault()
 	palette.generate()
 })
 onKeyStroke(['l', 'L'], (event) => {
-	if (!isInteractive(event) && palette.selected.value) palette.toggleLock(palette.selected.value.id)
+	if (!isInteractiveTarget(event) && palette.selected.value) palette.toggleLock(palette.selected.value.id)
 })
 onKeyStroke(['c', 'C'], (event) => {
-	if (!isInteractive(event) && !event.metaKey && !event.ctrlKey) copySelected()
+	if (!isInteractiveTarget(event) && !event.metaKey && !event.ctrlKey) copySelected()
 })
 onKeyStroke(['ArrowDown', 'ArrowUp'], (event) => {
-	if (isInteractive(event)) return
+	if (isInteractiveTarget(event)) return
 	event.preventDefault()
 	palette.select(event.key === 'ArrowDown' ? 1 : -1)
 })
 onKeyStroke(['z', 'Z'], (event) => {
-	if (!(event.metaKey || event.ctrlKey) || isInteractive(event)) return
+	if (!(event.metaKey || event.ctrlKey) || isInteractiveTarget(event)) return
 	event.preventDefault()
 	if (event.shiftKey) palette.redo()
 	else palette.undo()
@@ -148,7 +148,7 @@ onKeyStroke(['z', 'Z'], (event) => {
 					<CardDescription>Click a color to edit it. Lock the ones you want to keep.</CardDescription>
 				</CardHeader>
 				<CardContent class="flex min-h-0 flex-1 flex-col gap-5 overflow-x-hidden lg:overflow-y-auto">
-					<div class="-mx-2 grid gap-1">
+					<div class="-mx-2 grid grid-cols-1 gap-1">
 						<PaletteColorRow v-for="color in palette.colors.value" :key="color.id" :color="color" />
 					</div>
 				</CardContent>
@@ -159,24 +159,7 @@ onKeyStroke(['z', 'Z'], (event) => {
 					<CardTitle>Preview</CardTitle>
 					<CardDescription>Your colors applied to common UI elements</CardDescription>
 					<CardAction>
-						<ToggleGroup
-							:model-value="previewMode"
-							type="single"
-							size="sm"
-							:spacing="1"
-							aria-label="Preview mode"
-							class="rounded-4xl bg-muted p-1"
-							@update:model-value="value => value && (previewMode = value as 'light' | 'dark')"
-						>
-							<ToggleGroupItem
-								v-for="mode in (['light', 'dark'] as const)"
-								:key="mode"
-								:value="mode"
-								class="h-7 capitalize text-muted-foreground hover:bg-transparent data-[state=on]:bg-background data-[state=on]:text-foreground data-[state=on]:shadow-xs dark:data-[state=on]:bg-input/50"
-							>
-								<Icon :name="mode === 'light' ? 'lucide:sun' : 'lucide:moon'" /> {{ mode }}
-							</ToggleGroupItem>
-						</ToggleGroup>
+						<AppSegmentedControl v-model="previewMode" :options="previewModes" label="Preview mode" />
 					</CardAction>
 				</CardHeader>
 				<CardContent class="min-h-0 flex-1 lg:overflow-y-auto">

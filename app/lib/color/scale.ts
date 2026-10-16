@@ -1,5 +1,5 @@
 import { toGamutOklch, toHex } from './format'
-import { toOklch } from './parse'
+import { normalize, toOklch } from './parse'
 import type { ColorInput, Oklch } from './types'
 
 export const scaleSteps = [50, 100, 200, 300, 400, 500, 600, 700, 800, 900, 950] as const
@@ -26,15 +26,19 @@ export function nearestStepIndex(lightness: number) {
 	return nearest
 }
 
+export function toSwatches(colors: readonly Oklch[]): ScaleSwatch[] {
+	return scaleSteps.map((step, index) => {
+		const color = normalize(toGamutOklch(colors[index]!))
+		return { step, color, hex: toHex(color) }
+	})
+}
+
 export function generateScale(input: ColorInput): ScaleSwatch[] {
 	const base = toOklch(input)
 	const anchorIndex = nearestStepIndex(base.l)
-	return scaleSteps.map((step, index) => {
-		const lightness = stepLightness[index]!
-		const target = index === anchorIndex ? base : { l: lightness, c: taperedChroma(base.c, lightness), h: base.h }
-		const color = toGamutOklch(target)
-		return { step, color, hex: toHex(color) }
-	})
+	return toSwatches(stepLightness.map((lightness, index) =>
+		index === anchorIndex ? base : { l: lightness, c: taperedChroma(base.c, lightness), h: base.h },
+	))
 }
 
 export function scaleHexes(input: ColorInput) {

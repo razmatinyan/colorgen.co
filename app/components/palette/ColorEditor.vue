@@ -10,26 +10,6 @@ const { showToast } = useAppToast()
 
 const hex = computed(() => toHex(props.color))
 
-function channel(key: 'l' | 'c' | 'h') {
-	return computed({
-		get: () => props.color[key],
-		set: value => palette.update(props.color.id, { [key]: value }),
-	})
-}
-const lightness = channel('l')
-const intensity = channel('c')
-const hue = channel('h')
-
-const tracks = computed(() => {
-	const { l, c, h } = props.color
-	const hueStops = Array.from({ length: 13 }, (_, i) => `oklch(${l} ${c} ${i * 30})`).join(', ')
-	return {
-		l: `linear-gradient(to right, oklch(0 ${c} ${h}), oklch(0.5 ${c} ${h}), oklch(1 ${c} ${h}))`,
-		c: `linear-gradient(to right in oklch, oklch(${l} 0 ${h}), oklch(${l} 0.37 ${h}))`,
-		h: `linear-gradient(to right, ${hueStops})`,
-	}
-})
-
 const copyFormats: { format: ColorFormat, label: string }[] = [
 	{ format: 'hex', label: 'HEX' },
 	{ format: 'rgb', label: 'RGB' },
@@ -76,11 +56,7 @@ async function copyValue(value: string) {
 
 <template>
 	<div class="grid grid-cols-1 gap-5 px-2.5 pt-1 pb-3">
-		<div class="grid gap-4">
-			<ColorGradientSlider v-model="lightness" label="Lightness" :min="0" :max="1" :track="tracks.l" :format="v => `${Math.round(v * 100)}%`" @commit="palette.snapshot()" />
-			<ColorGradientSlider v-model="intensity" label="Intensity" :min="0" :max="0.37" :track="tracks.c" :format="v => `${Math.round((v / 0.37) * 100)}%`" @commit="palette.snapshot()" />
-			<ColorGradientSlider v-model="hue" label="Hue" :min="0" :max="360" :step="0.1" :track="tracks.h" :format="v => `${Math.round(v)}°`" @commit="palette.snapshot()" />
-		</div>
+		<ColorChannelSliders :color="color" @update="patch => palette.update(color.id, patch)" @commit="palette.snapshot()" />
 
 		<section class="grid grid-cols-1 gap-2">
 			<h3 class="text-sm font-medium">Copy as</h3>

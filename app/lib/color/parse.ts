@@ -31,3 +31,7 @@ export function normalize({ l, c, h }: Oklch): Oklch {
 export function wrapHue(h: number) {
 	return ((h % 360) + 360) % 360
 }
+
+export function hueDifference(from: number, to: number) {
+	return ((((to - from) % 360) + 540) % 360) - 180
+}

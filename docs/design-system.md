@@ -78,6 +78,7 @@ Labels and section headings are **sentence case**, `text-sm font-medium`, never 
 - Mobile/tablet: the two cards stack (sidebar → preview) and size to their content (`content-start`).
 - Previews adapt to their own width with container queries (`@container`, `@xl:`), not viewport breakpoints.
 - **Previews are galleries of UI elements, not mock dashboards** — a masonry (`columns-*`) of small shadcn-style cards: buttons and inputs, a form, a chart, a stat card, navigation, chat, notifications, an empty state, avatars. Each palette role has a consistent job across the cards (primary = main buttons, toggles, active items; secondary = secondary buttons and positive numbers; accent = badges and alerts; highlight = avatars and soft accents; neutral = text, borders, surfaces), and the sidebar hints describe exactly those jobs.
+- **Builder preview roles:** brand = main buttons, checkboxes/switches, focus rings, progress, chart bars (its scale), links and the active nav item (600 light / 300 dark text on a 100 / 900 fill); neutral = page, surfaces, fields, text, muted text and borders; success / warning / danger / info = alerts, status badges, validation messages, toasts and deltas — tinted (50 / 950 fill, 700 / 300 text, 200 / 800 border) or solid (the status color itself in light, its 400 step in dark). Phase 3 replaces this mapping with real semantic tokens.
 
 ## Wording
 
