@@ -1,84 +1,88 @@
 <template>
-	<article id="gradient">
+	<div class="flex min-h-0 flex-1 flex-col lg:overflow-y-auto">
+		<AppTopBar title="Gradient generator" title-as="p" />
+		<article id="gradient">
 
-		<div class="palette-wrapper">
-			<div class="palette-menu">
+			<div class="palette-wrapper">
+				<div class="palette-menu">
 
-				<GradientMenuPicker 
-					class="first-color"
-					:label="'Start Color'"
-					v-model:item="startColor"
-					@update:item="startColor = $event"
-					@color-change="changeGradient"
-					@done="changeRoute"
-				/>
+					<GradientMenuPicker 
+						class="first-color"
+						:label="'Start Color'"
+						v-model:item="startColor"
+						@update:item="startColor = $event"
+						@color-change="changeGradient"
+						@done="changeRoute"
+					/>
 
-				<GradientMenuPicker 
-					class="second-color"
-					:label="'End Color'"
-					v-model:item="endColor"
-					@update:item="endColor = $event"
-					@color-change="changeGradient"
-					@done="changeRoute"
-				/>
+					<GradientMenuPicker 
+						class="second-color"
+						:label="'End Color'"
+						v-model:item="endColor"
+						@update:item="endColor = $event"
+						@color-change="changeGradient"
+						@done="changeRoute"
+					/>
 
-				<div class="menu-item menu-color menu-count">
-					<label for="count" class="input-label">Count</label>
-					<div class="inputs">
-						<input 
-							type="number" 
-							id="count" 
-							class="color-input"
-							v-model="count"
-						>
-						<span class="count-arrow count-plus" @click="handleCountChange('plus')">
-							<Icon name="lucide:chevron-up" />
-						</span>
-						<span class="count-arrow count-minus" @click="handleCountChange('minus')">
-							<Icon name="lucide:chevron-down" />
-						</span>
+					<div class="menu-item menu-color menu-count">
+						<label for="count" class="input-label">Count</label>
+						<div class="inputs">
+							<input 
+								type="number" 
+								id="count" 
+								class="color-input"
+								v-model="count"
+							>
+							<span class="count-arrow count-plus" @click="handleCountChange('plus')">
+								<Icon name="lucide:chevron-up" />
+							</span>
+							<span class="count-arrow count-minus" @click="handleCountChange('minus')">
+								<Icon name="lucide:chevron-down" />
+							</span>
+						</div>
 					</div>
+
+					<div class="menu-item download flex-btn-mw">
+						<button class="btn btn-medium btn-border btn-flex btn-with-icon" @click="handleDownload">
+							<span class="text">Export</span>
+							<Icon name="lucide:download" class="btn-icon" />
+						</button>
+					</div>
+
+					<div class="menu-item save-menu flex-btn-mw">
+						<button class="btn btn-medium btn-border btn-flex btn-with-icon" @click="handleSave(state.colors, action)">
+							<span class="text">{{ action === 'set' ? 'Save' : 'Unsave' }}</span>
+							<Icon :name="action === 'set' ? 'lucide:bookmark' : 'lucide:bookmark-check'" class="btn-icon" />
+						</button>
+					</div>
+					
+					<div class="menu-item copy-url flex-btn-mw">
+						<button class="btn btn-medium btn-border btn-flex btn-with-icon" @click="handleCopyURL">
+							<span class="text">Copy URL</span>
+							<Icon name="lucide:link" class="btn-icon" />
+						</button>
+					</div>
+
 				</div>
 
-				<div class="menu-item download flex-btn-mw">
-					<button class="btn btn-medium btn-border btn-flex btn-with-icon" @click="handleDownload">
-						<span class="text">Export</span>
-						<Icon name="lucide:download" class="btn-icon" />
-					</button>
+				<div class="colors" :class="'colors-' + count">
+					<GradientColor
+						v-for="(color, index) in state.colors"
+						:key="index"
+						v-model:modelValue="state.colors[index]"
+						:color="color"
+						@copy="handleCopy($event)"
+						@openInNew="OpenInNewTab($event)"
+					/>
 				</div>
-
-				<div class="menu-item save-menu flex-btn-mw">
-					<button class="btn btn-medium btn-border btn-flex btn-with-icon" @click="handleSave(state.colors, action)">
-						<span class="text">{{ action === 'set' ? 'Save' : 'Unsave' }}</span>
-						<Icon :name="action === 'set' ? 'lucide:bookmark' : 'lucide:bookmark-check'" class="btn-icon" />
-					</button>
-				</div>
-				
-				<div class="menu-item copy-url flex-btn-mw">
-					<button class="btn btn-medium btn-border btn-flex btn-with-icon" @click="handleCopyURL">
-						<span class="text">Copy URL</span>
-						<Icon name="lucide:link" class="btn-icon" />
-					</button>
-				</div>
-
 			</div>
 
-			<div class="colors" :class="'colors-' + count">
-				<GradientColor
-					v-for="(color, index) in state.colors"
-					:key="index"
-					v-model:modelValue="state.colors[index]"
-					:color="color"
-					@copy="handleCopy($event)"
-					@openInNew="OpenInNewTab($event)"
-				/>
-			</div>
-		</div>
-
-	</article>
+		</article>
+	</div>
 </template>
 
 <script setup>
+definePageMeta({ layout: 'app' })
 const route = useRoute();
 const { data } = await useFetch(`/api/gradient/${route.params.gradient}`);
 const { $chroma } = useNuxtApp();

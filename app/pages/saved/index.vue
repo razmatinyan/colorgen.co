@@ -1,49 +1,53 @@
 <template>
-	<section id="saved" class="paddings">
-		<h1 class="saved-title big-title text-center">
-			Saved Palettes
-		</h1>
+	<div class="flex min-h-0 flex-1 flex-col lg:overflow-y-auto">
+		<AppTopBar title="Library" title-as="p" />
+		<section id="saved" class="paddings">
+			<h1 class="saved-title big-title text-center">
+				Saved Palettes
+			</h1>
 
-		<div v-if="savedPalettes !== undefined" class="palettes">
-			<PaletteCard 
-				v-for="(item, index) in savedPalettes"
-				:key="index"
-				:item="item"
-				@copied="handleToast($event)"
-				@copyURL="handleCopyURL($event)"
-				@unsave="handleUnsaveModal($event)"
-			/>
-		</div>
-		
-		<div v-else class="empty">
-			<p class="empty-text">You don't have any saved palette.</p>
-			
-			<div class="palette-btn-wrap">
-				<button id="random-btn" :disabled="disableButton" @click="generateRandomPalette" class="gnr-btn btn btn-medium btn-blue btn-min-width-200">Start Generate</button>
+			<div v-if="savedPalettes !== undefined" class="palettes">
+				<PaletteCard 
+					v-for="(item, index) in savedPalettes"
+					:key="index"
+					:item="item"
+					@copied="handleToast($event)"
+					@copyURL="handleCopyURL($event)"
+					@unsave="handleUnsaveModal($event)"
+				/>
 			</div>
-		</div>
-		
-		<AlertDialog v-model:open="deleteDialogOpen">
-			<AlertDialogContent>
-				<AlertDialogHeader>
-					<AlertDialogTitle>Delete palette</AlertDialogTitle>
-					<AlertDialogDescription>
-						Are you sure you want to delete this palette? This action cannot be undone.
-					</AlertDialogDescription>
-				</AlertDialogHeader>
-				<AlertDialogFooter>
-					<AlertDialogCancel>Cancel</AlertDialogCancel>
-					<AlertDialogAction variant="destructive" @click="handleUnsave(deletePalette)">
-						Delete
-					</AlertDialogAction>
-				</AlertDialogFooter>
-			</AlertDialogContent>
-		</AlertDialog>
+			
+			<div v-else class="empty">
+				<p class="empty-text">You don't have any saved palette.</p>
+				
+				<div class="palette-btn-wrap">
+					<button id="random-btn" :disabled="disableButton" @click="generateRandomPalette" class="gnr-btn btn btn-medium btn-blue btn-min-width-200">Start Generate</button>
+				</div>
+			</div>
+			
+			<AlertDialog v-model:open="deleteDialogOpen">
+				<AlertDialogContent>
+					<AlertDialogHeader>
+						<AlertDialogTitle>Delete palette</AlertDialogTitle>
+						<AlertDialogDescription>
+							Are you sure you want to delete this palette? This action cannot be undone.
+						</AlertDialogDescription>
+					</AlertDialogHeader>
+					<AlertDialogFooter>
+						<AlertDialogCancel>Cancel</AlertDialogCancel>
+						<AlertDialogAction variant="destructive" @click="handleUnsave(deletePalette)">
+							Delete
+						</AlertDialogAction>
+					</AlertDialogFooter>
+				</AlertDialogContent>
+			</AlertDialog>
 
-	</section>
+		</section>
+	</div>
 </template>
 
 <script setup>
+definePageMeta({ layout: 'app' })
 useHead({
 	link: [
 		{

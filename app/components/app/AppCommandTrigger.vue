@@ -1,10 +1,7 @@
 <script setup lang="ts">
 const { show } = useCommandMenu()
 
-const isMac = ref(false)
-onMounted(() => {
-	isMac.value = /Mac|iPhone|iPad/.test(navigator.userAgent)
-})
+const modifierKey = useModifierKey()
 </script>
 
 <template>
@@ -17,7 +14,7 @@ onMounted(() => {
 		<Icon name="lucide:search" class="size-4" />
 		Search tools…
 		<KbdGroup class="ml-auto">
-			<Kbd>{{ isMac ? '⌘' : 'Ctrl' }}</Kbd>
+			<Kbd>{{ modifierKey }}</Kbd>
 			<Kbd>K</Kbd>
 		</KbdGroup>
 	</button>

@@ -1,12 +1,12 @@
 <script setup lang="ts">
 import { onKeyStroke, useClipboard, useDebounceFn } from '@vueuse/core'
-import { readableTextColor } from '~/lib/color'
+import { describeColor, readableTextColor, toHex } from '~/lib/color'
 import { parseBuilderQuery, toBuilderQuery } from '~/lib/builder-url'
 import { isInteractiveTarget } from '~/lib/keyboard'
 import { parseHexPart, toHexPart } from '~/lib/palette-url'
 import { designSystemBuilderKey, useDesignSystemBuilder } from '~/composables/useDesignSystemBuilder'
 
-definePageMeta({ layout: 'tool', key: 'builder' })
+definePageMeta({ layout: 'app', key: 'builder' })
 
 const route = useRoute()
 const router = useRouter()
@@ -22,6 +22,13 @@ const builder = useDesignSystemBuilder({
 	...(initialBrand && { brand: initialBrand }),
 })
 provide(designSystemBuilderKey, builder)
+
+useRecentTracking('builder', () => (brandParam.value
+	? {
+			title: `${describeColor(builder.settings.value.brand)} system`,
+			colors: builder.colors.value.map(color => toHex(color.base)),
+		}
+	: null))
 
 const target = computed(() => ({
 	params: { brand: toHexPart(builder.settings.value.brand) },
@@ -93,55 +100,45 @@ onKeyStroke(['z', 'Z'], (event) => {
 </script>
 
 <template>
-	<div class="flex min-h-0 flex-1 flex-col gap-4 p-4 sm:px-6">
-		<div class="flex flex-wrap items-center gap-x-6 gap-y-3">
-			<div>
-				<h1 class="text-xl font-semibold">Design system builder</h1>
-				<p class="text-sm text-muted-foreground">Start from your brand color. Every color gets a full 50–950 scale.</p>
-			</div>
-
-			<div class="ml-auto flex flex-wrap items-center justify-end gap-2">
-				<div class="mr-1 flex items-center">
-					<Tooltip>
-						<TooltipTrigger as-child>
-							<Button variant="ghost" size="icon" aria-label="Undo" :disabled="!builder.canUndo.value" @click="builder.undo()">
-								<Icon name="lucide:undo-2" />
-							</Button>
-						</TooltipTrigger>
-						<TooltipContent>Undo <Kbd>⌘Z</Kbd></TooltipContent>
-					</Tooltip>
-					<Tooltip>
-						<TooltipTrigger as-child>
-							<Button variant="ghost" size="icon" aria-label="Redo" :disabled="!builder.canRedo.value" @click="builder.redo()">
-								<Icon name="lucide:redo-2" />
-							</Button>
-						</TooltipTrigger>
-						<TooltipContent>Redo <Kbd>⇧⌘Z</Kbd></TooltipContent>
-					</Tooltip>
-				</div>
-
-				<Tooltip>
-					<TooltipTrigger as-child>
-						<Button variant="outline" @click="copyLink">
-							<Icon name="lucide:link" data-icon="inline-start" /> Copy link
+	<div class="flex min-h-0 flex-1 flex-col">
+		<AppTopBar title="Design system builder">
+			<Tooltip>
+				<TooltipTrigger as-child>
+					<Button variant="ghost" size="icon-sm" aria-label="Undo" :disabled="!builder.canUndo.value" @click="builder.undo()">
+						<Icon name="lucide:undo-2" />
+					</Button>
+				</TooltipTrigger>
+				<TooltipContent>Undo <Kbd>⌘Z</Kbd></TooltipContent>
+			</Tooltip>
+			<Tooltip>
+				<TooltipTrigger as-child>
+					<Button variant="ghost" size="icon-sm" aria-label="Redo" :disabled="!builder.canRedo.value" @click="builder.redo()">
+						<Icon name="lucide:redo-2" />
+					</Button>
+				</TooltipTrigger>
+				<TooltipContent>Redo <Kbd>⇧⌘Z</Kbd></TooltipContent>
+			</Tooltip>
+			<Tooltip>
+				<TooltipTrigger as-child>
+					<Button variant="outline" size="sm" aria-label="Copy link" @click="copyLink">
+						<Icon name="lucide:link" data-icon="inline-start" /> <span class="hidden sm:inline">Copy link</span>
+					</Button>
+				</TooltipTrigger>
+				<TooltipContent>Share this color system</TooltipContent>
+			</Tooltip>
+			<Tooltip>
+				<TooltipTrigger as-child>
+					<span class="inline-flex">
+						<Button size="sm" disabled aria-label="Export">
+							<Icon name="lucide:code" data-icon="inline-start" /> <span class="hidden sm:inline">Export</span>
 						</Button>
-					</TooltipTrigger>
-					<TooltipContent>Share this color system</TooltipContent>
-				</Tooltip>
-				<Tooltip>
-					<TooltipTrigger as-child>
-						<span class="inline-flex">
-							<Button disabled>
-								<Icon name="lucide:code" data-icon="inline-start" /> Export
-							</Button>
-						</span>
-					</TooltipTrigger>
-					<TooltipContent>Tailwind, CSS, Figma and JSON exports are coming next</TooltipContent>
-				</Tooltip>
-			</div>
-		</div>
+					</span>
+				</TooltipTrigger>
+				<TooltipContent>Tailwind, CSS, Figma and JSON exports are coming next</TooltipContent>
+			</Tooltip>
+		</AppTopBar>
 
-		<div class="grid min-h-0 flex-1 grid-cols-[minmax(0,1fr)] content-start gap-4 lg:grid-cols-[23rem_minmax(0,1fr)] lg:content-stretch">
+		<div class="grid min-h-0 flex-1 grid-cols-[minmax(0,1fr)] content-start gap-4 p-4 lg:grid-cols-[23rem_minmax(0,1fr)] lg:content-stretch">
 			<Card size="sm" class="min-h-0">
 				<CardHeader>
 					<CardTitle>Your colors</CardTitle>

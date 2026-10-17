@@ -1,22 +1,26 @@
 <template>
-	<section id="palette-static" class="container">
-		<h1 class="palette-title big-title text-center">
-			Gradient Palette
-		</h1>
+	<div class="flex min-h-0 flex-1 flex-col lg:overflow-y-auto">
+		<AppTopBar title="Gradient generator" title-as="p" />
+		<section id="palette-static" class="container">
+			<h1 class="palette-title big-title text-center">
+				Gradient Palette
+			</h1>
 
-		<p class="palette-descr">
-			Our easy-to-use platform allows you to quickly generate gradient color palette by selecting your preferred colors.
-		</p>
+			<p class="palette-descr">
+				Our easy-to-use platform allows you to quickly generate gradient color palette by selecting your preferred colors.
+			</p>
 
-		<div class="palette-btn-wrap">
-			<button id="random-btn" :disabled="disableButton" @click="openGradientMaker" class="gnr-btn btn btn-medium btn-blue btn-min-width-200">Try it now</button>
-		</div>
-		
-		<GradientSvgPerson />
-	</section>
+			<div class="palette-btn-wrap">
+				<button id="random-btn" :disabled="disableButton" @click="openGradientMaker" class="gnr-btn btn btn-medium btn-blue btn-min-width-200">Try it now</button>
+			</div>
+			
+			<GradientSvgPerson />
+		</section>
+	</div>
 </template>
 
 <script setup>
+definePageMeta({ layout: 'app' })
 useHead({
 	link: [
 		{

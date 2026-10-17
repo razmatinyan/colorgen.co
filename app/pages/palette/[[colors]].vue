@@ -1,11 +1,11 @@
 <script setup lang="ts">
 import { onKeyStroke, useClipboard, useDebounceFn } from '@vueuse/core'
-import { readableTextColor, toHex } from '~/lib/color'
+import { describeColor, readableTextColor, toHex } from '~/lib/color'
 import { isInteractiveTarget } from '~/lib/keyboard'
 import { parseColorsParam, toColorsParam } from '~/lib/palette-url'
 import { paletteGeneratorKey, usePaletteGenerator } from '~/composables/usePaletteGenerator'
 
-definePageMeta({ layout: 'tool', key: 'palette' })
+definePageMeta({ layout: 'app', key: 'palette' })
 
 const route = useRoute()
 const router = useRouter()
@@ -18,6 +18,10 @@ if (colorsParam.value && !initialColors) {
 
 const palette = usePaletteGenerator(initialColors)
 provide(paletteGeneratorKey, palette)
+
+useRecentTracking('palette', () => (colorsParam.value
+	? { title: `${describeColor(palette.colors.value[0]!)} palette`, colors: palette.hexes.value }
+	: null))
 
 const syncUrl = useDebounceFn((param: string) => {
 	if (param !== colorsParam.value) router.replace({ params: { colors: param } })
@@ -89,59 +93,53 @@ onKeyStroke(['z', 'Z'], (event) => {
 </script>
 
 <template>
-	<div class="flex min-h-0 flex-1 flex-col gap-4 p-4 sm:px-6">
-		<div class="flex flex-wrap items-center gap-x-6 gap-y-3">
-			<div>
-				<h1 class="text-xl font-semibold">Palette generator</h1>
-				<p class="text-sm text-muted-foreground">Press Generate for new colors. Click a color to fine-tune it.</p>
-			</div>
-
-			<div class="ml-auto flex flex-wrap items-center justify-end gap-2">
-				<div class="mr-1 flex items-center">
-					<Tooltip>
-						<TooltipTrigger as-child>
-							<Button variant="ghost" size="icon" aria-label="Undo" :disabled="!palette.canUndo.value" @click="palette.undo()">
-								<Icon name="lucide:undo-2" />
-							</Button>
-						</TooltipTrigger>
-						<TooltipContent>Undo <Kbd>⌘Z</Kbd></TooltipContent>
-					</Tooltip>
-					<Tooltip>
-						<TooltipTrigger as-child>
-							<Button variant="ghost" size="icon" aria-label="Redo" :disabled="!palette.canRedo.value" @click="palette.redo()">
-								<Icon name="lucide:redo-2" />
-							</Button>
-						</TooltipTrigger>
-						<TooltipContent>Redo <Kbd>⇧⌘Z</Kbd></TooltipContent>
-					</Tooltip>
-				</div>
-
-				<Tooltip>
-					<TooltipTrigger as-child>
-						<span class="hidden sm:inline-flex">
-							<Button variant="outline" disabled>
-								<Icon name="lucide:bookmark" data-icon="inline-start" /> Save
-							</Button>
-						</span>
-					</TooltipTrigger>
-					<TooltipContent>Library arrives in v1</TooltipContent>
-				</Tooltip>
-				<Tooltip>
-					<TooltipTrigger as-child>
-						<Button variant="outline" @click="exportCss">
-							<Icon name="lucide:code" data-icon="inline-start" /> Export
+	<div class="flex min-h-0 flex-1 flex-col">
+		<AppTopBar title="Palette generator">
+			<Tooltip>
+				<TooltipTrigger as-child>
+					<Button variant="ghost" size="icon-sm" aria-label="Undo" :disabled="!palette.canUndo.value" @click="palette.undo()">
+						<Icon name="lucide:undo-2" />
+					</Button>
+				</TooltipTrigger>
+				<TooltipContent>Undo <Kbd>⌘Z</Kbd></TooltipContent>
+			</Tooltip>
+			<Tooltip>
+				<TooltipTrigger as-child>
+					<Button variant="ghost" size="icon-sm" aria-label="Redo" :disabled="!palette.canRedo.value" @click="palette.redo()">
+						<Icon name="lucide:redo-2" />
+					</Button>
+				</TooltipTrigger>
+				<TooltipContent>Redo <Kbd>⇧⌘Z</Kbd></TooltipContent>
+			</Tooltip>
+			<Tooltip>
+				<TooltipTrigger as-child>
+					<span class="hidden sm:inline-flex">
+						<Button variant="outline" size="sm" disabled>
+							<Icon name="lucide:bookmark" data-icon="inline-start" /> Save
 						</Button>
-					</TooltipTrigger>
-					<TooltipContent>Copy all colors as CSS variables</TooltipContent>
-				</Tooltip>
-				<Button @click="palette.generate()">
-					<Icon name="lucide:shuffle" data-icon="inline-start" /> Generate
-					<Kbd class="ml-1 hidden bg-primary-foreground/15 text-primary-foreground/80 sm:inline-flex">Space</Kbd>
-				</Button>
-			</div>
-		</div>
+					</span>
+				</TooltipTrigger>
+				<TooltipContent>Library arrives in v1</TooltipContent>
+			</Tooltip>
+			<Tooltip>
+				<TooltipTrigger as-child>
+					<Button variant="outline" size="sm" aria-label="Export" @click="exportCss">
+						<Icon name="lucide:code" data-icon="inline-start" /> <span class="hidden sm:inline">Export</span>
+					</Button>
+				</TooltipTrigger>
+				<TooltipContent>Copy all colors as CSS variables</TooltipContent>
+			</Tooltip>
+			<Tooltip>
+				<TooltipTrigger as-child>
+					<Button size="sm" aria-label="Generate" @click="palette.generate()">
+						<Icon name="lucide:shuffle" data-icon="inline-start" /> <span class="hidden sm:inline">Generate</span>
+					</Button>
+				</TooltipTrigger>
+				<TooltipContent>New colors <Kbd>Space</Kbd></TooltipContent>
+			</Tooltip>
+		</AppTopBar>
 
-		<div class="grid min-h-0 flex-1 grid-cols-[minmax(0,1fr)] content-start gap-4 lg:grid-cols-[23rem_minmax(0,1fr)] lg:content-stretch">
+		<div class="grid min-h-0 flex-1 grid-cols-[minmax(0,1fr)] content-start gap-4 p-4 lg:grid-cols-[23rem_minmax(0,1fr)] lg:content-stretch">
 			<Card size="sm" class="min-h-0">
 				<CardHeader>
 					<CardTitle>Your colors</CardTitle>

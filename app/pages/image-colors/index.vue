@@ -1,41 +1,45 @@
 <template>
-	<section id="image-colors">
-		<div class="container">
-			<h1 class="image-title big-title text-center">Image Colors</h1>
-			
-			<p class="image-descr">
-				Extract the color palette from your images with our Image Color Extractor tool.
-			</p>
+	<div class="flex min-h-0 flex-1 flex-col lg:overflow-y-auto">
+		<AppTopBar title="Image color extractor" title-as="p" />
+		<section id="image-colors">
+			<div class="container">
+				<h1 class="image-title big-title text-center">Image Colors</h1>
+				
+				<p class="image-descr">
+					Extract the color palette from your images with our Image Color Extractor tool.
+				</p>
 
-			<div class="dropzone-wrapper">
-				<DropZone ref="inputRef" @drop.prevent="drop" @change="fileSelected" />
+				<div class="dropzone-wrapper">
+					<DropZone ref="inputRef" @drop.prevent="drop" @change="fileSelected" />
+				</div>
+
+				<div class="img-wrapper">
+					<img
+						v-if="imgSrc"
+						:src="imgSrc"
+						alt="Image"
+						id="image" 
+						crossorigin="Anonymous"
+					>
+				</div>
+				
+				<div class="palette-wrapper">
+					<PaletteCard 
+						v-if="colors.palette"
+						:item="colors"
+						:showDelete="false"
+						@copied="handleToast($event)"
+						@copyURL="handleCopyURL($event)"
+					/>
+				</div>
 			</div>
 
-			<div class="img-wrapper">
-				<img
-					v-if="imgSrc"
-					:src="imgSrc"
-					alt="Image"
-					id="image" 
-					crossorigin="Anonymous"
-				>
-			</div>
-			
-			<div class="palette-wrapper">
-				<PaletteCard 
-					v-if="colors.palette"
-					:item="colors"
-					:showDelete="false"
-					@copied="handleToast($event)"
-					@copyURL="handleCopyURL($event)"
-				/>
-			</div>
-		</div>
-
-	</section>
+		</section>
+	</div>
 </template>
 
 <script setup>
+definePageMeta({ layout: 'app' })
 useHead({
 	link: [
 		{

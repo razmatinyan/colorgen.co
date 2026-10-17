@@ -70,9 +70,10 @@ Labels and section headings are **sentence case**, `text-sm font-medium`, never 
 
 ## Layout
 
-- `layouts/default.vue`: header, content, footer. For landing/content pages.
-- `layouts/tool.vue`: header plus full-height workspace, no footer. On `lg+` the page doesn't scroll; each card's content scrolls.
-- Tool workspace: a toolbar row (title + one-line instruction on the left, actions on the right), then **two areas**: a **sidebar** card on the left (~23rem) and a **preview** card filling the rest.
+- `layouts/default.vue`: header, content, footer. For landing/content pages only.
+- `layouts/app.vue`: the app shell for every tool. A navigation sidebar on the left (`bg-sidebar`, shadcn sidebar in the `inset` variant) and the tool in a rounded panel on the right (`ring-1 ring-foreground/10`, no shadow). The sidebar holds navigation and app-level things only — search, tools, recent work, library, contact, theme — and collapses to an icon rail (⌘B) or becomes a sheet on mobile. On `lg+` the page doesn't scroll; each card's content scrolls.
+- Each tool panel starts with `AppTopBar`: sidebar toggle, the tool's name, and the tool's actions on the right (undo/redo, share, save, export, main action). Page actions live there, never in the sidebar. Below `sm` the action labels hide and buttons show only their icon.
+- Tool workspace (below the top bar): **two areas** — an **editor** card on the left (~23rem, the list of colors with inline editing) and a **preview** card filling the rest. Not to be confused with the navigation sidebar of the app shell.
 - **Edit where you select.** Selecting an item in the sidebar expands its controls inline, directly under it (accordion; one open at a time, click again to collapse). Never put an item list on one side and its editor on the other — splitting "choose" and "change" across the screen was tested and rejected as confusing.
 - Keep expanded editors compact so the rest of the list stays visible: button rows instead of long lists, small side-by-side tiles instead of stacked rows.
 - Mobile/tablet: the two cards stack (sidebar → preview) and size to their content (`content-start`).
