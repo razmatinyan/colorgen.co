@@ -1,13 +1,28 @@
 <script setup lang="ts">
+import type { TokenName } from '~/lib/color'
 import { landingDemoKey } from '~/composables/useLandingDemo'
 
 const demo = inject(landingDemoKey)!
 const builder = demo.builder
 
-const light = computed(() => {
-	const tokens = builder.tokens.value
-	return Object.fromEntries(Object.entries(tokens).map(([name, modes]) => [name, modes.light.hex])) as Record<keyof typeof tokens, string>
-})
+const samples = computed(() => (['light', 'dark'] as const).map((mode) => {
+	const token = (name: TokenName) => builder.tokens.value[name][mode].hex
+	return {
+		mode,
+		visibility: mode === 'light' ? 'dark:hidden' : 'hidden dark:grid',
+		background: token('background'),
+		foreground: token('foreground'),
+		primary: token('primary'),
+		onPrimary: token('primary-foreground'),
+		secondary: token('secondary'),
+		onSecondary: token('secondary-foreground'),
+		destructive: token('destructive'),
+		onDestructive: token('destructive-foreground'),
+		muted: token('muted'),
+		mutedForeground: token('muted-foreground'),
+		success: token('success'),
+	}
+}))
 const passing = computed(() => builder.readability.value.length - builder.failingReadability.value.length)
 </script>
 
@@ -36,24 +51,30 @@ const passing = computed(() => builder.readability.value.length - builder.failin
 				</div>
 			</div>
 
-			<div class="mt-5 grid gap-3 rounded-2xl p-4 ring-1 ring-foreground/10 transition-colors duration-700" :style="{ background: light.background, color: light.foreground }">
+			<div
+				v-for="sample in samples"
+				:key="sample.mode"
+				class="mt-5 gap-3 rounded-2xl p-4 ring-1 ring-foreground/10 transition-colors duration-700"
+				:class="[sample.visibility, sample.mode === 'light' && 'grid']"
+				:style="{ background: sample.background, color: sample.foreground }"
+			>
 				<div class="flex flex-wrap gap-2">
-					<span class="inline-flex h-8 items-center rounded-full px-3.5 text-sm font-medium transition-colors duration-700" :style="{ background: light.primary, color: light['primary-foreground'] }">Get started</span>
-					<span class="inline-flex h-8 items-center rounded-full px-3.5 text-sm font-medium transition-colors duration-700" :style="{ background: light.secondary, color: light['secondary-foreground'] }">Learn more</span>
-					<span class="inline-flex h-8 items-center rounded-full px-3.5 text-sm font-medium transition-colors duration-700" :style="{ background: light.destructive, color: light['destructive-foreground'] }">Delete</span>
+					<span class="inline-flex h-8 items-center rounded-full px-3.5 text-sm font-medium transition-colors duration-700" :style="{ background: sample.primary, color: sample.onPrimary }">Get started</span>
+					<span class="inline-flex h-8 items-center rounded-full px-3.5 text-sm font-medium transition-colors duration-700" :style="{ background: sample.secondary, color: sample.onSecondary }">Learn more</span>
+					<span class="inline-flex h-8 items-center rounded-full px-3.5 text-sm font-medium transition-colors duration-700" :style="{ background: sample.destructive, color: sample.onDestructive }">Delete</span>
 				</div>
-				<div class="flex items-center gap-2.5 rounded-xl px-3 py-2 text-sm transition-colors duration-700" :style="{ background: light.muted, color: light['muted-foreground'] }">
-					<Icon name="lucide:circle-check" class="size-4 shrink-0 transition-colors duration-700" :style="{ color: light.success }" />
+				<div class="flex items-center gap-2.5 rounded-xl px-3 py-2 text-sm transition-colors duration-700" :style="{ background: sample.muted, color: sample.mutedForeground }">
+					<Icon name="lucide:circle-check" class="size-4 shrink-0 transition-colors duration-700" :style="{ color: sample.success }" />
 					Changes saved a moment ago
 				</div>
 			</div>
 		</div>
 
-		<div class="absolute -top-4 -right-2 hidden animate-float items-center gap-2 rounded-full bg-popover py-1.5 pr-3.5 pl-2 text-sm shadow-sm ring-1 ring-foreground/10 sm:flex">
+		<div class="absolute -top-4 -right-2 hidden items-center gap-2 rounded-full bg-popover py-1.5 pr-3.5 pl-2 text-sm shadow-sm ring-1 ring-foreground/10 sm:flex">
 			<span class="grid size-6 place-items-center rounded-full bg-success/15 text-success"><Icon name="lucide:check" class="size-3.5" /></span>
 			<span class="tabular-nums">{{ passing }} of {{ builder.readability.value.length }} readable</span>
 		</div>
-		<div class="absolute -bottom-4 -left-3 hidden animate-float items-center gap-2 rounded-full bg-popover py-1.5 pr-3.5 pl-3 text-sm shadow-sm ring-1 ring-foreground/10 [animation-delay:-3.5s] sm:flex">
+		<div class="absolute -bottom-4 -left-3 hidden items-center gap-2 rounded-full bg-popover py-1.5 pr-3.5 pl-3 text-sm shadow-sm ring-1 ring-foreground/10 sm:flex">
 			<Icon name="lucide:code" class="size-4 text-muted-foreground" />
 			Tailwind · shadcn · CSS · Figma
 		</div>

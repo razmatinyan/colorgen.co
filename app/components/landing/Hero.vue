@@ -1,5 +1,5 @@
 <template>
-	<section class="mx-auto grid max-w-6xl items-center gap-12 px-4 pt-14 pb-20 sm:px-6 lg:grid-cols-[minmax(0,1.15fr)_minmax(0,1fr)] lg:gap-14 lg:pt-24 lg:pb-28">
+	<section class="mx-auto grid max-w-6xl grid-cols-1 items-center gap-12 px-4 pt-14 pb-20 sm:px-6 lg:grid-cols-[minmax(0,1.15fr)_minmax(0,1fr)] lg:gap-14 lg:pt-24 lg:pb-16">
 		<div class="grid gap-7">
 			<LandingReveal>
 				<NuxtLink

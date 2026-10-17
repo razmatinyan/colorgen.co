@@ -29,7 +29,7 @@ useHead({
 <template>
 	<div class="overflow-x-clip">
 		<LandingHero />
-		<LandingFlow />
+		<LandingBento />
 		<LandingBuilderShowcase />
 		<LandingReadabilityShowcase />
 		<LandingExportShowcase />

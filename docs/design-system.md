@@ -64,7 +64,7 @@ Labels and section headings are **sentence case**, `text-sm font-medium`, never 
 
 ## Shape and spacing
 
-- Radius: cards `rounded-2xl`, buttons/inputs/badges `rounded-4xl` (pills), list items and inner blocks `rounded-xl`, swatches `rounded-lg`.
+- Radius: cards, dialogs, the command menu and popovers `rounded-2xl` (never larger), buttons/inputs/badges `rounded-4xl` (pills), list items and inner blocks `rounded-xl`, swatches `rounded-lg`.
 - Depth from surface steps and the card ring, not shadows. `shadow-xs` only on the active segment of a segmented control.
 - Spacing on the 4px grid. Workspace gutters `p-4 sm:px-6`, gaps `gap-4` between cards.
 
@@ -103,11 +103,11 @@ Thumb only — no arrow buttons, no visible track (global rule in `tailwind.css`
 
 150–250ms, ease-out, on color/opacity/transform only. Color changes animate (`transition-colors duration-300`). Everything respects `prefers-reduced-motion` (enforced globally in the base layer).
 
-**Landing page exception.** The landing page is a showcase and may move more: scales re-color in a staggered wave (`duration-700`, delay per row and step), sections fade up once when scrolled into view (`LandingReveal`), demos auto-cycle (sample brand colors, light/dark, export formats, the readability fix). Every auto-cycle stops as soon as the visitor interacts, pauses in hidden tabs, and never starts under reduced motion. Floating badges use `animate-float` (defined in `tailwind.css`).
+**Landing page exception.** The landing page is a showcase and may move more: scales re-color in a staggered wave (`duration-700`, delay per row and step), sections fade up once when scrolled into view (`LandingReveal`), demos auto-cycle (sample brand colors, export formats, the readability fix). Every auto-cycle stops as soon as the visitor interacts, pauses in hidden tabs, and never starts under reduced motion. Showcases never switch theme on their own: they always match the site theme. Animated demos keep a fixed size so nothing on the page jumps. Decorative elements (badges, chips) don't move.
 
 ## Landing page
 
-The landing page shows the product by running it: one live builder instance drives every section, so whatever color the visitor types re-themes the hero, the flow, the builder preview, the readability demo, the export excerpt and the tool cards. Sections alternate between the page background and a `bg-muted/30` band with `border-y`. Headings use `SectionHeading` (sentence-case label, display-tracked title, one-line description). Showcases use real components and real engine output, never screenshots.
+The landing page shows the product by running it: one live builder instance drives every section, so whatever color the visitor types re-themes the hero, the flow, the builder preview, the readability demo, the export excerpt and the tool cards. Sections alternate between the page background and a `bg-muted/30` band with `border-y`. Feature overviews use a bento grid (`lg:grid-cols-6`, one large tile plus smaller ones, each a card with a live visual on top and a title and one sentence below). Bento and section grids always set `grid-cols-1` as the base, so wide content (code, long labels) can never push a single-column phone layout off-screen. Headings use `SectionHeading` (sentence-case label, display-tracked title, one-line description). Showcases use real components and real engine output, never screenshots.
 
 ## Interaction
 

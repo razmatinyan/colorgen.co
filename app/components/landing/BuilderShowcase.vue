@@ -1,28 +1,7 @@
 <script setup lang="ts">
-import { useDocumentVisibility, useIntervalFn, usePreferredReducedMotion } from '@vueuse/core'
 import { landingDemoKey } from '~/composables/useLandingDemo'
 
 const { builder, builderPath } = inject(landingDemoKey)!
-const mode = ref<'light' | 'dark'>('light')
-const modes = [
-	{ value: 'light', label: 'Light', icon: 'lucide:sun' },
-	{ value: 'dark', label: 'Dark', icon: 'lucide:moon' },
-] as const
-
-const reducedMotion = usePreferredReducedMotion()
-const visibility = useDocumentVisibility()
-const autoSwitch = useIntervalFn(() => {
-	if (visibility.value === 'visible') mode.value = mode.value === 'light' ? 'dark' : 'light'
-}, 5200, { immediate: false })
-
-onMounted(() => {
-	if (reducedMotion.value !== 'reduce') autoSwitch.resume()
-})
-
-function chooseMode(value: 'light' | 'dark') {
-	autoSwitch.pause()
-	mode.value = value
-}
 
 const features = [
 	{ icon: 'lucide:swatch-book', title: 'Edit where you look', text: 'Every color opens right where it is listed, with plain Lightness, Intensity and Hue sliders.' },
@@ -33,12 +12,12 @@ const features = [
 
 <template>
 	<section class="border-y bg-muted/30">
-		<div class="mx-auto grid max-w-6xl gap-12 px-4 py-20 sm:px-6 lg:py-28">
-			<div class="grid gap-10 lg:grid-cols-[minmax(0,1fr)_minmax(0,1fr)] lg:items-end">
+		<div class="mx-auto grid max-w-6xl grid-cols-1 gap-12 px-4 py-20 sm:px-6 lg:py-28">
+			<div class="grid grid-cols-1 gap-10 lg:grid-cols-[minmax(0,1fr)_minmax(0,1fr)] lg:items-end">
 				<LandingSectionHeading
 					label="Design system builder"
 					title="See it on real UI before you ship it."
-					description="Buttons, forms, alerts, charts and navigation, rendered with your tokens in light and dark mode."
+					description="Buttons, forms, alerts, charts and navigation, rendered with your tokens. Switch the site theme to see dark mode."
 				/>
 				<ul class="grid gap-4 sm:grid-cols-3 lg:grid-cols-1 xl:grid-cols-3">
 					<LandingReveal v-for="(feature, index) in features" :key="feature.title" as="li" :delay="index * 90" class="grid content-start gap-1.5">
@@ -55,7 +34,6 @@ const features = [
 						<Icon name="lucide:panel-left" class="size-4 text-muted-foreground" />
 						<span class="text-sm font-medium">Design system builder</span>
 						<div class="ml-auto flex items-center gap-2">
-							<AppSegmentedControl :model-value="mode" :options="modes" label="Preview mode" @update:model-value="chooseMode" />
 							<Button as-child size="sm" variant="outline" class="hidden sm:inline-flex">
 								<NuxtLink :to="builderPath">Open in builder</NuxtLink>
 							</Button>
@@ -80,7 +58,8 @@ const features = [
 							</div>
 						</div>
 						<div class="relative min-w-0 overflow-hidden p-4 mask-b-from-75%">
-							<BuilderPreview :mode="mode" />
+							<BuilderPreview mode="light" class="dark:hidden" />
+							<BuilderPreview mode="dark" class="hidden dark:block" />
 						</div>
 					</div>
 				</div>
