@@ -113,7 +113,7 @@ function review() {
 				</div>
 			</div>
 
-			<div class="grid min-h-0 grid-rows-[auto_minmax(0,1fr)] overflow-hidden rounded-2xl bg-muted/50 ring-1 ring-foreground/10">
+			<div class="grid min-h-0 grid-rows-[auto_minmax(0,1fr)] overflow-hidden rounded-xl bg-muted/50 ring-1 ring-foreground/10">
 				<div class="flex items-center justify-between gap-3 border-b px-4 py-2 text-sm">
 					<span class="truncate font-medium">{{ shownFile.name }}</span>
 					<span class="shrink-0 text-muted-foreground tabular-nums">{{ lineCount }} lines</span>
