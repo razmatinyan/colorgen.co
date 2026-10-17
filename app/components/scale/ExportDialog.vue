@@ -39,11 +39,11 @@ const instructions = computed<Record<ExportFormat, string>>(() => {
 const file = computed(() => {
 	switch (format.value) {
 		case 'tailwind':
-			return { name: 'colorgen-scales.css', type: 'text/css', content: toTailwindScales(scales.value, valueFormat.value) }
+			return { name: 'sygen-scales.css', type: 'text/css', content: toTailwindScales(scales.value, valueFormat.value) }
 		case 'css':
-			return { name: 'colorgen-scales.css', type: 'text/css', content: toCssScales(scales.value, valueFormat.value) }
+			return { name: 'sygen-scales.css', type: 'text/css', content: toCssScales(scales.value, valueFormat.value) }
 		case 'json':
-			return { name: 'colorgen-scales.tokens.json', type: 'application/json', content: toScaleDesignTokens(scales.value) }
+			return { name: 'sygen-scales.tokens.json', type: 'application/json', content: toScaleDesignTokens(scales.value) }
 	}
 })
 const lineCount = computed(() => file.value.content.trimEnd().split('\n').length)

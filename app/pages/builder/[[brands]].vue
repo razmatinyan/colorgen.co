@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { onKeyStroke, useClipboard, useDebounceFn } from '@vueuse/core'
-import { describeColor, readableTextColor, toHex } from '~/lib/color'
+import { describeColor, toHex } from '~/lib/color'
 import { parseBrandsParam, parseBuilderQuery, toBrandsParam, toBuilderQuery } from '~/lib/builder-url'
 import { isInteractiveTarget } from '~/lib/keyboard'
 import { designSystemBuilderKey, useDesignSystemBuilder } from '~/composables/useDesignSystemBuilder'
@@ -22,12 +22,12 @@ const builder = useDesignSystemBuilder({
 })
 provide(designSystemBuilderKey, builder)
 
-useRecentTracking('builder', () => (brandsParam.value
-	? {
-			title: `${describeColor(builder.settings.value.brand)} system`,
-			colors: builder.colors.value.map(color => toHex(color.base)),
-		}
-	: null))
+const savePath = computed(() => router.resolve(target.value).fullPath)
+const savedSnapshot = () => ({
+	title: `${describeColor(builder.settings.value.brand)} system`,
+	colors: builder.colors.value.map(color => toHex(color.base)),
+})
+useRecentTracking('builder', () => (brandsParam.value ? savedSnapshot() : null))
 
 const target = computed(() => ({
 	params: { brands: toBrandsParam(builder.settings.value) },
@@ -40,11 +40,11 @@ const syncUrl = useDebounceFn((next: typeof target.value) => {
 }, 250)
 watch(target, next => syncUrl(next))
 
-const siteUrl = 'https://colorgen.co'
-const defaultTitle = 'Design System Color Builder: Brand, Neutral and Status Scales | colorgen.co'
+const siteUrl = 'https://sygen.app'
+const defaultTitle = 'Design System Color Builder: Brand, Neutral and Status Scales | Sygen'
 useSeoMeta({
 	title: () => (brandsParam.value
-		? `Design system colors for ${brandsParam.value.split('-').map(hex => `#${hex.toUpperCase()}`).join(' and ')} | colorgen.co`
+		? `Design system colors for ${brandsParam.value.split('-').map(hex => `#${hex.toUpperCase()}`).join(' and ')} | Sygen`
 		: defaultTitle),
 	description: 'Enter your brand color and get a complete UI color system: brand scales, brand-tinted neutrals, success, warning, danger and info, plus readable light and dark tokens for shadcn and Tailwind. Free, no sign-up.',
 	ogTitle: defaultTitle,
@@ -52,9 +52,6 @@ useSeoMeta({
 })
 useHead({
 	link: [{ rel: 'canonical', href: () => `${siteUrl}${route.path}` }],
-	htmlAttrs: {
-		style: computed(() => `--brand: ${builder.brandHex.value}; --brand-foreground: ${readableTextColor(builder.brandHex.value)}`),
-	},
 })
 
 const { copy } = useClipboard({ legacy: true })
@@ -133,6 +130,7 @@ onKeyStroke(['z', 'Z'], (event) => {
 				</TooltipTrigger>
 				<TooltipContent>Redo <Kbd>⇧⌘Z</Kbd></TooltipContent>
 			</Tooltip>
+			<AppSaveButton kind="builder" :path="savePath" :snapshot="savedSnapshot" />
 			<Tooltip>
 				<TooltipTrigger as-child>
 					<Button variant="outline" size="sm" aria-label="Copy link" @click="copyLink">

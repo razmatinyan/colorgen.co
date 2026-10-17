@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { onKeyStroke, useClipboard, useDebounceFn } from '@vueuse/core'
-import { describeColor, readableTextColor, toHex } from '~/lib/color'
+import { describeColor, toHex } from '~/lib/color'
 import { isInteractiveTarget } from '~/lib/keyboard'
 import { parseColorsParam, toColorsParam, toHexPart } from '~/lib/palette-url'
 import { paletteGeneratorKey, usePaletteGenerator } from '~/composables/usePaletteGenerator'
@@ -19,22 +19,22 @@ if (colorsParam.value && !initialColors) {
 const palette = usePaletteGenerator(initialColors)
 provide(paletteGeneratorKey, palette)
 
-useRecentTracking('palette', () => (colorsParam.value
-	? { title: `${describeColor(palette.colors.value[0]!)} palette`, colors: palette.hexes.value }
-	: null))
+const savePath = computed(() => router.resolve({ params: { colors: toColorsParam(palette.colors.value) } }).fullPath)
+const savedSnapshot = () => ({ title: `${describeColor(palette.colors.value[0]!)} palette`, colors: palette.hexes.value })
+useRecentTracking('palette', () => (colorsParam.value ? savedSnapshot() : null))
 
 const syncUrl = useDebounceFn((param: string) => {
 	if (param !== colorsParam.value) router.replace({ params: { colors: param } })
 }, 250)
 watch(palette.hexes, () => syncUrl(toColorsParam(palette.colors.value)))
 
-const siteUrl = 'https://colorgen.co'
+const siteUrl = 'https://sygen.app'
 useSeoMeta({
 	title: () => (colorsParam.value
-		? `Palette ${colorsParam.value.split('-').map(hex => `#${hex.toUpperCase()}`).join(', ')} | colorgen.co`
-		: 'Color Palette Generator from Your Color, with Live UI Preview | colorgen.co'),
+		? `Palette ${colorsParam.value.split('-').map(hex => `#${hex.toUpperCase()}`).join(', ')} | Sygen`
+		: 'Color Palette Generator from Your Color, with Live UI Preview | Sygen'),
 	description: 'Start from your color and pick from six palettes built around it in OKLCH. Fine-tune every color, check text contrast, and preview it on real UI components. Free, no sign-up.',
-	ogTitle: 'Color Palette Generator from Your Color, with Live UI Preview | colorgen.co',
+	ogTitle: 'Color Palette Generator from Your Color, with Live UI Preview | Sygen',
 	ogUrl: () => `${siteUrl}${route.path}`,
 })
 useHead({
@@ -52,9 +52,6 @@ const previewModes = [
 const primaryHex = computed(() => toHex(palette.colors.value[0]!))
 const builderPath = computed(() => `/builder/${toHexPart(palette.primary.value)}`)
 useHead({
-	htmlAttrs: {
-		style: computed(() => `--brand: ${primaryHex.value}; --brand-foreground: ${readableTextColor(primaryHex.value)}`),
-	},
 })
 
 async function exportCss() {
@@ -112,16 +109,7 @@ onKeyStroke(['z', 'Z'], (event) => {
 				</TooltipTrigger>
 				<TooltipContent>Redo <Kbd>⇧⌘Z</Kbd></TooltipContent>
 			</Tooltip>
-			<Tooltip>
-				<TooltipTrigger as-child>
-					<span class="hidden sm:inline-flex">
-						<Button variant="outline" size="sm" disabled>
-							<Icon name="lucide:bookmark" data-icon="inline-start" /> Save
-						</Button>
-					</span>
-				</TooltipTrigger>
-				<TooltipContent>Library arrives in v1</TooltipContent>
-			</Tooltip>
+			<AppSaveButton kind="palette" :path="savePath" :snapshot="savedSnapshot" />
 			<Tooltip>
 				<TooltipTrigger as-child>
 					<Button variant="outline" size="sm" aria-label="Export" @click="exportCss">

@@ -1,7 +1,7 @@
 import { createSharedComposable, useLocalStorage } from '@vueuse/core'
-import { clearRecents, emptyLibrary, parseLibrary, upsertRecent, type LibraryData, type RecentItem, type RecentKind } from '~/lib/library'
+import { clearRecents, emptyLibrary, parseLibrary, removeSaved, saveItem, upsertRecent, type LibraryData, type RecentItem, type RecentKind, type SavedItem } from '~/lib/library'
 
-const storageKey = 'colorgen-library'
+const storageKey = 'sygen-library'
 
 export const useLibrary = createSharedComposable(() => {
 	const library = useLocalStorage<LibraryData>(storageKey, emptyLibrary(), {
@@ -16,6 +16,13 @@ export const useLibrary = createSharedComposable(() => {
 		},
 		clearRecents: () => {
 			library.value = clearRecents(library.value)
+		},
+		saved: computed(() => library.value.saved),
+		save: (entry: SavedItem) => {
+			library.value = saveItem(library.value, entry)
+		},
+		removeSaved: (id: string) => {
+			library.value = removeSaved(library.value, id)
 		},
 	}
 })

@@ -1,6 +1,5 @@
 <script setup lang="ts">
 import { onKeyStroke, useClipboard, useDebounceFn } from '@vueuse/core'
-import { readableTextColor } from '~/lib/color'
 import { isInteractiveTarget } from '~/lib/keyboard'
 import { toColorsParam, toHexPart } from '~/lib/palette-url'
 import { parseNamesParam, parseScalesParam, toNamesParam } from '~/lib/scale-url'
@@ -24,12 +23,12 @@ const generator = useScaleGenerator({
 })
 provide(scaleGeneratorKey, generator)
 
-useRecentTracking('scale', () => (colorsParam.value
-	? {
-			title: generator.scales.value.length === 1 ? `${generator.scales.value[0]!.description} scale` : `${generator.scales.value.length} scales`,
-			colors: generator.scales.value.map(scale => scale.hex),
-		}
-	: null))
+const savePath = computed(() => router.resolve(target.value).fullPath)
+const savedSnapshot = () => ({
+	title: generator.scales.value.length === 1 ? `${generator.scales.value[0]!.description} scale` : `${generator.scales.value.length} scales`,
+	colors: generator.scales.value.map(scale => scale.hex),
+})
+useRecentTracking('scale', () => (colorsParam.value ? savedSnapshot() : null))
 
 const target = computed(() => {
 	const names = toNamesParam(generator.entries.value.map(entry => entry.name))
@@ -44,13 +43,13 @@ const syncUrl = useDebounceFn((next: typeof target.value) => {
 }, 250)
 watch(target, next => syncUrl(next))
 
-const siteUrl = 'https://colorgen.co'
-const defaultTitle = 'Shade Scale Generator: 50–950 Color Scales for Tailwind | colorgen.co'
+const siteUrl = 'https://sygen.app'
+const defaultTitle = 'Shade Scale Generator: 50–950 Color Scales for Tailwind | Sygen'
 const pathHexes = computed(() => colorsParam.value?.split('-').map(hex => `#${hex.toUpperCase()}`) ?? [])
 useSeoMeta({
 	title: () => {
-		if (pathHexes.value.length === 1) return `${pathHexes.value[0]} Shades: 50–950 Color Scale | colorgen.co`
-		if (pathHexes.value.length > 1) return `Color scales for ${pathHexes.value.join(', ')} | colorgen.co`
+		if (pathHexes.value.length === 1) return `${pathHexes.value[0]} Shades: 50–950 Color Scale | Sygen`
+		if (pathHexes.value.length > 1) return `Color scales for ${pathHexes.value.join(', ')} | Sygen`
 		return defaultTitle
 	},
 	description: 'Turn any color into an even 50–950 shade scale in OKLCH, with your exact color kept at its step. Check which text is readable on every shade and export to Tailwind, CSS or design tokens. Free, no sign-up.',
@@ -61,9 +60,6 @@ useSeoMeta({
 const firstHex = computed(() => generator.scales.value[0]!.hex)
 useHead({
 	link: [{ rel: 'canonical', href: () => `${siteUrl}${route.path}` }],
-	htmlAttrs: {
-		style: computed(() => `--brand: ${firstHex.value}; --brand-foreground: ${readableTextColor(firstHex.value)}`),
-	},
 })
 
 const { copy } = useClipboard({ legacy: true })
@@ -131,6 +127,7 @@ onKeyStroke(['z', 'Z'], (event) => {
 				</TooltipTrigger>
 				<TooltipContent>Redo <Kbd>⇧⌘Z</Kbd></TooltipContent>
 			</Tooltip>
+			<AppSaveButton kind="scale" :path="savePath" :snapshot="savedSnapshot" />
 			<Tooltip>
 				<TooltipTrigger as-child>
 					<Button as-child variant="outline" size="sm">

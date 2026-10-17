@@ -1,5 +1,5 @@
-# Colorgen - Color palette generator
+# Sygen
 
-Generate beautiful color palettes with my color palette generator. Make gradient palettes or generate palettes for your specific color. Save your favorite ones and download!
+Colors for your design system: turn a brand color into brand, neutral and status scales, light and dark tokens that pass WCAG, and exports for Tailwind, shadcn, CSS and Figma. Lives at [sygen.app](https://sygen.app).
 
 This site is made with Nuxt 3. The main purpose of the website, is to learn/improve Nuxt. If you will review my code and give me some advices about the code, I will be grateful 🙃

@@ -5,6 +5,10 @@ describe('describeColor', () => {
 	it.each([
 		['#ff0000', 'Red'],
 		['#ffa500', 'Orange'],
+		['#f97316', 'Orange'],
+		['#ea580c', 'Orange'],
+		['#ff6347', 'Red'],
+		['#dc2626', 'Red'],
 		['#ffff00', 'Yellow'],
 		['#00ff00', 'Green'],
 		['#008080', 'Teal'],

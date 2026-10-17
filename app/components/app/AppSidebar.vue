@@ -37,8 +37,8 @@ watch(() => route.fullPath, () => {
 		<SidebarHeader>
 			<SidebarMenu>
 				<SidebarMenuItem>
-					<SidebarMenuButton as-child tooltip="ColorGen home">
-						<NuxtLink to="/" aria-label="ColorGen home">
+					<SidebarMenuButton as-child tooltip="Sygen home">
+						<NuxtLink to="/" aria-label="Sygen home">
 							<AppLogo />
 						</NuxtLink>
 					</SidebarMenuButton>

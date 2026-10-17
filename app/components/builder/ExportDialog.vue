@@ -52,18 +52,18 @@ const model = computed(() => buildExportModel(builder.system.value, builder.toke
 const files = computed<ExportFile[]>(() => {
 	switch (format.value) {
 		case 'tailwind':
-			return [{ name: 'colorgen-theme.css', type: 'text/css', label: 'Download', content: toTailwindCss(model.value, valueFormat.value) }]
+			return [{ name: 'sygen-theme.css', type: 'text/css', label: 'Download', content: toTailwindCss(model.value, valueFormat.value) }]
 		case 'css':
-			return [{ name: 'colorgen-variables.css', type: 'text/css', label: 'Download', content: toCssVariables(model.value, valueFormat.value) }]
+			return [{ name: 'sygen-variables.css', type: 'text/css', label: 'Download', content: toCssVariables(model.value, valueFormat.value) }]
 		case 'figma':
 			return (['light', 'dark'] as const).map(mode => ({
-				name: `colorgen-${mode}.tokens.json`,
+				name: `sygen-${mode}.tokens.json`,
 				type: 'application/json',
 				label: mode === 'light' ? 'Light file' : 'Dark file',
 				content: toFigmaTokens(model.value, mode),
 			}))
 		case 'json':
-			return [{ name: 'colorgen.tokens.json', type: 'application/json', label: 'Download', content: toDesignTokens(model.value) }]
+			return [{ name: 'sygen.tokens.json', type: 'application/json', label: 'Download', content: toDesignTokens(model.value) }]
 	}
 })
 

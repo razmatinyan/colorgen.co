@@ -6,6 +6,7 @@ const converter = inject(colorConverterKey)!
 const links = computed(() => {
 	const hex = converter.conversion.value.hex.slice(1)
 	return [
+		{ to: `/color/${hex}`, icon: 'lucide:palette', title: 'About this color', description: 'Shades, palettes and readability' },
 		{ to: `/scale/${hex}`, icon: 'lucide:chart-column', title: 'Shades', description: 'A 50–950 scale from this color' },
 		{ to: `/contrast/${hex}-ffffff`, icon: 'lucide:contrast', title: 'Contrast', description: 'Is it readable as text?' },
 		{ to: `/builder/${hex}`, icon: 'lucide:blocks', title: 'Builder', description: 'A full UI color system' },
@@ -16,7 +17,7 @@ const links = computed(() => {
 <template>
 	<section class="grid gap-2" aria-labelledby="related-tools">
 		<h3 id="related-tools" class="text-sm font-medium">Keep going</h3>
-		<ul class="grid grid-cols-1 gap-2 sm:grid-cols-3">
+		<ul class="grid grid-cols-1 gap-2 sm:grid-cols-2">
 			<li v-for="link in links" :key="link.title">
 				<NuxtLink
 					:to="link.to"

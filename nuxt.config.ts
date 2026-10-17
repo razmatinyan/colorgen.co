@@ -1,11 +1,14 @@
 import tailwindcss from '@tailwindcss/vite'
+import { colorsNamed } from 'culori'
+
+const namedColorPaths = [...new Set(Object.values(colorsNamed).map(value => `/color/${value.toString(16).padStart(6, '0')}`))]
 
 export default defineNuxtConfig({
 	compatibilityDate: '2026-09-30',
 	devtools: { enabled: false },
 	runtimeConfig: {
 		public: {
-			BASE_URL: 'https://colorgen.co',
+			BASE_URL: 'https://sygen.app',
 			gtagID: process.env.GTAG_ID
 		}
 	},
@@ -26,7 +29,7 @@ export default defineNuxtConfig({
 		classSuffix: '',
 		preference: 'system',
 		fallback: 'light',
-		storageKey: 'colorgen-color-mode',
+		storageKey: 'sygen-color-mode',
 	},
 	fonts: {
 		families: [
@@ -44,8 +47,8 @@ export default defineNuxtConfig({
 		},
 	},
 	site: {
-		url: 'https://colorgen.co',
-		name: 'ColorGen',
+		url: 'https://sygen.app',
+		name: 'Sygen',
 		indexable: true,
 	},
 	sitemap: {
@@ -58,6 +61,7 @@ export default defineNuxtConfig({
 			'/palette/143449-d6f863-fe6122-f5f7f8-0c1828',
 			'/palette/41436a-974063-f54768-ff9677',
 			'/palette/2e424d-5b8291-98dad9-eaebed',
+			...namedColorPaths,
 		],
 		exclude: [
 			'/saved',
@@ -76,17 +80,17 @@ export default defineNuxtConfig({
 			htmlAttrs: {
 				lang: 'en'
 			},
-			title: 'ColorGen - Create Stunning Color Palettes | colorgen.co',
+			title: 'Sygen: Turn your brand color into a complete design system',
 			charset: 'utf-8',
 			viewport: 'width=device-width, initial-scale=1.0',
 			meta: [
 				{
 					name: "description",
-					content: "Our Color Palette Generator makes easy to create stunning color schemes for your designs. With endless combinations of colors, you can experiment with random palettes or select your own color to achieve the perfect look."
+					content: "Brand, neutral and status color scales, light and dark tokens that pass WCAG, and exports for Tailwind, shadcn, CSS and Figma, from one brand color."
 				},
 				{
 					name: "keywords",
-					content: "Color Palette, Palette, Generator, Design, Color combination, Color Schemes, Colorgen"
+					content: "Design system colors, Color scales, Design tokens, Tailwind colors, shadcn theme, Color palette, Sygen"
 				},
 				{
 					property: "og:image",
@@ -94,7 +98,7 @@ export default defineNuxtConfig({
 				},
 				{
 					property: "og:site_name",
-					content: "Colorgen"
+					content: "Sygen"
 				},
 				{
 					property: "og:type",
@@ -106,7 +110,9 @@ export default defineNuxtConfig({
 				},
 			],
 			link: [
-				{ rel: 'icon', type: 'image/svg+xml', href: '/cg-only.svg' },
+				{ rel: 'icon', href: '/favicon.ico', sizes: '48x48' },
+				{ rel: 'icon', type: 'image/svg+xml', href: '/logo-dark-sm.svg' },
+				{ rel: 'apple-touch-icon', href: '/apple-touch-icon.png' },
 			],
 		},
 	},

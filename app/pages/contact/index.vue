@@ -49,18 +49,18 @@ useHead({
 	link: [
 		{
 			rel: 'canonical',
-			href: 'https://colorgen.co/contact'
+			href: 'https://sygen.app/contact'
 		},
 	]
 })
 
 useSeoMeta({
-	title: 'Contact | colorgen.co',
+	title: 'Contact | Sygen',
 	description: "We would love to hear from you! If you have any questions, comments, or feedback about our website, please don't hesitate to contact us using the form.",
-	keywords: 'Color Palette, Contact, Generate, Generator, Colorgen',
-	ogTitle: 'Contact | colorgen.co',
+	keywords: 'Color Palette, Contact, Generate, Generator, Sygen',
+	ogTitle: 'Contact | Sygen',
 	ogDescription: "We would love to hear from you! If you have any questions, comments, or feedback about our website, please don't hesitate to contact us using the form.",
-	ogUrl: `https://colorgen.co/contact`,
+	ogUrl: `https://sygen.app/contact`,
 })
 
 const resultDialogOpen = ref(false);

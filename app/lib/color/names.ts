@@ -3,7 +3,7 @@ import type { ColorInput } from './types'
 
 const hueNames: readonly [maxHue: number, name: string][] = [
 	[15, 'rose'],
-	[50, 'red'],
+	[38, 'red'],
 	[80, 'orange'],
 	[115, 'yellow'],
 	[160, 'green'],

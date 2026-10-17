@@ -4,13 +4,11 @@ Source of truth for tokens is `app/assets/css/tailwind.css`. This document expla
 
 ## Direction
 
-ColorGen follows **shadcn/ui's "Maia" style** (`components.json` → `"style": "reka-maia"`): soft, rounded, monochrome chrome with generous but compact spacing. The look must read as a real product, not a generated landing page. The user's colors are the only saturated thing on screen.
+Sygen follows **shadcn/ui's "Maia" style** (`components.json` → `"style": "reka-maia"`): soft, rounded, monochrome chrome with generous but compact spacing. The look must read as a real product, not a generated landing page. The user's colors are the only saturated thing on screen.
 
 **Hallmarks (keep):** pure-neutral surfaces, `rounded-2xl` cards with a `ring-foreground/10` edge, pill buttons (`rounded-4xl`), filled pill inputs/selects, `rounded-xl` list items with `bg-muted` for the active one, sentence-case labels.
 
 **Avoid (reads as "AI-made"):** uppercase/letter-spaced micro labels, monospace "instrument" readouts, engineering grids, gradient glows, purple gradients, glassmorphism, heavy shadows, decorative illustrations, full-bleed vertical color stripes (Coolors).
-
-**Accent:** `--brand` is overridden at runtime (on `<html>`) with the active palette's primary color. It's used **only** for the logo mark. Primary actions stay monochrome (`bg-primary`) like shadcn.
 
 ## Components
 
@@ -40,7 +38,6 @@ shadcn's neutral palette in OKLCH (chroma 0), light and dark.
 | `secondary`, `accent` | Secondary buttons, hover fills |
 | `border`, `input`, `ring` | Hairlines, input borders, focus rings |
 | `success`, `warning`, `destructive` | Status only |
-| `brand` / `brand-foreground` | Runtime palette color — logo mark only |
 
 Rules:
 - Components use token utilities only. No raw hex or arbitrary color values in app chrome.
@@ -117,4 +114,4 @@ The landing page shows the product by running it: one live builder instance driv
 
 ## Dark mode
 
-`@nuxtjs/color-mode` with `classSuffix: ''` toggles `.dark` on `<html>`; default follows the system, the header toggle cycles system → light → dark and persists in `localStorage` (`colorgen-color-mode`). No flash on load. UI that depends on the resolved mode must render inside `<ClientOnly>` or use `dark:` variants.
+`@nuxtjs/color-mode` with `classSuffix: ''` toggles `.dark` on `<html>`; default follows the system, the header toggle cycles system → light → dark and persists in `localStorage` (`sygen-color-mode`). No flash on load. UI that depends on the resolved mode must render inside `<ClientOnly>` or use `dark:` variants.

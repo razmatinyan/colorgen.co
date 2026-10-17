@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { onKeyStroke, useClipboard, useDebounceFn } from '@vueuse/core'
-import { checkContrast, readableTextColor, toHex } from '~/lib/color'
+import { checkContrast, toHex } from '~/lib/color'
 import { parseContrastParam, toContrastParam } from '~/lib/contrast-url'
 import { isInteractiveTarget } from '~/lib/keyboard'
 import { toHexPart } from '~/lib/palette-url'
@@ -22,9 +22,9 @@ provide(contrastCheckerKey, checker)
 
 const pairTitle = computed(() => `${checker.hexes.value.text.toUpperCase()} on ${checker.hexes.value.background.toUpperCase()}`)
 
-useRecentTracking('contrast', () => (pairParam.value
-	? { title: pairTitle.value, colors: [checker.hexes.value.text, checker.hexes.value.background] }
-	: null))
+const savePath = computed(() => router.resolve(target.value).fullPath)
+const savedSnapshot = () => ({ title: pairTitle.value, colors: [checker.hexes.value.text, checker.hexes.value.background] })
+useRecentTracking('contrast', () => (pairParam.value ? savedSnapshot() : null))
 
 const target = computed(() => ({ params: { pair: toContrastParam(checker.pair.value) } }))
 const syncUrl = useDebounceFn((next: typeof target.value) => {
@@ -32,8 +32,8 @@ const syncUrl = useDebounceFn((next: typeof target.value) => {
 }, 250)
 watch(target, next => syncUrl(next))
 
-const siteUrl = 'https://colorgen.co'
-const defaultTitle = 'Color Contrast Checker: WCAG 2.2 and APCA, with Fixes | colorgen.co'
+const siteUrl = 'https://sygen.app'
+const defaultTitle = 'Color Contrast Checker: WCAG 2.2 and APCA, with Fixes | Sygen'
 const pathCheck = computed(() => {
 	const pair = parseContrastParam(pairParam.value)
 	if (!pair) return null
@@ -45,7 +45,7 @@ const pathCheck = computed(() => {
 })
 useSeoMeta({
 	title: () => (pathCheck.value
-		? `${pathCheck.value.text} on ${pathCheck.value.background}: contrast ${pathCheck.value.check.ratio.toFixed(2)}:1 | colorgen.co`
+		? `${pathCheck.value.text} on ${pathCheck.value.background}: contrast ${pathCheck.value.check.ratio.toFixed(2)}:1 | Sygen`
 		: defaultTitle),
 	description: () => {
 		if (!pathCheck.value) return 'Check text and background colors against WCAG 2.2 AA and AAA and the APCA method, see them on real text, and get the closest colors that pass. Free, no sign-up.'
@@ -59,9 +59,6 @@ useSeoMeta({
 })
 useHead({
 	link: [{ rel: 'canonical', href: () => `${siteUrl}${route.path}` }],
-	htmlAttrs: {
-		style: computed(() => `--brand: ${checker.hexes.value.text}; --brand-foreground: ${readableTextColor(checker.hexes.value.text)}`),
-	},
 })
 
 const { copy } = useClipboard({ legacy: true })
@@ -126,6 +123,7 @@ onKeyStroke(['z', 'Z'], (event) => {
 				</TooltipTrigger>
 				<TooltipContent>Redo <Kbd>⇧⌘Z</Kbd></TooltipContent>
 			</Tooltip>
+			<AppSaveButton kind="contrast" :path="savePath" :snapshot="savedSnapshot" />
 			<Tooltip>
 				<TooltipTrigger as-child>
 					<Button variant="outline" size="sm" aria-label="Copy link" @click="copyLink">

@@ -23,9 +23,9 @@ provide(colorConverterKey, converter)
 const conversion = computed(() => converter.conversion.value)
 const hexLabel = computed(() => conversion.value.hex.toUpperCase())
 
-useRecentTracking('convert', () => (colorParam.value
-	? { title: `${converter.description.value} ${hexLabel.value}`, colors: [conversion.value.hex] }
-	: null))
+const savePath = computed(() => router.resolve(target.value).fullPath)
+const savedSnapshot = () => ({ title: `${converter.description.value} ${hexLabel.value}`, colors: [conversion.value.hex] })
+useRecentTracking('convert', () => (colorParam.value ? savedSnapshot() : null))
 
 const target = computed(() => {
 	const { param, query } = toConvertTarget(converter.color.value)
@@ -36,15 +36,15 @@ const syncUrl = useDebounceFn((next: typeof target.value) => {
 }, 250)
 watch(target, next => syncUrl(next))
 
-const siteUrl = 'https://colorgen.co'
-const defaultTitle = 'Color Converter: HEX, RGB, HSL, OKLCH, Lab and Display P3 | colorgen.co'
+const siteUrl = 'https://sygen.app'
+const defaultTitle = 'Color Converter: HEX, RGB, HSL, OKLCH, Lab and Display P3 | Sygen'
 const pathConversion = computed(() => {
 	const color = parseConvertRoute(colorParam.value, undefined)
 	return color ? convertColor(color) : null
 })
 useSeoMeta({
 	title: () => (pathConversion.value
-		? `${pathConversion.value.hex.toUpperCase()} to RGB, HSL, OKLCH and more | colorgen.co`
+		? `${pathConversion.value.hex.toUpperCase()} to RGB, HSL, OKLCH and more | Sygen`
 		: defaultTitle),
 	description: () => {
 		if (!pathConversion.value) return 'Paste any CSS color and copy it as HEX, RGB, HSL, HWB, OKLCH, OKLab, LCH, Lab or Display P3. Colors outside sRGB stay exact. Free, no sign-up.'
@@ -56,9 +56,6 @@ useSeoMeta({
 })
 useHead({
 	link: [{ rel: 'canonical', href: () => `${siteUrl}${route.path}` }],
-	htmlAttrs: {
-		style: computed(() => `--brand: ${conversion.value.hex}; --brand-foreground: ${readableTextColor(conversion.value.hex)}`),
-	},
 })
 
 const { copy } = useClipboard({ legacy: true })
@@ -122,6 +119,7 @@ onKeyStroke(['z', 'Z'], (event) => {
 				</TooltipTrigger>
 				<TooltipContent>Redo <Kbd>⇧⌘Z</Kbd></TooltipContent>
 			</Tooltip>
+			<AppSaveButton kind="convert" :path="savePath" :snapshot="savedSnapshot" />
 			<Tooltip>
 				<TooltipTrigger as-child>
 					<Button variant="outline" size="sm" aria-label="Copy link" @click="copyLink">

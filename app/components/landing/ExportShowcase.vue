@@ -13,7 +13,7 @@ const formats: { id: FormatId, label: string, text: string, icon: string, file: 
 	{ id: 'tailwind', label: 'Tailwind + shadcn', text: 'Drop-in globals.css with your scales as utilities.', icon: 'lucide:wind', file: 'globals.css', anchor: ':root {' },
 	{ id: 'css', label: 'CSS variables', text: 'Tokens that point to your scales, with a dark class.', icon: 'lucide:braces', file: 'variables.css', anchor: '  --background:' },
 	{ id: 'figma', label: 'Figma variables', text: 'One file per mode for Figma’s variable import.', icon: 'lucide:figma', file: 'light.tokens.json', anchor: '  "theme": {' },
-	{ id: 'json', label: 'Design tokens', text: 'W3C format with primitives and aliases.', icon: 'lucide:file-json', file: 'colorgen.tokens.json', anchor: '  "light": {' },
+	{ id: 'json', label: 'Design tokens', text: 'W3C format with primitives and aliases.', icon: 'lucide:file-json', file: 'sygen.tokens.json', anchor: '  "light": {' },
 ]
 
 const active = ref<FormatId>('tailwind')
