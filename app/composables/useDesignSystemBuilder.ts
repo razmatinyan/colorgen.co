@@ -58,10 +58,9 @@ function withoutSecondBrandRefs(tokens: TokenOverrides): TokenOverrides {
 }
 
 export function useDesignSystemBuilder(initial: Partial<BuilderState> = {}) {
-	const brand = initial.brand ?? defaultBrand
 	const settings = ref<BuilderState>({
-		brand,
-		brand2: initial.brand2 === undefined ? suggestSecondBrand(brand) : initial.brand2,
+		brand: initial.brand ?? defaultBrand,
+		brand2: initial.brand2 ?? null,
 		neutralTint: initial.neutralTint ?? defaultNeutralTint,
 		status: initial.status ?? {},
 		tokens: initial.tokens ?? {},

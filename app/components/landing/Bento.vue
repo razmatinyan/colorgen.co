@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { generateNeutralScale, type TokenName } from '~/lib/color'
+import { generateNeutralScale, suggestSecondBrand, toHex, type TokenName } from '~/lib/color'
 import { landingDemoKey } from '~/composables/useLandingDemo'
 
 const { builder } = inject(landingDemoKey)!
@@ -38,7 +38,7 @@ const chartBars = computed(() => (['chart-1', 'chart-2', 'chart-3', 'chart-4', '
 	hex: builder.tokens.value[name].light.hex,
 	height: [62, 100, 48, 80, 70][index]!,
 })))
-const brand2Hex = computed(() => builder.colors.value.find(color => color.id === 'brand2')?.hex ?? null)
+const brand2Hex = computed(() => toHex(builder.system.value.brand2?.base ?? suggestSecondBrand(builder.settings.value.brand)))
 
 const formats = ['HEX', 'RGB', 'HSL', 'OKLCH']
 const tile = 'grid content-between gap-6 overflow-hidden rounded-2xl bg-card p-5 ring-1 ring-foreground/10 sm:p-6'
@@ -157,7 +157,7 @@ const tile = 'grid content-between gap-6 overflow-hidden rounded-2xl bg-card p-5
 				<div class="flex items-end gap-4">
 					<div class="flex -space-x-3">
 						<span class="size-12 rounded-full ring-3 ring-card transition-colors duration-700" :style="{ background: builder.brandHex.value }" />
-						<span v-if="brand2Hex" class="size-12 rounded-full ring-3 ring-card transition-colors duration-700" :style="{ background: brand2Hex }" />
+						<span class="size-12 rounded-full ring-3 ring-card transition-colors duration-700" :style="{ background: brand2Hex }" />
 					</div>
 					<div class="flex h-14 flex-1 items-end gap-1.5">
 						<span

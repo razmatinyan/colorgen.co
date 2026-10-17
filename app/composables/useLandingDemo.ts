@@ -1,6 +1,6 @@
 import type { InjectionKey } from 'vue'
 import { useDocumentVisibility, useIntervalFn, usePreferredReducedMotion } from '@vueuse/core'
-import { parseColor, suggestSecondBrand, type Oklch } from '~/lib/color'
+import { parseColor, type Oklch } from '~/lib/color'
 import { toBrandsParam } from '~/lib/builder-url'
 
 export const landingSamples = ['#2f5bea', '#0f9488', '#f0603c', '#7c3aed', '#2f7d4a', '#e11d64', '#d99a0b', '#1e293b'] as const
@@ -15,7 +15,7 @@ export function useLandingDemo() {
 	const visibility = useDocumentVisibility()
 
 	function showBrand(brand: Oklch) {
-		builder.settings.value = { ...builder.settings.value, brand, brand2: suggestSecondBrand(brand), status: {}, tokens: {} }
+		builder.settings.value = { ...builder.settings.value, brand, brand2: null, status: {}, tokens: {} }
 	}
 
 	const cycle = useIntervalFn(() => {
