@@ -1,13 +1,9 @@
-import { formatValue, type ExportModel, type ValueFormat } from './model'
+import { formatValue, scaleVariableLines, type ExportModel, type ExportScale, type ValueFormat } from './model'
 
 export function toTailwindCss(model: ExportModel, format: ValueFormat = 'oklch') {
-	const scaleLines = model.scales.flatMap(scale => [
-		'',
-		...scale.steps.map(step => `  --color-${scale.name}-${step.step}: ${formatValue(step, format)};`),
-	])
 	return [
 		'@theme {',
-		...scaleLines.slice(1),
+		...scaleVariableLines(model.scales, 'color-', format),
 		'}',
 		'',
 		':root {',
@@ -23,4 +19,8 @@ export function toTailwindCss(model: ExportModel, format: ValueFormat = 'oklch')
 		'}',
 		'',
 	].join('\n')
+}
+
+export function toTailwindScales(scales: readonly ExportScale[], format: ValueFormat = 'oklch') {
+	return ['@theme {', ...scaleVariableLines(scales, 'color-', format), '}', ''].join('\n')
 }

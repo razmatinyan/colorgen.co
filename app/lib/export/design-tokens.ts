@@ -1,5 +1,5 @@
 import { tokenModes, type TokenMode } from '../color'
-import { dtcgColor, type ExportModel, type ExportTokenValue } from './model'
+import { dtcgColor, type ExportModel, type ExportScale, type ExportTokenValue } from './model'
 
 type TokenTree = { [key: string]: TokenTree | { $type: 'color', $value: unknown } }
 
@@ -12,14 +12,15 @@ export function toJson(value: unknown) {
 	return `${json}\n`
 }
 
+function scalePrimitives(scales: readonly ExportScale[]): TokenTree {
+	return Object.fromEntries(scales.map(scale => [
+		scale.name,
+		Object.fromEntries(scale.steps.map(step => [String(step.step), colorToken(dtcgColor(step.hex))])),
+	]))
+}
+
 function primitives(model: ExportModel): TokenTree {
-	return {
-		white: colorToken(dtcgColor('#ffffff')),
-		...Object.fromEntries(model.scales.map(scale => [
-			scale.name,
-			Object.fromEntries(scale.steps.map(step => [String(step.step), colorToken(dtcgColor(step.hex))])),
-		])),
-	}
+	return { white: colorToken(dtcgColor('#ffffff')), ...scalePrimitives(model.scales) }
 }
 
 function alias(value: ExportTokenValue) {
@@ -42,4 +43,8 @@ export function toFigmaTokens(model: ExportModel, mode: TokenMode) {
 		theme: semantic(model, mode, value => dtcgColor(value.hex)),
 	}
 	return toJson(tree)
+}
+
+export function toScaleDesignTokens(scales: readonly ExportScale[]) {
+	return toJson({ color: scalePrimitives(scales) })
 }

@@ -48,3 +48,8 @@ export function describeColor(input: ColorInput) {
 	if (c < achromaticChroma) return capitalize(grayName(l))
 	return capitalize([...shadeWords(l, c), hueName(h)].join(' '))
 }
+
+export function colorFamily(input: ColorInput) {
+	const { c, h } = toOklch(input)
+	return c < achromaticChroma ? 'gray' : hueName(h)
+}

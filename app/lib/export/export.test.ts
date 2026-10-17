@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest'
-import { generateSystem, parseColor, resolveTokens, tokenNames, type SystemSettings } from '../color'
-import { buildExportModel, dtcgColor, srgbComponents, toCssVariables, toDesignTokens, toFigmaTokens, toTailwindCss } from '.'
+import { generateScale, generateSystem, parseColor, resolveTokens, tokenNames, type SystemSettings } from '../color'
+import { buildExportModel, dtcgColor, srgbComponents, toCssScales, toCssVariables, toDesignTokens, toFigmaTokens, toScaleDesignTokens, toTailwindCss, toTailwindScales, type ExportScale } from '.'
 
 const settings: SystemSettings = { brand: parseColor('#1f6cb0')!, brand2: parseColor('#8b5cf6')!, neutralTint: 0.3, status: {} }
 const system = generateSystem(settings)
@@ -138,5 +138,34 @@ describe('toJson', () => {
 		expect(json).toContain('"components": [0.1216, 0.4235, 0.6902]')
 		expect(() => JSON.parse(json)).not.toThrow()
 		expect(toFigmaTokens(model, 'light')).not.toMatch(/^\s*-?[\d.]+,?$/m)
+	})
+})
+
+describe('scale exports', () => {
+	const scales: ExportScale[] = [
+		{ name: 'blue', steps: generateScale('#1f6cb0') },
+		{ name: 'accent', steps: generateScale('#f68443') },
+	]
+
+	it('writes every step as a Tailwind theme color', () => {
+		const css = toTailwindScales(scales, 'hex')
+		const values = declarations(block(css, '@theme'))
+		expect(Object.keys(values)).toHaveLength(22)
+		expect(values['color-blue-50']).toBe(scales[0]!.steps[0]!.hex)
+		expect(values['color-accent-950']).toBe(scales[1]!.steps[10]!.hex)
+		expect(css).not.toContain(':root')
+	})
+
+	it('writes plain CSS variables in OKLCH by default', () => {
+		const values = declarations(block(toCssScales(scales), ':root'))
+		expect(Object.keys(values)).toHaveLength(22)
+		expect(values['blue-500']).toMatch(/^oklch\(/)
+	})
+
+	it('writes DTCG color primitives only', () => {
+		const tree = JSON.parse(toScaleDesignTokens(scales))
+		expect(Object.keys(tree)).toEqual(['color'])
+		expect(Object.keys(tree.color)).toEqual(['blue', 'accent'])
+		expect(tree.color.blue['600']).toEqual({ $type: 'color', $value: dtcgColor(scales[0]!.steps[6]!.hex) })
 	})
 })

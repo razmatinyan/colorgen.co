@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { useClipboard } from '@vueuse/core'
-import { formatColor, scaleHexes, toHex, wcagLevel, wcagRatio, type ColorFormat, type WcagLevel } from '~/lib/color'
+import { formatColor, scaleHexes, toHex, wcagRatio, type ColorFormat } from '~/lib/color'
 import { paletteGeneratorKey, type PaletteColor } from '~/composables/usePaletteGenerator'
 
 const props = defineProps<{ color: PaletteColor }>()
@@ -28,25 +28,8 @@ const checks = computed(() => {
 		{ label: 'On white', against: '#ffffff' },
 		{ label: 'On black', against: '#000000' },
 		{ label: 'On page background', against: pageBackground },
-	].map((check) => {
-		const ratio = wcagRatio(hex.value, check.against)
-		return { ...check, ratio, level: wcagLevel(ratio) }
-	})
+	].map(check => ({ ...check, ratio: wcagRatio(hex.value, check.against) }))
 })
-
-const levelLabel: Record<WcagLevel, string> = {
-	'AAA': 'AAA',
-	'AA': 'AA',
-	'AA Large': 'Large',
-	'Fail': 'Fail',
-}
-
-const levelClass: Record<WcagLevel, string> = {
-	'AAA': 'bg-success/15 text-success',
-	'AA': 'bg-success/15 text-success',
-	'AA Large': 'bg-warning/25 text-foreground',
-	'Fail': 'bg-destructive/10 text-destructive',
-}
 
 async function copyValue(value: string) {
 	await copy(value)
@@ -82,9 +65,7 @@ async function copyValue(value: string) {
 					:style="{ background: check.against }"
 				>
 					<span class="text-lg font-semibold" :style="{ color: hex }">Aa</span>
-					<Badge variant="secondary" :class="levelClass[check.level]" class="bg-background/90 dark:bg-background/90">
-						{{ levelLabel[check.level] }} · {{ check.ratio.toFixed(1) }}
-					</Badge>
+					<ColorContrastBadge :ratio="check.ratio" class="bg-background/90 dark:bg-background/90" />
 					<span class="sr-only">{{ check.label }}</span>
 				</li>
 			</ul>

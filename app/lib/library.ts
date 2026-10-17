@@ -1,7 +1,7 @@
 export const libraryVersion = 1
 export const maxRecents = 8
 
-export const recentKinds = ['builder', 'palette'] as const
+export const recentKinds = ['builder', 'palette', 'scale'] as const
 export type RecentKind = typeof recentKinds[number]
 
 export interface RecentItem {

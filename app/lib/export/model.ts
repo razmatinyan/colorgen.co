@@ -75,6 +75,13 @@ export function formatValue({ hex, color }: ExportColor, format: ValueFormat) {
 	return format === 'hex' ? hex : toOklchString(color)
 }
 
+export function scaleVariableLines(scales: readonly ExportScale[], prefix: string, format: ValueFormat) {
+	return scales.flatMap(scale => [
+		'',
+		...scale.steps.map(step => `  --${prefix}${scale.name}-${step.step}: ${formatValue(step, format)};`),
+	]).slice(1)
+}
+
 export function srgbComponents(hex: string): [number, number, number] {
 	const channel = (offset: number) => Math.round((Number.parseInt(hex.slice(offset, offset + 2), 16) / 255) * 10000) / 10000
 	return [channel(1), channel(3), channel(5)]

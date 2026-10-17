@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest'
-import { describeColor } from './names'
+import { colorFamily, describeColor } from './names'
 
 describe('describeColor', () => {
 	it.each([
@@ -21,5 +21,19 @@ describe('describeColor', () => {
 		['#7a8b7a', 'Muted green'],
 	])('names %s "%s"', (input, name) => {
 		expect(describeColor(input)).toBe(name)
+	})
+})
+
+describe('colorFamily', () => {
+	it.each([
+		['#1f6cb0', 'blue'],
+		['#3b0a0a', 'red'],
+		['#0ea5e9', 'sky blue'],
+		['#f4e19c', 'yellow'],
+		['#ffffff', 'gray'],
+		['#000000', 'gray'],
+		['#222933', 'gray'],
+	])('groups %s as "%s"', (input, family) => {
+		expect(colorFamily(input)).toBe(family)
 	})
 })
