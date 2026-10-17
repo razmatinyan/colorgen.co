@@ -22,11 +22,6 @@ function preview() {
 	if (parsed && toHex(parsed) !== demo.builder.brandHex.value) demo.chooseBrand(parsed)
 }
 
-function pick(event: Event) {
-	const parsed = parseColor((event.target as HTMLInputElement).value)
-	if (parsed) demo.chooseBrand(parsed)
-}
-
 function choose(hex: string) {
 	demo.chooseBrand(parseColor(hex)!)
 }
@@ -47,10 +42,19 @@ async function submit() {
 				class="flex h-12 flex-1 items-center gap-2 rounded-4xl border border-input bg-background pr-4 pl-1.5 transition-colors focus-within:border-ring focus-within:ring-3 focus-within:ring-ring/50 dark:bg-input/30"
 				:class="isInvalid && 'border-destructive ring-3 ring-destructive/20'"
 			>
-				<label class="relative size-9 shrink-0 cursor-pointer overflow-hidden rounded-full ring-1 ring-foreground/10 ring-inset transition-colors duration-500" :style="{ background: demo.builder.brandHex.value }">
-					<span class="sr-only">Pick a color</span>
-					<input type="color" class="absolute inset-0 cursor-pointer opacity-0" :value="demo.builder.brandHex.value" @input="pick">
-				</label>
+				<Popover>
+					<PopoverTrigger as-child>
+						<button
+							type="button"
+							class="size-9 shrink-0 rounded-full ring-1 ring-foreground/10 ring-inset outline-none transition-colors duration-500 focus-visible:ring-3 focus-visible:ring-ring/50"
+							:style="{ background: demo.builder.brandHex.value }"
+							aria-label="Open color picker"
+						/>
+					</PopoverTrigger>
+					<PopoverContent align="start" class="w-76">
+						<ColorPickerPanel :color="demo.builder.settings.value.brand" @update="demo.chooseBrand" />
+					</PopoverContent>
+				</Popover>
 				<label :for="inputId" class="sr-only">Your brand color</label>
 				<input
 					:id="inputId"

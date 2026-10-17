@@ -33,7 +33,13 @@ function changeColor(color: Oklch) {
 		</button>
 
 		<div v-if="isOpen" :id="panelId" class="grid grid-cols-1 gap-5 px-2.5 pt-1 pb-3">
-			<ColorValueInput :hex="color.hex" :label="color.id === 'text' ? 'Text color' : 'Background color'" @change="changeColor" />
+			<ColorValueInput
+				:color="color.color"
+				:label="color.id === 'text' ? 'Text color' : 'Background color'"
+				@change="changeColor"
+				@update="value => checker.update(color.id, value)"
+				@commit="checker.snapshot()"
+			/>
 			<ColorChannelSliders :color="color.color" @update="patch => checker.update(color.id, patch)" @commit="checker.snapshot()" />
 		</div>
 	</div>

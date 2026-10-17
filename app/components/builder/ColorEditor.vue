@@ -15,6 +15,12 @@ function changeBrand(color: Oklch) {
 	builder.updateBrand(brandId.value, color)
 }
 
+function changeStatus(color: Oklch) {
+	if (!statusKind.value) return
+	builder.snapshot()
+	builder.updateStatus(statusKind.value, color)
+}
+
 const tint = computed({
 	get: () => builder.settings.value.neutralTint,
 	set: value => builder.setNeutralTint(value),
@@ -29,7 +35,13 @@ const tintTrack = computed(() => {
 <template>
 	<div class="grid grid-cols-1 gap-5 px-2.5 pt-1 pb-3">
 		<template v-if="brandId && brandColor">
-			<ColorValueInput :hex="color.hex" :label="brandId === 'brand' ? 'Your brand color' : 'Your second brand color'" @change="changeBrand" />
+			<ColorValueInput
+				:color="brandColor"
+				:label="brandId === 'brand' ? 'Your brand color' : 'Your second brand color'"
+				@change="changeBrand"
+				@update="value => builder.updateBrand(brandId!, value)"
+				@commit="builder.snapshot()"
+			/>
 			<ColorChannelSliders :color="brandColor" @update="patch => builder.updateBrand(brandId!, patch)" @commit="builder.snapshot()" />
 			<div v-if="brandId === 'brand2'" class="flex items-center justify-between gap-3">
 				<p class="text-sm text-muted-foreground">Used for secondary buttons and charts.</p>
@@ -54,6 +66,13 @@ const tintTrack = computed(() => {
 		</template>
 
 		<template v-else-if="statusKind">
+			<ColorValueInput
+				:color="color.base"
+				:label="`${color.label} color`"
+				@change="changeStatus"
+				@update="value => builder.updateStatus(statusKind!, value)"
+				@commit="builder.snapshot()"
+			/>
 			<ColorChannelSliders :color="color.base" @update="patch => builder.updateStatus(statusKind!, patch)" @commit="builder.snapshot()" />
 			<div class="flex items-center justify-between gap-3">
 				<p class="text-sm text-muted-foreground">

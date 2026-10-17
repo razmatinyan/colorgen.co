@@ -39,7 +39,13 @@ const builderPath = computed(() => `/builder/${toHexPart(props.scale.color)}`)
 
 <template>
 	<div class="grid grid-cols-1 gap-5 px-2.5 pt-1 pb-3">
-		<ColorValueInput :hex="scale.hex" label="Your color" @change="changeColor" />
+		<ColorValueInput
+			:color="scale.color"
+			label="Your color"
+			@change="changeColor"
+			@update="value => generator.updateColor(scale.id, value)"
+			@commit="generator.snapshot()"
+		/>
 		<ColorChannelSliders :color="scale.color" @update="patch => generator.updateColor(scale.id, patch)" @commit="generator.snapshot()" />
 
 		<form class="grid gap-2" @submit.prevent="applyName">

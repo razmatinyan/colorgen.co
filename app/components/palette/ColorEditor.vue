@@ -44,7 +44,13 @@ async function copyValue(value: string) {
 
 <template>
 	<div class="grid grid-cols-1 gap-5 px-2.5 pt-1 pb-3">
-		<ColorValueInput :hex="hex" :label="color.id === 'primary' ? 'Your color' : `${color.role} color`" @change="changeColor" />
+		<ColorValueInput
+			:color="color"
+			:label="color.id === 'primary' ? 'Your color' : `${color.role} color`"
+			@change="changeColor"
+			@update="value => palette.update(color.id, value)"
+			@commit="palette.snapshot()"
+		/>
 		<ColorChannelSliders :color="color" @update="patch => palette.update(color.id, patch)" @commit="palette.snapshot()" />
 
 		<section class="grid grid-cols-1 gap-2">

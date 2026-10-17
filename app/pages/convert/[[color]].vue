@@ -157,10 +157,13 @@ onKeyStroke(['z', 'Z'], (event) => {
 						<span class="tabular-nums opacity-80">{{ hexLabel }}</span>
 					</div>
 					<ColorValueInput
-						:hex="conversion.hex"
+						:color="converter.color.value"
 						label="Paste any color"
+						picker-label="Open color picker"
 						hint="HEX, RGB, HSL, HWB, OKLCH, Lab, LCH, Display P3 or a CSS name."
 						@change="changeColor"
+						@update="value => converter.update(value)"
+						@commit="converter.snapshot()"
 					/>
 					<ColorChannelSliders :color="converter.color.value" @update="patch => converter.update(patch)" @commit="converter.snapshot()" />
 					<p v-if="gamutNote" class="flex gap-2 rounded-xl bg-muted px-3 py-2.5 text-sm text-muted-foreground">
