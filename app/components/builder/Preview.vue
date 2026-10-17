@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { readableTextColor, scaleSteps, statusKinds, toHex, type ScaleStep, type StatusKind, type SystemColorId } from '~/lib/color'
+import { scaleSteps, statusKinds, type ScaleStep, type StatusKind, type TokenName } from '~/lib/color'
 import { designSystemBuilderKey } from '~/composables/useDesignSystemBuilder'
 
 const props = defineProps<{ mode: 'light' | 'dark' }>()
@@ -7,16 +7,17 @@ const builder = inject(designSystemBuilderKey)!
 
 const tokens = computed(() => {
 	const system = builder.system.value
+	const resolved = builder.tokens.value
 	const dark = props.mode === 'dark'
-	const step = (id: SystemColorId, light: ScaleStep, darkStep: ScaleStep) =>
+	const token = (name: TokenName) => resolved[name][props.mode].hex
+	const step = (id: StatusKind, light: ScaleStep, darkStep: ScaleStep) =>
 		system[id].swatches[scaleSteps.indexOf(dark ? darkStep : light)]!.hex
-	const primary = dark ? step('brand', 400, 400) : toHex(system.brand.base)
 
 	const statusTokens = statusKinds.flatMap((kind) => {
-		const solid = dark ? step(kind, 400, 400) : toHex(system[kind].base)
+		const name = kind === 'danger' ? 'destructive' : kind
 		return [
-			[`--pv-${kind}`, solid],
-			[`--pv-on-${kind}`, readableTextColor(solid)],
+			[`--pv-${kind}`, token(name)],
+			[`--pv-on-${kind}`, token(`${name}-foreground`)],
 			[`--pv-${kind}-text`, step(kind, 700, 300)],
 			[`--pv-${kind}-soft`, step(kind, 50, 950)],
 			[`--pv-${kind}-border`, step(kind, 200, 800)],
@@ -24,21 +25,28 @@ const tokens = computed(() => {
 	})
 
 	return {
-		'--pv-bg': step('neutral', 50, 950),
-		'--pv-surface': dark ? step('neutral', 900, 900) : '#ffffff',
-		'--pv-field': step('neutral', 100, 800),
-		'--pv-text': step('neutral', 950, 50),
-		'--pv-muted': step('neutral', 600, 400),
-		'--pv-border': step('neutral', 200, 800),
-		'--pv-primary': primary,
-		'--pv-on-primary': readableTextColor(primary),
-		'--pv-brand-text': step('brand', 600, 300),
-		'--pv-brand-soft': step('brand', 100, 900),
-		'--pv-bar-1': step('brand', 200, 800),
-		'--pv-bar-2': step('brand', 300, 700),
-		'--pv-bar-3': step('brand', 400, 600),
-		'--pv-bar-4': step('brand', 500, 500),
-		'--pv-bar-5': step('brand', 600, 400),
+		'--pv-bg': token('background'),
+		'--pv-surface': token('card'),
+		'--pv-field': token('muted'),
+		'--pv-text': token('foreground'),
+		'--pv-muted': token('muted-foreground'),
+		'--pv-border': token('border'),
+		'--pv-input': token('input'),
+		'--pv-ring': token('ring'),
+		'--pv-primary': token('primary'),
+		'--pv-on-primary': token('primary-foreground'),
+		'--pv-secondary': token('secondary'),
+		'--pv-on-secondary': token('secondary-foreground'),
+		'--pv-sidebar': token('sidebar'),
+		'--pv-sidebar-text': token('sidebar-foreground'),
+		'--pv-sidebar-active': token('sidebar-accent'),
+		'--pv-sidebar-active-text': token('sidebar-accent-foreground'),
+		'--pv-sidebar-border': token('sidebar-border'),
+		'--pv-bar-1': token('chart-1'),
+		'--pv-bar-2': token('chart-2'),
+		'--pv-bar-3': token('chart-3'),
+		'--pv-bar-4': token('chart-4'),
+		'--pv-bar-5': token('chart-5'),
 		...Object.fromEntries(statusTokens),
 	}
 })
@@ -104,7 +112,7 @@ const setupSteps = [
 			<div :class="card" class="grid gap-4">
 				<div class="flex flex-wrap gap-2">
 					<span :class="pill" class="bg-(--pv-primary) text-(--pv-on-primary)">Save changes</span>
-					<span :class="pill" class="bg-(--pv-field)">Preview</span>
+					<span :class="pill" class="bg-(--pv-secondary) text-(--pv-on-secondary)">Preview</span>
 					<span :class="pill" class="ring-1 ring-(--pv-border) ring-inset">Cancel</span>
 					<span :class="pill" :style="solid('danger')"><Icon name="lucide:trash-2" class="size-4" /> Delete</span>
 				</div>
@@ -112,8 +120,8 @@ const setupSteps = [
 					<span class="text-sm font-medium">Workspace name</span>
 					<span
 						:class="field"
-						class="text-(--pv-text) ring-1 ring-(--pv-primary)"
-						:style="{ boxShadow: '0 0 0 4px color-mix(in oklch, var(--pv-primary) 25%, transparent)' }"
+						class="text-(--pv-text) ring-1 ring-(--pv-ring)"
+						:style="{ boxShadow: '0 0 0 4px color-mix(in oklch, var(--pv-ring) 30%, transparent)' }"
 					>Studio North<span class="ml-px h-4 w-px bg-(--pv-text)" /></span>
 				</div>
 				<div class="flex flex-wrap items-center gap-x-4 gap-y-2 text-sm whitespace-nowrap">
@@ -159,7 +167,7 @@ const setupSteps = [
 				<div class="grid gap-1.5">
 					<span class="flex justify-between text-sm font-medium">
 						Password
-						<span class="font-normal text-(--pv-brand-text)">Forgot password?</span>
+						<span class="font-normal text-(--pv-primary)">Forgot password?</span>
 					</span>
 					<span :class="field" class="text-(--pv-text) ring-1 ring-(--pv-danger)">••••</span>
 					<span class="flex items-center gap-1.5 text-sm text-(--pv-danger-text)">
@@ -229,12 +237,12 @@ const setupSteps = [
 				</div>
 			</div>
 
-			<div :class="card" class="grid gap-0.5 p-3">
+			<div :class="card" class="grid gap-0.5 bg-(--pv-sidebar) p-3 text-(--pv-sidebar-text) ring-(--pv-sidebar-border)">
 				<span
 					v-for="item in navItems"
 					:key="item.label"
 					class="flex items-center gap-2.5 rounded-xl px-2.5 py-2 text-sm"
-					:class="item.active && 'bg-(--pv-brand-soft) font-medium text-(--pv-brand-text)'"
+					:class="item.active && 'bg-(--pv-sidebar-active) font-medium text-(--pv-sidebar-active-text)'"
 				>
 					<Icon :name="item.icon" class="size-4" :class="!item.active && 'text-(--pv-muted)'" />
 					{{ item.label }}
@@ -257,7 +265,7 @@ const setupSteps = [
 						<p class="text-sm font-medium">Upload failed</p>
 						<p class="text-sm text-(--pv-muted)">report-q3.pdf is larger than 10 MB.</p>
 					</div>
-					<span class="text-sm font-medium text-(--pv-brand-text)">Retry</span>
+					<span class="text-sm font-medium text-(--pv-primary)">Retry</span>
 				</div>
 			</div>
 
@@ -288,7 +296,7 @@ const setupSteps = [
 			</div>
 
 			<div :class="card" class="flex flex-col items-center gap-3 py-8 text-center">
-				<span class="grid size-11 place-items-center rounded-full bg-(--pv-brand-soft) text-(--pv-brand-text)">
+				<span class="grid size-11 place-items-center rounded-full text-(--pv-primary)" :style="{ background: 'color-mix(in oklch, var(--pv-primary) 14%, var(--pv-surface))' }">
 					<Icon name="lucide:folder-plus" class="size-5" />
 				</span>
 				<div>

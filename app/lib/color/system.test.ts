@@ -3,18 +3,18 @@ import { toHex } from './format'
 import { parseColor } from './parse'
 import { scaleSteps } from './scale'
 import { suggestStatusColor } from './status'
-import { generateSystem, systemColorIds, type SystemSettings } from './system'
+import { generateSystem, systemColorIds, systemScales, type SystemSettings } from './system'
 
 const brand = parseColor('#1f6cb0')!
-const settings: SystemSettings = { brand, neutralTint: 0.3, status: {} }
+const settings: SystemSettings = { brand, brand2: null, neutralTint: 0.3, status: {} }
 
 describe('generateSystem', () => {
 	it('returns a full scale for every system color', () => {
-		const system = generateSystem(settings)
+		const system = generateSystem({ ...settings, brand2: parseColor('#8b5cf6')! })
 		expect(Object.keys(system)).toEqual([...systemColorIds])
 		for (const id of systemColorIds) {
-			expect(system[id].id).toBe(id)
-			expect(system[id].swatches.map(swatch => swatch.step)).toEqual([...scaleSteps])
+			expect(system[id]!.id).toBe(id)
+			expect(system[id]!.swatches.map(swatch => swatch.step)).toEqual([...scaleSteps])
 		}
 	})
 
@@ -47,5 +47,18 @@ describe('generateSystem', () => {
 		const subtle = generateSystem({ ...settings, neutralTint: 0.1 }).neutral.base.c
 		const strong = generateSystem({ ...settings, neutralTint: 0.9 }).neutral.base.c
 		expect(strong).toBeGreaterThan(subtle)
+	})
+})
+
+describe('second brand color', () => {
+	it('is absent unless set', () => {
+		expect(generateSystem(settings).brand2).toBeNull()
+		expect(systemScales(generateSystem(settings)).map(scale => scale.id)).not.toContain('brand2')
+	})
+
+	it('gets a full anchored scale when set', () => {
+		const system = generateSystem({ ...settings, brand2: parseColor('#8b5cf6')! })
+		expect(system.brand2!.swatches.some(swatch => swatch.hex === '#8b5cf6')).toBe(true)
+		expect(systemScales(system).map(scale => scale.id)).toEqual([...systemColorIds])
 	})
 })

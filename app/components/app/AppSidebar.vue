@@ -114,7 +114,7 @@ watch(() => route.fullPath, () => {
 							</SidebarMenuButton>
 						</SidebarMenuItem>
 					</SidebarMenu>
-					<div v-else class="mx-2 grid justify-items-center gap-2 rounded-xl border border-dashed px-3 py-4 text-center">
+					<div v-else class="mx-2 grid justify-items-center gap-2 rounded-md border border-dashed px-3 py-4 text-center">
 						<p class="text-sm text-muted-foreground">Color systems and palettes you open show up here.</p>
 						<Button as-child size="sm" variant="secondary">
 							<NuxtLink to="/builder">Open the builder</NuxtLink>

@@ -1,29 +1,28 @@
 <script setup lang="ts">
 import { onKeyStroke, useClipboard, useDebounceFn } from '@vueuse/core'
 import { describeColor, readableTextColor, toHex } from '~/lib/color'
-import { parseBuilderQuery, toBuilderQuery } from '~/lib/builder-url'
+import { parseBrandsParam, parseBuilderQuery, toBrandsParam, toBuilderQuery } from '~/lib/builder-url'
 import { isInteractiveTarget } from '~/lib/keyboard'
-import { parseHexPart, toHexPart } from '~/lib/palette-url'
 import { designSystemBuilderKey, useDesignSystemBuilder } from '~/composables/useDesignSystemBuilder'
 
 definePageMeta({ layout: 'app', key: 'builder' })
 
 const route = useRoute()
 const router = useRouter()
-const brandParam = computed(() => (typeof route.params.brand === 'string' ? route.params.brand : undefined))
-const initialBrand = parseHexPart(brandParam.value)
+const brandsParam = computed(() => (typeof route.params.brands === 'string' ? route.params.brands : undefined))
+const initialBrands = parseBrandsParam(brandsParam.value)
 
-if (brandParam.value && !initialBrand) {
+if (brandsParam.value && !initialBrands) {
 	await navigateTo('/builder', { replace: true, redirectCode: 301 })
 }
 
 const builder = useDesignSystemBuilder({
 	...parseBuilderQuery(route.query),
-	...(initialBrand && { brand: initialBrand }),
+	...initialBrands,
 })
 provide(designSystemBuilderKey, builder)
 
-useRecentTracking('builder', () => (brandParam.value
+useRecentTracking('builder', () => (brandsParam.value
 	? {
 			title: `${describeColor(builder.settings.value.brand)} system`,
 			colors: builder.colors.value.map(color => toHex(color.base)),
@@ -31,7 +30,7 @@ useRecentTracking('builder', () => (brandParam.value
 	: null))
 
 const target = computed(() => ({
-	params: { brand: toHexPart(builder.settings.value.brand) },
+	params: { brands: toBrandsParam(builder.settings.value) },
 	query: toBuilderQuery(builder.settings.value),
 }))
 
@@ -44,8 +43,10 @@ watch(target, next => syncUrl(next))
 const siteUrl = 'https://colorgen.co'
 const defaultTitle = 'Design System Color Builder: Brand, Neutral and Status Scales | colorgen.co'
 useSeoMeta({
-	title: () => (brandParam.value ? `Design system colors for #${brandParam.value.toUpperCase()} | colorgen.co` : defaultTitle),
-	description: 'Enter your brand color and get a complete UI color system: brand, brand-tinted neutral, and success, warning, danger and info scales from 50 to 950, previewed in light and dark mode. Free, no sign-up.',
+	title: () => (brandsParam.value
+		? `Design system colors for ${brandsParam.value.split('-').map(hex => `#${hex.toUpperCase()}`).join(' and ')} | colorgen.co`
+		: defaultTitle),
+	description: 'Enter your brand color and get a complete UI color system: brand scales, brand-tinted neutrals, success, warning, danger and info, plus readable light and dark tokens for shadcn and Tailwind. Free, no sign-up.',
 	ogTitle: defaultTitle,
 	ogUrl: () => `${siteUrl}${route.path}`,
 })
@@ -60,11 +61,18 @@ const { copy } = useClipboard({ legacy: true })
 const { showToast } = useAppToast()
 const requestUrl = useRequestURL()
 
-const view = ref<'preview' | 'scales'>('preview')
+type BuilderView = 'preview' | 'tokens' | 'scales'
+const view = ref<BuilderView>('preview')
 const views = [
 	{ value: 'preview', label: 'Preview', icon: 'lucide:layout-panel-left' },
+	{ value: 'tokens', label: 'Tokens', icon: 'lucide:list-tree' },
 	{ value: 'scales', label: 'Scales', icon: 'lucide:chart-column' },
 ] as const
+const viewDetails: Record<BuilderView, { title: string, description: string }> = {
+	preview: { title: 'Preview', description: 'Your tokens applied to common UI elements' },
+	tokens: { title: 'Tokens', description: 'The named colors your app uses, for light and dark mode' },
+	scales: { title: 'Scales', description: 'Every color from 50 (lightest) to 950 (darkest)' },
+}
 const previewMode = ref<'light' | 'dark'>('light')
 const previewModes = [
 	{ value: 'light', label: 'Light', icon: 'lucide:sun' },
@@ -146,18 +154,29 @@ onKeyStroke(['z', 'Z'], (event) => {
 				</CardHeader>
 				<CardContent class="flex min-h-0 flex-1 flex-col gap-5 overflow-x-hidden lg:overflow-y-auto">
 					<div class="-mx-2 grid grid-cols-1 gap-1">
-						<BuilderColorRow v-for="color in builder.colors.value" :key="color.id" :color="color" />
+						<template v-for="color in builder.colors.value" :key="color.id">
+							<BuilderColorRow :color="color" />
+							<button
+								v-if="color.id === 'brand' && !builder.settings.value.brand2"
+								type="button"
+								class="flex items-center gap-3 rounded-xl p-2.5 text-left text-sm text-muted-foreground outline-none transition-colors hover:bg-muted/50 hover:text-foreground focus-visible:ring-3 focus-visible:ring-ring/50"
+								@click="builder.addSecondBrand()"
+							>
+								<span class="grid size-10 shrink-0 place-items-center rounded-lg border border-dashed">
+									<Icon name="lucide:plus" class="size-4" />
+								</span>
+								Add a second brand color
+							</button>
+						</template>
 					</div>
 				</CardContent>
 			</Card>
 
-			<Card size="sm" class="min-h-0" :aria-label="view === 'preview' ? 'Live preview' : 'Color scales'">
+			<Card size="sm" class="min-h-0" :aria-label="viewDetails[view].title">
 				<CardHeader class="flex flex-wrap items-start justify-between gap-3">
 					<div class="grid gap-1">
-						<CardTitle>{{ view === 'preview' ? 'Preview' : 'Scales' }}</CardTitle>
-						<CardDescription>
-							{{ view === 'preview' ? 'Your system applied to common UI elements' : 'Every color from 50 (lightest) to 950 (darkest)' }}
-						</CardDescription>
+						<CardTitle>{{ viewDetails[view].title }}</CardTitle>
+						<CardDescription>{{ viewDetails[view].description }}</CardDescription>
 					</div>
 					<div class="flex flex-wrap gap-2">
 						<AppSegmentedControl v-if="view === 'preview'" v-model="previewMode" :options="previewModes" label="Preview mode" />
@@ -166,6 +185,7 @@ onKeyStroke(['z', 'Z'], (event) => {
 				</CardHeader>
 				<CardContent class="min-h-0 flex-1 lg:overflow-y-auto">
 					<BuilderPreview v-if="view === 'preview'" :mode="previewMode" />
+					<BuilderTokens v-else-if="view === 'tokens'" />
 					<BuilderScales v-else />
 				</CardContent>
 			</Card>
