@@ -48,7 +48,7 @@ const delegatedProps = reactiveOmit(props, 'class', 'toastOptions')
       </div>
     </template>
     <template #close-icon>
-      <Icon name="lucide:x" class="size-4" />
+      <Icon name="lucide:x" class="size-3" />
     </template>
   </Sonner>
 </template>
