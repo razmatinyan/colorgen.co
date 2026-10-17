@@ -1,27 +1,39 @@
-<template>
-	<div class="home-wrapper">
-			<HomeSvgs />
-			<HomeHero />
-			<HomeGradient />
-			<HomeImage />
-			<HomeTrending />
-	</div>
-</template>
+<script setup lang="ts">
+import { readableTextColor } from '~/lib/color'
+import { designSystemBuilderKey } from '~/composables/useDesignSystemBuilder'
+import { landingDemoKey, useLandingDemo } from '~/composables/useLandingDemo'
 
-<script setup>
+const demo = useLandingDemo()
+provide(landingDemoKey, demo)
+provide(designSystemBuilderKey, demo.builder)
+
+const siteUrl = 'https://colorgen.co'
+const title = 'ColorGen: Turn your brand color into a complete design system'
+const description = 'Brand, neutral and status color scales, light and dark tokens that pass WCAG, and exports for Tailwind, shadcn, CSS and Figma, from one brand color. Free, no sign-up.'
+
 useSeoMeta({
-	ogTitle: 'ColorGen - Create Stunning Color Palettes | colorgen.co',
-	ogDescription: `Our Color Palette Generator makes easy to create stunning color schemes for your designs. With endless combinations of colors, you can experiment with random palettes or select your own color to achieve the perfect look.`,
-	ogUrl: `https://colorgen.co`,
+	title,
+	description,
+	ogTitle: title,
+	ogDescription: description,
+	ogUrl: siteUrl,
+})
+useHead({
+	link: [{ rel: 'canonical', href: siteUrl }],
+	htmlAttrs: {
+		style: computed(() => `--brand: ${demo.builder.brandHex.value}; --brand-foreground: ${readableTextColor(demo.builder.brandHex.value)}`),
+	},
 })
 </script>
 
-<style scoped>
-.home-wrapper {
-	position: relative;
-	max-width: 1920px;
-	margin: 0 auto;
-	overflow: hidden;
-	z-index: 10;
-}
-</style>
+<template>
+	<div class="overflow-x-clip">
+		<LandingHero />
+		<LandingFlow />
+		<LandingBuilderShowcase />
+		<LandingReadabilityShowcase />
+		<LandingExportShowcase />
+		<LandingToolsGrid />
+		<LandingFinalCta />
+	</div>
+</template>

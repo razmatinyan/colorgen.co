@@ -103,6 +103,12 @@ Thumb only — no arrow buttons, no visible track (global rule in `tailwind.css`
 
 150–250ms, ease-out, on color/opacity/transform only. Color changes animate (`transition-colors duration-300`). Everything respects `prefers-reduced-motion` (enforced globally in the base layer).
 
+**Landing page exception.** The landing page is a showcase and may move more: scales re-color in a staggered wave (`duration-700`, delay per row and step), sections fade up once when scrolled into view (`LandingReveal`), demos auto-cycle (sample brand colors, light/dark, export formats, the readability fix). Every auto-cycle stops as soon as the visitor interacts, pauses in hidden tabs, and never starts under reduced motion. Floating badges use `animate-float` (defined in `tailwind.css`).
+
+## Landing page
+
+The landing page shows the product by running it: one live builder instance drives every section, so whatever color the visitor types re-themes the hero, the flow, the builder preview, the readability demo, the export excerpt and the tool cards. Sections alternate between the page background and a `bg-muted/30` band with `border-y`. Headings use `SectionHeading` (sentence-case label, display-tracked title, one-line description). Showcases use real components and real engine output, never screenshots.
+
 ## Interaction
 
 - Keyboard-first: `Space` generate, `L` lock, `C` copy hex, `↑/↓` select, `⌘Z / ⇧⌘Z` undo/redo, `⌘K` command menu (planned). Shortcuts are shown in tooltips with `<Kbd>`.
