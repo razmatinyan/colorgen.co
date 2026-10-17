@@ -110,5 +110,5 @@ export default defineNuxtConfig({
 			],
 		},
 	},
-	css: ['~/assets/css/tailwind.css'],
+	css: ['~/assets/css/tailwind.css', 'vue-sonner/style.css'],
 })
