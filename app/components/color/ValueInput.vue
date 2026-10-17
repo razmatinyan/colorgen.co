@@ -1,7 +1,7 @@
 <script setup lang="ts">
-import { parseColor, toHex, type Oklch } from '~/lib/color'
+import { isInGamut, parseColor, toHex, type Oklch } from '~/lib/color'
 
-const props = defineProps<{ hex: string, label: string }>()
+const props = withDefaults(defineProps<{ hex: string, label: string, hint?: string }>(), { hint: 'Paste a HEX, RGB, HSL or OKLCH value.' })
 const emit = defineEmits<{ change: [color: Oklch] }>()
 
 const inputId = useId()
@@ -18,7 +18,7 @@ function apply() {
 	const parsed = parseColor(draft.value)
 	isInvalid.value = !parsed
 	if (!parsed) return
-	if (toHex(parsed) !== props.hex) emit('change', parsed)
+	if (toHex(parsed) !== props.hex || !isInGamut(parsed)) emit('change', parsed)
 	draft.value = toHex(parsed).toUpperCase()
 }
 
@@ -43,7 +43,7 @@ function onBlur() {
 			@blur="onBlur"
 		/>
 		<p :id="hintId" class="text-sm" :class="isInvalid ? 'text-destructive' : 'text-muted-foreground'">
-			{{ isInvalid ? 'Enter a color like #1F6CB0 or rgb(31 108 176).' : 'Paste a HEX, RGB, HSL or OKLCH value.' }}
+			{{ isInvalid ? 'Enter a color like #1F6CB0 or rgb(31 108 176).' : hint }}
 		</p>
 	</form>
 </template>

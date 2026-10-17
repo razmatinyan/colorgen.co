@@ -12,6 +12,7 @@ export const tools: ToolLink[] = [
 	{ id: 'palette', label: 'Palette', description: 'Generate harmonious palettes in OKLCH', to: '/palette', icon: 'lucide:swatch-book', status: 'live' },
 	{ id: 'scale', label: 'Scale', description: '50–950 shade scales for any color', to: '/scale', icon: 'lucide:chart-column', status: 'live' },
 	{ id: 'contrast', label: 'Contrast', description: 'WCAG 2.2 and APCA checks with fixes', to: '/contrast', icon: 'lucide:contrast', status: 'live' },
+	{ id: 'convert', label: 'Convert', description: 'HEX, RGB, HSL, OKLCH, Lab and P3', to: '/convert', icon: 'lucide:arrow-left-right', status: 'live' },
 	{ id: 'gradient', label: 'Gradient', description: 'Smooth multi-stop gradients', to: '/gradient', icon: 'lucide:blend', status: 'live' },
 	{ id: 'image', label: 'Image', description: 'Extract colors from a photo', to: '/image-colors', icon: 'lucide:image', status: 'live' },
 ]
