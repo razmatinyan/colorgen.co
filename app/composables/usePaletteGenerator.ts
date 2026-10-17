@@ -1,5 +1,16 @@
 import type { InjectionKey } from 'vue'
-import { generatePalette, paletteRoles, scaleHexes, scaleSteps, toHex, type Oklch, type PaletteRole } from '~/lib/color'
+import {
+	createRng,
+	paletteRoles,
+	randomSeed,
+	scaleHexes,
+	scaleSteps,
+	suggestPalettes,
+	suggestStartingColors,
+	toHex,
+	type Oklch,
+	type PaletteRole,
+} from '~/lib/color'
 
 export interface PaletteColor extends Oklch {
 	id: PaletteRole
@@ -8,14 +19,21 @@ export interface PaletteColor extends Oklch {
 	locked: boolean
 }
 
+export interface PaletteOption {
+	colors: Oklch[]
+	hexes: string[]
+	isCurrent: boolean
+}
+
 const roleDetails: Record<PaletteRole, { label: string, hint: string, initial: Oklch }> = {
-	primary: { label: 'Primary', hint: 'Buttons, toggles, active items', initial: { l: 0.52, c: 0.13, h: 250 } },
+	primary: { label: 'Your color', hint: 'Buttons, toggles, active items', initial: { l: 0.52, c: 0.13, h: 250 } },
 	secondary: { label: 'Secondary', hint: 'Secondary buttons, positive numbers', initial: { l: 0.68, c: 0.11, h: 190 } },
 	accent: { label: 'Accent', hint: 'Badges and alerts', initial: { l: 0.73, c: 0.16, h: 48 } },
 	highlight: { label: 'Highlight', hint: 'Avatars and soft accents', initial: { l: 0.91, c: 0.09, h: 95 } },
 	neutral: { label: 'Neutral', hint: 'Text, borders, backgrounds', initial: { l: 0.28, c: 0.02, h: 255 } },
 }
 
+const initialSeed = 1
 const oklchOf = ({ l, c, h }: Oklch): Oklch => ({ l, c, h })
 
 export function usePaletteGenerator(initialColors: readonly Oklch[] | null = null) {
@@ -29,14 +47,47 @@ export function usePaletteGenerator(initialColors: readonly Oklch[] | null = nul
 	})))
 	const selectedId = ref<PaletteRole | null>('primary')
 	const history = useUndoHistory(colors)
+	const optionsSeed = ref(initialSeed)
+	const startingSeed = ref(initialSeed)
 
 	const selected = computed(() => colors.value.find(color => color.id === selectedId.value) ?? null)
 	const hexes = computed(() => colors.value.map(color => toHex(color)))
+	const primary = computed(() => oklchOf(colors.value[0]!))
 
-	function generate() {
+	const options = computed<PaletteOption[]>(() => {
+		const locked = colors.value.map(color => (color.locked ? oklchOf(color) : null))
+		return suggestPalettes({ base: primary.value, locked, rng: createRng(optionsSeed.value) }).map((option) => {
+			const optionHexes = option.map(color => toHex(color))
+			return { colors: option, hexes: optionHexes, isCurrent: optionHexes.every((hex, index) => hex === hexes.value[index]) }
+		})
+	})
+	const startingColors = computed(() => suggestStartingColors(createRng(startingSeed.value)))
+
+	function applyColors(next: readonly Oklch[]) {
+		colors.value = colors.value.map((color, index) => ({ ...color, ...oklchOf(next[index] ?? color) }))
+	}
+
+	function applyOption(index: number) {
+		const option = options.value[index]
+		if (!option || option.isCurrent) return
 		history.snapshot()
-		const next = generatePalette({ locked: colors.value.map(color => (color.locked ? oklchOf(color) : null)) })
-		colors.value = colors.value.map((color, index) => ({ ...color, ...oklchOf(next[index]!) }))
+		applyColors(option.colors)
+	}
+
+	function moreOptions() {
+		optionsSeed.value = randomSeed()
+	}
+
+	function moreStartingColors() {
+		startingSeed.value = randomSeed()
+	}
+
+	function startFrom(color: Oklch) {
+		history.snapshot()
+		const locked = colors.value.map(item => (item.locked ? oklchOf(item) : null))
+		optionsSeed.value = randomSeed()
+		applyColors(suggestPalettes({ base: color, locked, rng: createRng(optionsSeed.value) })[0]!)
+		selectedId.value = 'primary'
 	}
 
 	function findColor(id: PaletteRole) {
@@ -45,7 +96,7 @@ export function usePaletteGenerator(initialColors: readonly Oklch[] | null = nul
 
 	function toggleLock(id: PaletteRole) {
 		const color = findColor(id)
-		if (color) color.locked = !color.locked
+		if (color && id !== 'primary') color.locked = !color.locked
 	}
 
 	function update(id: PaletteRole, patch: Partial<Oklch>) {
@@ -76,8 +127,14 @@ export function usePaletteGenerator(initialColors: readonly Oklch[] | null = nul
 		selected,
 		selectedId,
 		hexes,
+		primary,
+		options,
+		startingColors,
 		...history,
-		generate,
+		applyOption,
+		moreOptions,
+		moreStartingColors,
+		startFrom,
 		toggleLock,
 		update,
 		select,

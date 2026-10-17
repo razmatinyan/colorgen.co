@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { useClipboard } from '@vueuse/core'
-import { formatColor, scaleHexes, toHex, wcagRatio, type ColorFormat } from '~/lib/color'
+import { formatColor, scaleHexes, toHex, wcagRatio, type ColorFormat, type Oklch } from '~/lib/color'
 import { paletteGeneratorKey, type PaletteColor } from '~/composables/usePaletteGenerator'
 
 const props = defineProps<{ color: PaletteColor }>()
@@ -31,6 +31,11 @@ const checks = computed(() => {
 	].map(check => ({ ...check, ratio: wcagRatio(hex.value, check.against) }))
 })
 
+function changeColor(next: Oklch) {
+	palette.snapshot()
+	palette.update(props.color.id, next)
+}
+
 async function copyValue(value: string) {
 	await copy(value)
 	showToast(`Copied ${value}`, 'success')
@@ -39,6 +44,7 @@ async function copyValue(value: string) {
 
 <template>
 	<div class="grid grid-cols-1 gap-5 px-2.5 pt-1 pb-3">
+		<ColorValueInput :hex="hex" :label="color.id === 'primary' ? 'Your color' : `${color.role} color`" @change="changeColor" />
 		<ColorChannelSliders :color="color" @update="patch => palette.update(color.id, patch)" @commit="palette.snapshot()" />
 
 		<section class="grid grid-cols-1 gap-2">

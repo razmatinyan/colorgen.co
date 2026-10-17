@@ -1,6 +1,6 @@
 import { toGamutOklch } from './format'
 import { wrapHue } from './parse'
-import { between, pick, type Rng } from './random'
+import { between, pick, shuffle, type Rng } from './random'
 import type { Oklch } from './types'
 
 export const harmonies = ['analogous', 'complementary', 'split-complementary', 'triadic', 'tetradic', 'monochromatic'] as const
@@ -40,6 +40,21 @@ function anchorHueFrom(locked: GeneratePaletteOptions['locked'], offsets: Record
 	return wrapHue(locked![index]!.h - offsets[paletteRoles[index]!])
 }
 
+export const muddyHueRange = [95, 130] as const
+export const yellowHueRange = [70, 135] as const
+export const minYellowLightness = 0.76
+
+export function flatteringHue(hue: number) {
+	const [min, max] = muddyHueRange
+	if (hue <= min || hue >= max) return hue
+	return hue - min < max - hue ? min : max
+}
+
+export function flatteringLightness(lightness: number, hue: number) {
+	const [min, max] = yellowHueRange
+	return hue >= min && hue <= max ? Math.max(lightness, minYellowLightness) : lightness
+}
+
 export function generatePalette({ rng = Math.random, harmony = pick(rng, harmonies), locked = [] }: GeneratePaletteOptions = {}): Oklch[] {
 	const offsets = hueOffsetsByHarmony[harmony]
 	const anchorHue = anchorHueFrom(locked, offsets, rng)
@@ -47,10 +62,45 @@ export function generatePalette({ rng = Math.random, harmony = pick(rng, harmoni
 		const kept = locked[index]
 		if (kept) return kept
 		const { lightness, chroma } = roleRanges[role]
+		const hue = wrapHue(anchorHue + offsets[role] + between(rng, -hueJitter, hueJitter))
+		const l = between(rng, ...lightness)
+		const c = between(rng, ...chroma)
+		if (role === 'neutral') return toGamutOklch({ l, c, h: hue })
+		const h = flatteringHue(hue)
+		return toGamutOklch({ l: flatteringLightness(l, h), c, h })
+	})
+}
+
+export const paletteOptionCount = harmonies.length
+
+export interface SuggestPalettesOptions {
+	base: Oklch
+	locked?: readonly (Oklch | null | undefined)[]
+	rng?: Rng
+}
+
+export function suggestPalettes({ base, locked = [], rng = Math.random }: SuggestPalettesOptions): Oklch[][] {
+	const kept = [base, ...paletteRoles.slice(1).map((_, index) => locked[index + 1] ?? null)]
+	return shuffle(rng, harmonies).map(harmony => generatePalette({ rng, harmony, locked: kept }))
+}
+
+export const startingColorCount = 8
+
+const startingRange = { lightness: [0.5, 0.66], chroma: [0.12, 0.18] } as const
+const yellowishHues = [80, 125] as const
+const yellowishLightness = [0.74, 0.82] as const
+const startingHueJitter = 12
+
+export function suggestStartingColors(rng: Rng = Math.random, count = startingColorCount): Oklch[] {
+	const firstHue = between(rng, 0, 360)
+	return Array.from({ length: count }, (_, index) => {
+		const h = wrapHue(firstHue + (index * 360) / count + between(rng, -startingHueJitter, startingHueJitter))
+		const isYellowish = h >= yellowishHues[0] && h <= yellowishHues[1]
+		const [minLightness, maxLightness] = isYellowish ? yellowishLightness : startingRange.lightness
 		return toGamutOklch({
-			l: between(rng, ...lightness),
-			c: between(rng, ...chroma),
-			h: wrapHue(anchorHue + offsets[role] + between(rng, -hueJitter, hueJitter)),
+			l: between(rng, minLightness, maxLightness),
+			c: between(rng, ...startingRange.chroma),
+			h,
 		})
 	})
 }

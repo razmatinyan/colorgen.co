@@ -2,7 +2,7 @@
 import { onKeyStroke, useClipboard, useDebounceFn } from '@vueuse/core'
 import { describeColor, readableTextColor, toHex } from '~/lib/color'
 import { isInteractiveTarget } from '~/lib/keyboard'
-import { parseColorsParam, toColorsParam } from '~/lib/palette-url'
+import { parseColorsParam, toColorsParam, toHexPart } from '~/lib/palette-url'
 import { paletteGeneratorKey, usePaletteGenerator } from '~/composables/usePaletteGenerator'
 
 definePageMeta({ layout: 'app', key: 'palette' })
@@ -32,9 +32,9 @@ const siteUrl = 'https://colorgen.co'
 useSeoMeta({
 	title: () => (colorsParam.value
 		? `Palette ${colorsParam.value.split('-').map(hex => `#${hex.toUpperCase()}`).join(', ')} | colorgen.co`
-		: 'Color Palette Generator with Live UI Preview | colorgen.co'),
-	description: 'Generate harmonious color palettes in OKLCH, fine-tune every color, check text contrast, and preview them on real UI components. Free, no sign-up.',
-	ogTitle: 'Color Palette Generator with Live UI Preview | colorgen.co',
+		: 'Color Palette Generator from Your Color, with Live UI Preview | colorgen.co'),
+	description: 'Start from your color and pick from six palettes built around it in OKLCH. Fine-tune every color, check text contrast, and preview it on real UI components. Free, no sign-up.',
+	ogTitle: 'Color Palette Generator from Your Color, with Live UI Preview | colorgen.co',
 	ogUrl: () => `${siteUrl}${route.path}`,
 })
 useHead({
@@ -50,6 +50,7 @@ const previewModes = [
 ] as const
 
 const primaryHex = computed(() => toHex(palette.colors.value[0]!))
+const builderPath = computed(() => `/builder/${toHexPart(palette.primary.value)}`)
 useHead({
 	htmlAttrs: {
 		style: computed(() => `--brand: ${primaryHex.value}; --brand-foreground: ${readableTextColor(primaryHex.value)}`),
@@ -71,7 +72,7 @@ async function copySelected() {
 onKeyStroke(' ', (event) => {
 	if (isInteractiveTarget(event)) return
 	event.preventDefault()
-	palette.generate()
+	palette.moreOptions()
 })
 onKeyStroke(['l', 'L'], (event) => {
 	if (!isInteractiveTarget(event) && palette.selected.value) palette.toggleLock(palette.selected.value.id)
@@ -131,11 +132,13 @@ onKeyStroke(['z', 'Z'], (event) => {
 			</Tooltip>
 			<Tooltip>
 				<TooltipTrigger as-child>
-					<Button size="sm" aria-label="Generate" @click="palette.generate()">
-						<Icon name="lucide:shuffle" data-icon="inline-start" /> <span class="hidden sm:inline">Generate</span>
+					<Button as-child size="sm">
+						<NuxtLink :to="builderPath" aria-label="Use in builder">
+							<Icon name="lucide:blocks" data-icon="inline-start" /> <span class="hidden sm:inline">Use in builder</span>
+						</NuxtLink>
 					</Button>
 				</TooltipTrigger>
-				<TooltipContent>New colors <Kbd>Space</Kbd></TooltipContent>
+				<TooltipContent>Build a full color system from your color</TooltipContent>
 			</Tooltip>
 		</AppTopBar>
 
@@ -143,27 +146,50 @@ onKeyStroke(['z', 'Z'], (event) => {
 			<Card size="sm" class="min-h-0">
 				<CardHeader>
 					<CardTitle>Your colors</CardTitle>
-					<CardDescription>Click a color to edit it. Lock the ones you want to keep.</CardDescription>
+					<CardDescription>Enter your color, then pick an option. Lock colors to keep them in every option.</CardDescription>
 				</CardHeader>
-				<CardContent class="flex min-h-0 flex-1 flex-col gap-5 overflow-x-hidden lg:overflow-y-auto">
+				<CardContent class="flex min-h-0 flex-1 flex-col gap-6 overflow-x-hidden lg:overflow-y-auto">
 					<div class="-mx-2 grid grid-cols-1 gap-1">
 						<PaletteColorRow v-for="color in palette.colors.value" :key="color.id" :color="color" />
 					</div>
+					<PaletteStartingColors />
 				</CardContent>
 			</Card>
 
-			<Card size="sm" class="min-h-0" aria-label="Live preview">
-				<CardHeader>
-					<CardTitle>Preview</CardTitle>
-					<CardDescription>Your colors applied to common UI elements</CardDescription>
-					<CardAction>
-						<AppSegmentedControl v-model="previewMode" :options="previewModes" label="Preview mode" />
-					</CardAction>
-				</CardHeader>
-				<CardContent class="min-h-0 flex-1 lg:overflow-y-auto">
-					<PalettePreview :mode="previewMode" />
-				</CardContent>
-			</Card>
+			<div class="flex min-h-0 flex-col gap-4">
+				<Card size="sm" class="shrink-0" aria-label="Palette options">
+					<CardHeader>
+						<CardTitle>Built from {{ primaryHex.toUpperCase() }}</CardTitle>
+						<CardDescription>Six palettes around your color. Pick one, then fine-tune any color.</CardDescription>
+						<CardAction>
+							<Tooltip>
+								<TooltipTrigger as-child>
+									<Button variant="outline" size="sm" aria-label="More options" @click="palette.moreOptions()">
+										<Icon name="lucide:refresh-cw" data-icon="inline-start" /> <span class="hidden sm:inline">More options</span>
+									</Button>
+								</TooltipTrigger>
+								<TooltipContent>Six new palettes around your color <Kbd>Space</Kbd></TooltipContent>
+							</Tooltip>
+						</CardAction>
+					</CardHeader>
+					<CardContent>
+						<PaletteOptions />
+					</CardContent>
+				</Card>
+
+				<Card size="sm" class="min-h-0 flex-1" aria-label="Live preview">
+					<CardHeader>
+						<CardTitle>Preview</CardTitle>
+						<CardDescription>Your colors applied to common UI elements</CardDescription>
+						<CardAction>
+							<AppSegmentedControl v-model="previewMode" :options="previewModes" label="Preview mode" />
+						</CardAction>
+					</CardHeader>
+					<CardContent class="min-h-0 flex-1 lg:overflow-y-auto">
+						<PalettePreview :mode="previewMode" />
+					</CardContent>
+				</Card>
+			</div>
 		</div>
 	</div>
 </template>

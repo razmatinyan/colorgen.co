@@ -22,3 +22,14 @@ export function between(rng: Rng, min: number, max: number) {
 export function pick<T>(rng: Rng, items: readonly T[]): T {
 	return items[Math.floor(rng() * items.length)]!
 }
+
+export function shuffle<T>(rng: Rng, items: readonly T[]): T[] {
+	const shuffled = [...items]
+	for (let index = shuffled.length - 1; index > 0; index--) {
+		const swapIndex = Math.floor(rng() * (index + 1))
+		const current = shuffled[index]!
+		shuffled[index] = shuffled[swapIndex]!
+		shuffled[swapIndex] = current
+	}
+	return shuffled
+}

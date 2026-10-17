@@ -31,12 +31,16 @@ const panelId = useId()
 				</span>
 			</button>
 
-			<Tooltip>
+			<span v-if="color.id === 'primary'" class="grid size-8 shrink-0 place-items-center text-muted-foreground">
+				<Icon name="lucide:pin" aria-hidden="true" />
+				<span class="sr-only">Always kept. Every option is built around it.</span>
+			</span>
+			<Tooltip v-else>
 				<TooltipTrigger as-child>
 					<Button
 						variant="ghost"
 						size="icon-sm"
-						:aria-label="color.locked ? `Unlock ${color.role}` : `Keep ${color.role} when generating`"
+						:aria-label="color.locked ? `Unlock ${color.role}` : `Keep ${color.role} in every option`"
 						:aria-pressed="color.locked"
 						:class="color.locked ? 'text-foreground' : 'text-muted-foreground'"
 						@click="palette.toggleLock(color.id)"
@@ -44,7 +48,7 @@ const panelId = useId()
 						<Icon :name="color.locked ? 'lucide:lock' : 'lucide:lock-open'" />
 					</Button>
 				</TooltipTrigger>
-				<TooltipContent>{{ color.locked ? 'Locked — Generate keeps this color' : 'Lock to keep this color when generating' }}</TooltipContent>
+				<TooltipContent>{{ color.locked ? 'Locked. Every option keeps this color' : 'Lock to keep this color in every option' }}</TooltipContent>
 			</Tooltip>
 		</div>
 
