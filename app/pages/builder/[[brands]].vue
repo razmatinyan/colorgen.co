@@ -79,6 +79,8 @@ const previewModes = [
 	{ value: 'dark', label: 'Dark', icon: 'lucide:moon' },
 ] as const
 
+const exportOpen = ref(false)
+
 async function copyLink() {
 	await copy(`${requestUrl.origin}${router.resolve(target.value).fullPath}`)
 	showToast('Link copied', 'success', { description: 'Anyone with the link sees this color system.' })
@@ -93,6 +95,11 @@ async function copySelected() {
 
 onKeyStroke(['c', 'C'], (event) => {
 	if (!isInteractiveTarget(event) && !event.metaKey && !event.ctrlKey) copySelected()
+})
+onKeyStroke(['e', 'E'], (event) => {
+	if (isInteractiveTarget(event) || event.metaKey || event.ctrlKey || exportOpen.value) return
+	event.preventDefault()
+	exportOpen.value = true
 })
 onKeyStroke(['ArrowDown', 'ArrowUp'], (event) => {
 	if (isInteractiveTarget(event)) return
@@ -136,13 +143,11 @@ onKeyStroke(['z', 'Z'], (event) => {
 			</Tooltip>
 			<Tooltip>
 				<TooltipTrigger as-child>
-					<span class="inline-flex">
-						<Button size="sm" disabled aria-label="Export">
-							<Icon name="lucide:code" data-icon="inline-start" /> <span class="hidden sm:inline">Export</span>
-						</Button>
-					</span>
+					<Button size="sm" aria-label="Export" @click="exportOpen = true">
+						<Icon name="lucide:code" data-icon="inline-start" /> <span class="hidden sm:inline">Export</span>
+					</Button>
 				</TooltipTrigger>
-				<TooltipContent>Tailwind, CSS, Figma and JSON exports are coming next</TooltipContent>
+				<TooltipContent>Tailwind, CSS, Figma or design tokens <Kbd>E</Kbd></TooltipContent>
 			</Tooltip>
 		</AppTopBar>
 
@@ -190,5 +195,6 @@ onKeyStroke(['z', 'Z'], (event) => {
 				</CardContent>
 			</Card>
 		</div>
+		<BuilderExportDialog v-model:open="exportOpen" @review="view = 'tokens'" />
 	</div>
 </template>
