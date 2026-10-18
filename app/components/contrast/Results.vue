@@ -31,15 +31,21 @@ const check = computed(() => checker.check.value)
 					class="size-4 shrink-0"
 					:class="criterion.passes ? 'text-success' : 'text-destructive'"
 				/>
-				<span class="min-w-0 flex-1 truncate">{{ criterion.label }} <span class="text-muted-foreground">· {{ criterion.level }}</span></span>
+				<span class="min-w-0 flex-1 truncate"
+					>{{ criterion.label }} <span class="text-muted-foreground">· {{ criterion.level }}</span></span
+				>
 				<span class="shrink-0 text-muted-foreground tabular-nums">{{ criterion.minRatio }}:1</span>
-				<span class="w-9 shrink-0 text-right font-medium" :class="criterion.passes ? 'text-success' : 'text-destructive'">
+				<span
+					class="w-9 shrink-0 text-right font-medium"
+					:class="criterion.passes ? 'text-success' : 'text-destructive'"
+				>
 					{{ criterion.passes ? 'Pass' : 'Fail' }}
 				</span>
 			</li>
 		</ul>
 		<p class="text-sm text-muted-foreground">
-			Large text is 24px, or 18.5px bold. APCA is the newer method planned for WCAG 3; a negative Lc means light text on a dark background.
+			Large text is 24px, or 18.5px bold. APCA is the newer method planned for WCAG 3; a negative Lc means light text on
+			a dark background.
 		</p>
 	</section>
 </template>

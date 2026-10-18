@@ -1,7 +1,9 @@
 import tailwindcss from '@tailwindcss/vite'
 import { colorsNamed } from 'culori'
 
-const namedColorPaths = [...new Set(Object.values(colorsNamed).map(value => `/color/${value.toString(16).padStart(6, '0')}`))]
+const namedColorPaths = [
+	...new Set(Object.values(colorsNamed).map((value) => `/color/${value.toString(16).padStart(6, '0')}`)),
+]
 
 export default defineNuxtConfig({
 	compatibilityDate: '2026-09-30',
@@ -9,22 +11,13 @@ export default defineNuxtConfig({
 	runtimeConfig: {
 		public: {
 			BASE_URL: 'https://sygen.app',
-			gtagID: process.env.GTAG_ID
-		}
+			gtagID: process.env.GTAG_ID,
+		},
 	},
 	vite: {
-		plugins: [
-			tailwindcss(),
-		],
+		plugins: [tailwindcss()],
 	},
-	modules: [
-		'@nuxt/icon',
-		'shadcn-nuxt',
-		'@nuxtjs/sitemap',
-		'@nuxtjs/robots',
-		'@nuxtjs/color-mode',
-		'@nuxt/fonts',
-	],
+	modules: ['@nuxt/icon', 'shadcn-nuxt', '@nuxtjs/sitemap', '@nuxtjs/robots', '@nuxtjs/color-mode', '@nuxt/fonts'],
 	colorMode: {
 		classSuffix: '',
 		preference: 'system',
@@ -32,9 +25,7 @@ export default defineNuxtConfig({
 		storageKey: 'sygen-color-mode',
 	},
 	fonts: {
-		families: [
-			{ name: 'Inter', provider: 'google', weights: [400, 500, 600, 700] },
-		],
+		families: [{ name: 'Inter', provider: 'google', weights: [400, 500, 600, 700] }],
 	},
 	shadcn: {
 		prefix: '',
@@ -63,10 +54,7 @@ export default defineNuxtConfig({
 			'/palette/2e424d-5b8291-98dad9-eaebed',
 			...namedColorPaths,
 		],
-		exclude: [
-			'/saved',
-			'/saved/**',
-		]
+		exclude: ['/saved', '/saved/**'],
 	},
 	robots: {
 		disallow: ['/saved', '/saved/*'],
@@ -78,35 +66,37 @@ export default defineNuxtConfig({
 	app: {
 		head: {
 			htmlAttrs: {
-				lang: 'en'
+				lang: 'en',
 			},
 			title: 'Sygen: Turn your brand color into a complete design system',
 			charset: 'utf-8',
 			viewport: 'width=device-width, initial-scale=1.0',
 			meta: [
 				{
-					name: "description",
-					content: "Brand, neutral and status color scales, light and dark tokens that pass WCAG, and exports for Tailwind, shadcn, CSS and Figma, from one brand color."
+					name: 'description',
+					content:
+						'Brand, neutral and status color scales, light and dark tokens that pass WCAG, and exports for Tailwind, shadcn, CSS and Figma, from one brand color.',
 				},
 				{
-					name: "keywords",
-					content: "Design system colors, Color scales, Design tokens, Tailwind colors, shadcn theme, Color palette, Sygen"
+					name: 'keywords',
+					content:
+						'Design system colors, Color scales, Design tokens, Tailwind colors, shadcn theme, Color palette, Sygen',
 				},
 				{
-					property: "og:image",
-					content: "/og-image.jpg"
+					property: 'og:image',
+					content: '/og-image.jpg',
 				},
 				{
-					property: "og:site_name",
-					content: "Sygen"
+					property: 'og:site_name',
+					content: 'Sygen',
 				},
 				{
-					property: "og:type",
-					content: "website"
+					property: 'og:type',
+					content: 'website',
 				},
 				{
-					name: "google-site-verification",
-					content: "_nkR76E889L8-Gs_AQOTLSCNwkS4PKh40ZgsIoL028w"
+					name: 'google-site-verification',
+					content: '_nkR76E889L8-Gs_AQOTLSCNwkS4PKh40ZgsIoL028w',
 				},
 			],
 			link: [

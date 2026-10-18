@@ -4,17 +4,31 @@ import { parseColor } from './parse'
 import { generateSystem, type SystemSettings } from './system'
 import { isTokenRef, nearbyRefs, parseTokenRef, refHex, resolveTokens, tokenGroups, tokenNames } from './tokens'
 
-const settings: SystemSettings = { brand: parseColor('#1f6cb0')!, brand2: parseColor('#8b5cf6')!, neutralTint: 0.3, status: {} }
+const settings: SystemSettings = {
+	brand: parseColor('#1f6cb0')!,
+	brand2: parseColor('#8b5cf6')!,
+	neutralTint: 0.3,
+	status: {},
+}
 const system = generateSystem(settings)
 const singleBrand = generateSystem({ ...settings, brand2: null })
 
 describe('token names', () => {
 	it('cover the shadcn set plus status colors, each once', () => {
 		expect(new Set(tokenNames).size).toBe(tokenNames.length)
-		for (const name of ['background', 'primary-foreground', 'ring', 'chart-5', 'sidebar-ring', 'success', 'warning-foreground', 'info']) {
+		for (const name of [
+			'background',
+			'primary-foreground',
+			'ring',
+			'chart-5',
+			'sidebar-ring',
+			'success',
+			'warning-foreground',
+			'info',
+		]) {
 			expect(tokenNames).toContain(name)
 		}
-		expect(tokenGroups.flatMap(group => group.tokens)).toEqual(tokenNames)
+		expect(tokenGroups.flatMap((group) => group.tokens)).toEqual(tokenNames)
 	})
 })
 

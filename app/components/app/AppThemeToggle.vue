@@ -7,10 +7,10 @@ const modes = [
 	{ value: 'dark', label: 'Dark theme', icon: 'lucide:moon' },
 ] as const
 
-const current = computed(() => modes.find(mode => mode.value === colorMode.preference) ?? modes[0])
+const current = computed(() => modes.find((mode) => mode.value === colorMode.preference) ?? modes[0])
 
 function cycle() {
-	const index = modes.findIndex(mode => mode.value === colorMode.preference)
+	const index = modes.findIndex((mode) => mode.value === colorMode.preference)
 	colorMode.preference = modes[(index + 1) % modes.length]!.value
 }
 </script>

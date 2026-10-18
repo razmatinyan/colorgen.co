@@ -55,7 +55,12 @@ describe('normalize and wrapHue', () => {
 		expect(normalize({ l: 1.4, c: -0.2, h: 10 })).toEqual({ l: 1, c: 0, h: 0 })
 	})
 
-	it.each([[370, 10], [-30, 330], [360, 0], [0, 0]])('wraps %d to %d', (input, expected) => {
+	it.each([
+		[370, 10],
+		[-30, 330],
+		[360, 0],
+		[0, 0],
+	])('wraps %d to %d', (input, expected) => {
 		expect(wrapHue(input)).toBe(expected)
 	})
 })

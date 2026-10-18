@@ -58,14 +58,29 @@ const pill = 'inline-flex h-9 items-center gap-1.5 rounded-full px-4 text-sm fon
 const tinted = (kind: StatusKind) => ({ background: `var(--pv-${kind}-soft)`, color: `var(--pv-${kind}-text)` })
 const solid = (kind: StatusKind) => ({ background: `var(--pv-${kind})`, color: `var(--pv-on-${kind})` })
 
-const alerts: { kind: StatusKind, icon: string, title: string, text: string }[] = [
+const alerts: { kind: StatusKind; icon: string; title: string; text: string }[] = [
 	{ kind: 'success', icon: 'lucide:circle-check', title: 'Payment received', text: 'Invoice #1042 was paid in full.' },
-	{ kind: 'warning', icon: 'lucide:triangle-alert', title: 'Your trial ends in 3 days', text: 'Add a payment method to keep your projects.' },
-	{ kind: 'danger', icon: 'lucide:circle-x', title: 'Couldn’t save changes', text: 'Check your connection and try again.' },
-	{ kind: 'info', icon: 'lucide:info', title: 'A new version is available', text: 'Reload the page to get the latest features.' },
+	{
+		kind: 'warning',
+		icon: 'lucide:triangle-alert',
+		title: 'Your trial ends in 3 days',
+		text: 'Add a payment method to keep your projects.',
+	},
+	{
+		kind: 'danger',
+		icon: 'lucide:circle-x',
+		title: 'Couldn’t save changes',
+		text: 'Check your connection and try again.',
+	},
+	{
+		kind: 'info',
+		icon: 'lucide:info',
+		title: 'A new version is available',
+		text: 'Reload the page to get the latest features.',
+	},
 ]
 
-const invoices: { id: string, client: string, amount: string, status: string, kind: StatusKind | null }[] = [
+const invoices: { id: string; client: string; amount: string; status: string; kind: StatusKind | null }[] = [
 	{ id: 'INV-1042', client: 'Northwind', amount: '$4,200', status: 'Paid', kind: 'success' },
 	{ id: 'INV-1041', client: 'Acme Corp', amount: '$1,860', status: 'Pending', kind: 'warning' },
 	{ id: 'INV-1040', client: 'Globex', amount: '$920', status: 'Overdue', kind: 'danger' },
@@ -122,19 +137,27 @@ const setupSteps = [
 						:class="field"
 						class="text-(--pv-text) ring-1 ring-(--pv-ring)"
 						:style="{ boxShadow: '0 0 0 4px color-mix(in oklch, var(--pv-ring) 30%, transparent)' }"
-					>Studio North<span class="ml-px h-4 w-px bg-(--pv-text)" /></span>
+						>Studio North<span class="ml-px h-4 w-px bg-(--pv-text)"
+					/></span>
 				</div>
 				<div class="flex flex-wrap items-center gap-x-4 gap-y-2 text-sm whitespace-nowrap">
 					<span class="flex items-center gap-2">
-						<span class="grid size-4.5 place-items-center rounded-md bg-(--pv-primary) text-(--pv-on-primary)"><Icon name="lucide:check" class="size-3.5" /></span>
+						<span class="grid size-4.5 place-items-center rounded-md bg-(--pv-primary) text-(--pv-on-primary)"
+							><Icon name="lucide:check" class="size-3.5"
+						/></span>
 						Remember me
 					</span>
 					<span class="flex items-center gap-2">
-						<span class="flex h-5 w-9 items-center justify-end rounded-full bg-(--pv-primary) p-0.5"><span class="size-4 rounded-full bg-(--pv-on-primary)" /></span>
+						<span class="flex h-5 w-9 items-center justify-end rounded-full bg-(--pv-primary) p-0.5"
+							><span class="size-4 rounded-full bg-(--pv-on-primary)"
+						/></span>
 						On
 					</span>
 					<span class="flex items-center gap-2">
-						<span class="flex h-5 w-9 items-center rounded-full bg-(--pv-field) p-0.5 ring-1 ring-(--pv-border) ring-inset"><span class="size-4 rounded-full bg-(--pv-surface) ring-1 ring-(--pv-border)" /></span>
+						<span
+							class="flex h-5 w-9 items-center rounded-full bg-(--pv-field) p-0.5 ring-1 ring-(--pv-border) ring-inset"
+							><span class="size-4 rounded-full bg-(--pv-surface) ring-1 ring-(--pv-border)"
+						/></span>
 						Off
 					</span>
 				</div>
@@ -182,21 +205,38 @@ const setupSteps = [
 					<div>
 						<p class="text-sm text-(--pv-muted)">Revenue</p>
 						<p class="text-2xl font-semibold tracking-tight tabular-nums">$48,210</p>
-						<span class="mt-1 inline-flex items-center gap-1 rounded-full px-2 py-0.5 text-xs font-medium tabular-nums" :style="tinted('success')">
+						<span
+							class="mt-1 inline-flex items-center gap-1 rounded-full px-2 py-0.5 text-xs font-medium tabular-nums"
+							:style="tinted('success')"
+						>
 							<Icon name="lucide:trending-up" class="size-3.5" /> 12.4%
 						</span>
 					</div>
 					<div>
 						<p class="text-sm text-(--pv-muted)">Churn</p>
 						<p class="text-2xl font-semibold tracking-tight tabular-nums">2.4%</p>
-						<span class="mt-1 inline-flex items-center gap-1 rounded-full px-2 py-0.5 text-xs font-medium tabular-nums" :style="tinted('danger')">
+						<span
+							class="mt-1 inline-flex items-center gap-1 rounded-full px-2 py-0.5 text-xs font-medium tabular-nums"
+							:style="tinted('danger')"
+						>
 							<Icon name="lucide:trending-up" class="size-3.5" /> 0.6%
 						</span>
 					</div>
 				</div>
-				<svg viewBox="0 0 300 100" preserveAspectRatio="none" class="-mx-5 h-20 w-[calc(100%+2.5rem)]" aria-hidden="true">
+				<svg
+					viewBox="0 0 300 100"
+					preserveAspectRatio="none"
+					class="-mx-5 h-20 w-[calc(100%+2.5rem)]"
+					aria-hidden="true"
+				>
 					<path :d="area.fill" fill="var(--pv-primary)" fill-opacity="0.16" />
-					<path :d="area.line" fill="none" stroke="var(--pv-primary)" stroke-width="2" vector-effect="non-scaling-stroke" />
+					<path
+						:d="area.line"
+						fill="none"
+						stroke="var(--pv-primary)"
+						stroke-width="2"
+						vector-effect="non-scaling-stroke"
+					/>
 				</svg>
 			</div>
 
@@ -231,7 +271,10 @@ const setupSteps = [
 				</div>
 				<div class="flex h-32 items-end gap-3">
 					<div v-for="bar in bars" :key="bar.month" class="flex h-full flex-1 flex-col justify-end gap-2">
-						<span class="w-full rounded-xl transition-colors duration-300" :style="{ height: `${bar.height}%`, background: `var(${bar.tone})` }" />
+						<span
+							class="w-full rounded-xl transition-colors duration-300"
+							:style="{ height: `${bar.height}%`, background: `var(${bar.tone})` }"
+						/>
 						<span class="text-center text-xs text-(--pv-muted)">{{ bar.month }}</span>
 					</div>
 				</div>
@@ -246,7 +289,9 @@ const setupSteps = [
 				>
 					<Icon :name="item.icon" class="size-4" :class="!item.active && 'text-(--pv-muted)'" />
 					{{ item.label }}
-					<span v-if="item.count" class="ml-auto rounded-full px-1.5 text-xs font-semibold" :style="solid('danger')">{{ item.count }}</span>
+					<span v-if="item.count" class="ml-auto rounded-full px-1.5 text-xs font-semibold" :style="solid('danger')">{{
+						item.count
+					}}</span>
 				</span>
 			</div>
 
@@ -296,14 +341,19 @@ const setupSteps = [
 			</div>
 
 			<div :class="card" class="flex flex-col items-center gap-3 py-8 text-center">
-				<span class="grid size-11 place-items-center rounded-full text-(--pv-primary)" :style="{ background: 'color-mix(in oklch, var(--pv-primary) 14%, var(--pv-surface))' }">
+				<span
+					class="grid size-11 place-items-center rounded-full text-(--pv-primary)"
+					:style="{ background: 'color-mix(in oklch, var(--pv-primary) 14%, var(--pv-surface))' }"
+				>
 					<Icon name="lucide:folder-plus" class="size-5" />
 				</span>
 				<div>
 					<p class="font-medium">No projects yet</p>
 					<p class="mx-auto max-w-56 text-sm text-(--pv-muted)">Create a project to start tracking your work.</p>
 				</div>
-				<span class="rounded-full bg-(--pv-primary) px-4 py-1.5 text-sm font-medium text-(--pv-on-primary)">New project</span>
+				<span class="rounded-full bg-(--pv-primary) px-4 py-1.5 text-sm font-medium text-(--pv-on-primary)"
+					>New project</span
+				>
 			</div>
 		</div>
 	</div>

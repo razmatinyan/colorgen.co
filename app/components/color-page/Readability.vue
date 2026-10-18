@@ -17,7 +17,11 @@ function contrastPath(text: string, background: string) {
 		:description="`Contrast for text on ${hexLabel} and for ${hexLabel} used as text. WCAG 2.2 asks for 4.5:1 for body text and 3:1 for large text; APCA Lc rates how comfortable the text is to read.`"
 	>
 		<ul class="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-4">
-			<li v-for="row in page.readability" :key="row.id" class="flex flex-col gap-3 rounded-2xl bg-card p-2 ring-1 ring-foreground/10">
+			<li
+				v-for="row in page.readability"
+				:key="row.id"
+				class="flex flex-col gap-3 rounded-2xl bg-card p-2 ring-1 ring-foreground/10"
+			>
 				<div
 					class="grid h-32 content-end gap-1 rounded-xl p-4 ring-1 ring-foreground/10 ring-inset"
 					:style="{ background: row.background, color: row.text }"
@@ -31,15 +35,20 @@ function contrastPath(text: string, background: string) {
 						<ColorContrastBadge :ratio="row.check.ratio" />
 					</div>
 					<p class="text-sm text-muted-foreground">
-						APCA Lc <span class="tabular-nums">{{ Math.round(Math.abs(row.check.lc)) }}</span> · {{ row.check.usage.label }}
+						APCA Lc <span class="tabular-nums">{{ Math.round(Math.abs(row.check.lc)) }}</span> ·
+						{{ row.check.usage.label }}
 					</p>
 				</div>
 				<NuxtLink
 					v-if="row.fix"
 					:to="`/color/${row.fix.hex.slice(1)}`"
-					class="mx-2 flex items-center gap-2.5 rounded-xl bg-muted px-3 py-2 text-sm outline-none transition-colors hover:bg-muted/70 focus-visible:ring-3 focus-visible:ring-ring/50"
+					class="mx-2 flex items-center gap-2.5 rounded-xl bg-muted px-3 py-2 text-sm transition-colors outline-none hover:bg-muted/70 focus-visible:ring-3 focus-visible:ring-ring/50"
 				>
-					<span class="size-5 shrink-0 rounded-md ring-1 ring-foreground/10 ring-inset" :style="{ background: row.fix.hex }" aria-hidden="true" />
+					<span
+						class="size-5 shrink-0 rounded-md ring-1 ring-foreground/10 ring-inset"
+						:style="{ background: row.fix.hex }"
+						aria-hidden="true"
+					/>
 					<span class="min-w-0">
 						Closest readable: <span class="tabular-nums">{{ row.fix.hex.toUpperCase() }}</span>
 						<span class="text-muted-foreground tabular-nums"> · {{ row.fix.ratio.toFixed(1) }}:1</span>

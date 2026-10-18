@@ -21,7 +21,10 @@ const panelId = useId()
 				:aria-controls="panelId"
 				@click="palette.toggleOpen(color.id)"
 			>
-				<span class="size-10 shrink-0 rounded-lg ring-1 ring-foreground/10 ring-inset transition-colors duration-300" :style="{ background: hex }" />
+				<span
+					class="size-10 shrink-0 rounded-lg ring-1 ring-foreground/10 transition-colors duration-300 ring-inset"
+					:style="{ background: hex }"
+				/>
 				<span class="min-w-0 flex-1">
 					<span class="flex items-baseline justify-between gap-2">
 						<span class="text-sm font-medium">{{ color.role }}</span>
@@ -48,7 +51,9 @@ const panelId = useId()
 						<Icon :name="color.locked ? 'lucide:lock' : 'lucide:lock-open'" />
 					</Button>
 				</TooltipTrigger>
-				<TooltipContent>{{ color.locked ? 'Locked. Every option keeps this color' : 'Lock to keep this color in every option' }}</TooltipContent>
+				<TooltipContent>{{
+					color.locked ? 'Locked. Every option keeps this color' : 'Lock to keep this color in every option'
+				}}</TooltipContent>
 			</Tooltip>
 		</div>
 

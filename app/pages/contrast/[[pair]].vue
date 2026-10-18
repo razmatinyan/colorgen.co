@@ -20,17 +20,22 @@ if (pairParam.value && !initialPair) {
 const checker = useContrastChecker(initialPair ?? {})
 provide(contrastCheckerKey, checker)
 
-const pairTitle = computed(() => `${checker.hexes.value.text.toUpperCase()} on ${checker.hexes.value.background.toUpperCase()}`)
+const pairTitle = computed(
+	() => `${checker.hexes.value.text.toUpperCase()} on ${checker.hexes.value.background.toUpperCase()}`,
+)
 
 const savePath = computed(() => router.resolve(target.value).fullPath)
-const savedSnapshot = () => ({ title: pairTitle.value, colors: [checker.hexes.value.text, checker.hexes.value.background] })
+const savedSnapshot = () => ({
+	title: pairTitle.value,
+	colors: [checker.hexes.value.text, checker.hexes.value.background],
+})
 useRecentTracking('contrast', () => (pairParam.value ? savedSnapshot() : null))
 
 const target = computed(() => ({ params: { pair: toContrastParam(checker.pair.value) } }))
 const syncUrl = useDebounceFn((next: typeof target.value) => {
 	if (router.resolve(next).fullPath !== route.fullPath) router.replace(next)
 }, 250)
-watch(target, next => syncUrl(next))
+watch(target, (next) => syncUrl(next))
 
 const siteUrl = 'https://sygen.app'
 const defaultTitle = 'Color Contrast Checker: WCAG 2.2 and APCA, with Fixes | Sygen'
@@ -44,13 +49,17 @@ const pathCheck = computed(() => {
 	}
 })
 useSeoMeta({
-	title: () => (pathCheck.value
-		? `${pathCheck.value.text} on ${pathCheck.value.background}: contrast ${pathCheck.value.check.ratio.toFixed(2)}:1 | Sygen`
-		: defaultTitle),
+	title: () =>
+		pathCheck.value
+			? `${pathCheck.value.text} on ${pathCheck.value.background}: contrast ${pathCheck.value.check.ratio.toFixed(2)}:1 | Sygen`
+			: defaultTitle,
 	description: () => {
-		if (!pathCheck.value) return 'Check text and background colors against WCAG 2.2 AA and AAA and the APCA method, see them on real text, and get the closest colors that pass. Free, no sign-up.'
+		if (!pathCheck.value)
+			return 'Check text and background colors against WCAG 2.2 AA and AAA and the APCA method, see them on real text, and get the closest colors that pass. Free, no sign-up.'
 		const { text, background, check } = pathCheck.value
-		const passed = check.criteria.filter(criterion => criterion.passes).map(criterion => `${criterion.label.toLowerCase()} ${criterion.level}`)
+		const passed = check.criteria
+			.filter((criterion) => criterion.passes)
+			.map((criterion) => `${criterion.label.toLowerCase()} ${criterion.level}`)
 		const summary = passed.length ? `Passes WCAG for ${passed.join(', ')}.` : 'Fails every WCAG level.'
 		return `${text} text on ${background} has a contrast ratio of ${check.ratio.toFixed(2)}:1 and APCA Lc ${Math.round(check.lc)}. ${summary} See the closest colors that pass.`
 	},
@@ -68,7 +77,7 @@ const requestUrl = useRequestURL()
 const builderPath = computed(() => `/builder/${toHexPart(checker.brandColor.value)}`)
 const announcement = computed(() => {
 	const { ratio, criteria } = checker.check.value
-	const bodyAa = criteria.find(criterion => criterion.id === 'body-aa')!
+	const bodyAa = criteria.find((criterion) => criterion.id === 'body-aa')!
 	return `Contrast ${ratio.toFixed(2)} to 1, ${bodyAa.passes ? 'passes' : 'fails'} AA for body text`
 })
 
@@ -109,7 +118,13 @@ onKeyStroke(['z', 'Z'], (event) => {
 		<AppTopBar title="Contrast checker">
 			<Tooltip>
 				<TooltipTrigger as-child>
-					<Button variant="ghost" size="icon-sm" aria-label="Undo" :disabled="!checker.canUndo.value" @click="checker.undo()">
+					<Button
+						variant="ghost"
+						size="icon-sm"
+						aria-label="Undo"
+						:disabled="!checker.canUndo.value"
+						@click="checker.undo()"
+					>
 						<Icon name="lucide:undo-2" />
 					</Button>
 				</TooltipTrigger>
@@ -117,7 +132,13 @@ onKeyStroke(['z', 'Z'], (event) => {
 			</Tooltip>
 			<Tooltip>
 				<TooltipTrigger as-child>
-					<Button variant="ghost" size="icon-sm" aria-label="Redo" :disabled="!checker.canRedo.value" @click="checker.redo()">
+					<Button
+						variant="ghost"
+						size="icon-sm"
+						aria-label="Redo"
+						:disabled="!checker.canRedo.value"
+						@click="checker.redo()"
+					>
 						<Icon name="lucide:redo-2" />
 					</Button>
 				</TooltipTrigger>
@@ -136,15 +157,20 @@ onKeyStroke(['z', 'Z'], (event) => {
 				<TooltipTrigger as-child>
 					<Button as-child size="sm">
 						<NuxtLink :to="builderPath" aria-label="Use in builder">
-							<Icon name="lucide:blocks" data-icon="inline-start" /> <span class="hidden sm:inline">Use in builder</span>
+							<Icon name="lucide:blocks" data-icon="inline-start" />
+							<span class="hidden sm:inline">Use in builder</span>
 						</NuxtLink>
 					</Button>
 				</TooltipTrigger>
-				<TooltipContent>Build a full color system from {{ toHexPart(checker.brandColor.value).toUpperCase() }}</TooltipContent>
+				<TooltipContent
+					>Build a full color system from {{ toHexPart(checker.brandColor.value).toUpperCase() }}</TooltipContent
+				>
 			</Tooltip>
 		</AppTopBar>
 
-		<div class="grid min-h-0 flex-1 grid-cols-[minmax(0,1fr)] content-start gap-4 p-4 lg:grid-cols-[23rem_minmax(0,1fr)] lg:content-stretch">
+		<div
+			class="grid min-h-0 flex-1 grid-cols-[minmax(0,1fr)] content-start gap-4 p-4 lg:grid-cols-[23rem_minmax(0,1fr)] lg:content-stretch"
+		>
 			<Card size="sm" class="min-h-0">
 				<CardHeader>
 					<CardTitle>Your colors</CardTitle>

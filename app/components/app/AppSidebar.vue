@@ -16,10 +16,10 @@ const themes = [
 	{ value: 'light', label: 'Light theme', icon: 'lucide:sun' },
 	{ value: 'dark', label: 'Dark theme', icon: 'lucide:moon' },
 ] as const
-const currentTheme = computed(() => themes.find(theme => theme.value === colorMode.preference) ?? themes[0])
+const currentTheme = computed(() => themes.find((theme) => theme.value === colorMode.preference) ?? themes[0])
 
 function cycleTheme() {
-	const index = themes.findIndex(theme => theme.value === colorMode.preference)
+	const index = themes.findIndex((theme) => theme.value === colorMode.preference)
 	colorMode.preference = themes[(index + 1) % themes.length]!.value
 }
 
@@ -27,9 +27,12 @@ function isActive(to: string) {
 	return route.path === to || route.path.startsWith(`${to}/`)
 }
 
-watch(() => route.fullPath, () => {
-	if (isMobile.value) setOpenMobile(false)
-})
+watch(
+	() => route.fullPath,
+	() => {
+		if (isMobile.value) setOpenMobile(false)
+	},
+)
 </script>
 
 <template>
@@ -106,15 +109,26 @@ watch(() => route.fullPath, () => {
 						<SidebarMenuItem v-for="item in recents" :key="item.id">
 							<SidebarMenuButton as-child :is-active="route.fullPath === item.path">
 								<NuxtLink :to="item.path">
-									<span class="flex h-4 w-7 shrink-0 overflow-hidden rounded-[5px] outline outline-foreground/10 -outline-offset-1" aria-hidden="true">
-										<span v-for="(color, index) in item.colors" :key="index" class="flex-1" :style="{ background: color }" />
+									<span
+										class="flex h-4 w-7 shrink-0 overflow-hidden rounded-[5px] outline -outline-offset-1 outline-foreground/10"
+										aria-hidden="true"
+									>
+										<span
+											v-for="(color, index) in item.colors"
+											:key="index"
+											class="flex-1"
+											:style="{ background: color }"
+										/>
 									</span>
 									<span>{{ item.title }}</span>
 								</NuxtLink>
 							</SidebarMenuButton>
 						</SidebarMenuItem>
 					</SidebarMenu>
-					<div v-else class="mx-2 grid justify-items-center gap-2 rounded-md border border-dashed px-3 py-4 text-center">
+					<div
+						v-else
+						class="mx-2 grid justify-items-center gap-2 rounded-md border border-dashed px-3 py-4 text-center"
+					>
 						<p class="text-sm text-muted-foreground">Color systems and palettes you open show up here.</p>
 						<Button as-child size="sm" variant="secondary">
 							<NuxtLink to="/builder">Open the builder</NuxtLink>

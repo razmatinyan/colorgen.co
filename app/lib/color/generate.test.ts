@@ -1,6 +1,20 @@
 import { describe, expect, it } from 'vitest'
 import { isInGamut } from './format'
-import { flatteringHue, flatteringLightness, generatePalette, harmonies, minYellowLightness, muddyHueRange, paletteOptionCount, paletteRoles, roleRanges, startingColorCount, suggestPalettes, suggestStartingColors, yellowHueRange } from './generate'
+import {
+	flatteringHue,
+	flatteringLightness,
+	generatePalette,
+	harmonies,
+	minYellowLightness,
+	muddyHueRange,
+	paletteOptionCount,
+	paletteRoles,
+	roleRanges,
+	startingColorCount,
+	suggestPalettes,
+	suggestStartingColors,
+	yellowHueRange,
+} from './generate'
 import { createRng, shuffle } from './random'
 
 const hueDistance = (a: number, b: number) => {
@@ -39,7 +53,8 @@ describe('generatePalette', () => {
 			const palette = generatePalette({ rng: createRng(seed), harmony })
 			palette.forEach((color, index) => {
 				const range = roleRanges[paletteRoles[index]!]
-				const isLiftedYellow = paletteRoles[index] !== 'neutral' && color.h >= yellowHueRange[0] && color.h <= yellowHueRange[1]
+				const isLiftedYellow =
+					paletteRoles[index] !== 'neutral' && color.h >= yellowHueRange[0] && color.h <= yellowHueRange[1]
 				const maxLightness = isLiftedYellow ? Math.max(range.lightness[1], minYellowLightness) : range.lightness[1]
 				expect(isInGamut(color)).toBe(true)
 				expect(color.l).toBeGreaterThanOrEqual(range.lightness[0] - 0.02)
@@ -94,7 +109,11 @@ describe('suggestPalettes', () => {
 
 	it('offers palettes that differ from each other', () => {
 		const options = suggestPalettes({ base, rng: createRng(2) })
-		const keys = new Set(options.map(option => option.map(color => `${color.l.toFixed(3)} ${color.c.toFixed(3)} ${color.h.toFixed(1)}`).join('|')))
+		const keys = new Set(
+			options.map((option) =>
+				option.map((color) => `${color.l.toFixed(3)} ${color.c.toFixed(3)} ${color.h.toFixed(1)}`).join('|'),
+			),
+		)
 		expect(keys.size).toBe(options.length)
 	})
 
@@ -114,9 +133,13 @@ describe('suggestPalettes', () => {
 		expect(suggestPalettes({ base, rng: createRng(9) })).toEqual(suggestPalettes({ base, rng: createRng(9) }))
 	})
 
-	it.each([{ l: 0, c: 0, h: 0 }, { l: 1, c: 0, h: 0 }, { l: 0.5, c: 0, h: 0 }])('stays in gamut for gray base %j', (gray) => {
+	it.each([
+		{ l: 0, c: 0, h: 0 },
+		{ l: 1, c: 0, h: 0 },
+		{ l: 0.5, c: 0, h: 0 },
+	])('stays in gamut for gray base %j', (gray) => {
 		for (const option of suggestPalettes({ base: gray, rng: createRng(6) })) {
-			option.slice(1).forEach(color => expect(isInGamut(color)).toBe(true))
+			option.slice(1).forEach((color) => expect(isInGamut(color)).toBe(true))
 		}
 	})
 })
@@ -130,8 +153,10 @@ describe('suggestStartingColors', () => {
 				expect(isInGamut(color)).toBe(true)
 				expect(color.c).toBeGreaterThan(0.08)
 			})
-			const hues = colors.map(color => color.h)
-			hues.forEach((hue, index) => hues.slice(index + 1).forEach(other => expect(hueDistance(hue, other)).toBeGreaterThan(15)))
+			const hues = colors.map((color) => color.h)
+			hues.forEach((hue, index) =>
+				hues.slice(index + 1).forEach((other) => expect(hueDistance(hue, other)).toBeGreaterThan(15)),
+			)
 		}
 	})
 
@@ -160,7 +185,8 @@ describe('flattering colors', () => {
 			palette.slice(1, -1).forEach((color) => {
 				const [min, max] = muddyHueRange
 				expect(color.h <= min + 1 || color.h >= max - 1).toBe(true)
-				if (color.h >= yellowHueRange[0] && color.h <= yellowHueRange[1]) expect(color.l).toBeGreaterThanOrEqual(minYellowLightness - 0.01)
+				if (color.h >= yellowHueRange[0] && color.h <= yellowHueRange[1])
+					expect(color.l).toBeGreaterThanOrEqual(minYellowLightness - 0.01)
 			})
 		}
 	})

@@ -3,7 +3,7 @@ import { hueDifference, toOklch, wrapHue } from './parse'
 import type { ColorInput, Oklch } from './types'
 
 export const statusKinds = ['success', 'warning', 'danger', 'info'] as const
-export type StatusKind = typeof statusKinds[number]
+export type StatusKind = (typeof statusKinds)[number]
 
 export const statusHueRanges: Record<StatusKind, readonly [min: number, max: number]> = {
 	success: [138, 165],
@@ -48,5 +48,8 @@ export function suggestStatusColor(kind: StatusKind, brandInput: ColorInput): Ok
 }
 
 export function suggestStatusColors(brand: ColorInput): Record<StatusKind, Oklch> {
-	return Object.fromEntries(statusKinds.map(kind => [kind, suggestStatusColor(kind, brand)])) as Record<StatusKind, Oklch>
+	return Object.fromEntries(statusKinds.map((kind) => [kind, suggestStatusColor(kind, brand)])) as Record<
+		StatusKind,
+		Oklch
+	>
 }

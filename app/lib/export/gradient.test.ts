@@ -1,6 +1,13 @@
 import { describe, expect, it } from 'vitest'
 import { parseColor, sampleGradient } from '../color'
-import { toCssGradient, toFallbackGradient, toGradientCss, toNumberedVariables, toTailwindGradient, type GradientExport } from './gradient'
+import {
+	toCssGradient,
+	toFallbackGradient,
+	toGradientCss,
+	toNumberedVariables,
+	toTailwindGradient,
+	type GradientExport,
+} from './gradient'
 
 const blue = parseColor('#1f6cb0')!
 const yellow = parseColor('#facc15')!
@@ -17,8 +24,12 @@ describe('toCssGradient', () => {
 	})
 
 	it('writes radial and conic gradients', () => {
-		expect(toCssGradient({ ...linear, type: 'radial', space: 'oklab' })).toBe('radial-gradient(circle in oklab, #1f6cb0, #facc15)')
-		expect(toCssGradient({ ...linear, type: 'conic', angle: 45 })).toBe('conic-gradient(from 45deg in oklch, #1f6cb0, #facc15)')
+		expect(toCssGradient({ ...linear, type: 'radial', space: 'oklab' })).toBe(
+			'radial-gradient(circle in oklab, #1f6cb0, #facc15)',
+		)
+		expect(toCssGradient({ ...linear, type: 'conic', angle: 45 })).toBe(
+			'conic-gradient(from 45deg in oklch, #1f6cb0, #facc15)',
+		)
 	})
 
 	it('can write OKLCH stops', () => {
@@ -51,19 +62,27 @@ describe('toGradientCss', () => {
 	})
 
 	it('needs no fallback for sRGB', () => {
-		expect(toGradientCss({ ...linear, space: 'srgb' })).toBe('.gradient {\n  background: linear-gradient(90deg, #1f6cb0, #facc15);\n}\n')
+		expect(toGradientCss({ ...linear, space: 'srgb' })).toBe(
+			'.gradient {\n  background: linear-gradient(90deg, #1f6cb0, #facc15);\n}\n',
+		)
 	})
 })
 
 describe('toTailwindGradient', () => {
 	it('uses gradient utilities for up to three colors', () => {
 		expect(toTailwindGradient(linear)).toBe('bg-linear-90/oklch from-[#1f6cb0] to-[#facc15]')
-		expect(toTailwindGradient({ ...linear, stops: [blue, white, yellow], type: 'radial', space: 'srgb' })).toBe('bg-radial/srgb from-[#1f6cb0] via-[#ffffff] to-[#facc15]')
-		expect(toTailwindGradient({ ...linear, type: 'conic', angle: 180 })).toBe('bg-conic-180/oklch from-[#1f6cb0] to-[#facc15]')
+		expect(toTailwindGradient({ ...linear, stops: [blue, white, yellow], type: 'radial', space: 'srgb' })).toBe(
+			'bg-radial/srgb from-[#1f6cb0] via-[#ffffff] to-[#facc15]',
+		)
+		expect(toTailwindGradient({ ...linear, type: 'conic', angle: 180 })).toBe(
+			'bg-conic-180/oklch from-[#1f6cb0] to-[#facc15]',
+		)
 	})
 
 	it('falls back to an arbitrary value for more colors', () => {
-		expect(toTailwindGradient({ ...linear, stops: [blue, white, yellow, blue] })).toBe('bg-[linear-gradient(90deg_in_oklch,_#1f6cb0,_#ffffff,_#facc15,_#1f6cb0)]')
+		expect(toTailwindGradient({ ...linear, stops: [blue, white, yellow, blue] })).toBe(
+			'bg-[linear-gradient(90deg_in_oklch,_#1f6cb0,_#ffffff,_#facc15,_#1f6cb0)]',
+		)
 	})
 })
 

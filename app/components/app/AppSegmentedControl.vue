@@ -1,6 +1,6 @@
 <script setup lang="ts" generic="T extends string">
 defineProps<{
-	options: readonly { value: T, label: string, icon?: string }[]
+	options: readonly { value: T; label: string; icon?: string }[]
 	label: string
 }>()
 
@@ -15,7 +15,7 @@ const model = defineModel<T>({ required: true })
 		:spacing="1"
 		:aria-label="label"
 		class="rounded-4xl bg-muted p-1"
-		@update:model-value="value => value && (model = value as T)"
+		@update:model-value="(value) => value && (model = value as T)"
 	>
 		<ToggleGroupItem
 			v-for="option in options"

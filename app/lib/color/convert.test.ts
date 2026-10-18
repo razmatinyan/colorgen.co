@@ -3,12 +3,14 @@ import { conversionFormats, convertColor, cssColorNames, isInP3 } from './conver
 import { parseColor } from './parse'
 
 function valuesOf(input: string) {
-	return Object.fromEntries(convertColor(input).values.map(value => [value.id, value.value]))
+	return Object.fromEntries(convertColor(input).values.map((value) => [value.id, value.value]))
 }
 
 describe('convertColor', () => {
 	it('lists every format in order', () => {
-		expect(convertColor('#1f6cb0').values.map(value => value.id)).toEqual(conversionFormats.map(format => format.id))
+		expect(convertColor('#1f6cb0').values.map((value) => value.id)).toEqual(
+			conversionFormats.map((format) => format.id),
+		)
 	})
 
 	it('converts an sRGB color to every format', () => {
@@ -22,7 +24,7 @@ describe('convertColor', () => {
 		expect(values.lab).toMatch(/^lab\(4\d(\.\d+)?% -?\d+(\.\d+)? -\d+(\.\d+)?\)$/)
 		expect(values.lch).toMatch(/^lch\(4\d(\.\d+)?% \d+(\.\d+)? \d+(\.\d+)?\)$/)
 		expect(values.p3).toMatch(/^color\(display-p3 0\.\d+ 0\.\d+ 0\.\d+\)$/)
-		expect(convertColor('#1f6cb0').values.every(value => !value.isMapped)).toBe(true)
+		expect(convertColor('#1f6cb0').values.every((value) => !value.isMapped)).toBe(true)
 	})
 
 	it('round-trips every format back to the same hex', () => {
@@ -34,8 +36,17 @@ describe('convertColor', () => {
 	})
 
 	it('writes black, white and grays without stray signs or hues', () => {
-		expect(valuesOf('#000000')).toMatchObject({ rgb: 'rgb(0 0 0)', hsl: 'hsl(0 0% 0%)', oklch: 'oklch(0% 0 0)', lch: 'lch(0% 0 0)' })
-		expect(valuesOf('#ffffff')).toMatchObject({ rgb: 'rgb(255 255 255)', hwb: 'hwb(0 100% 0%)', p3: 'color(display-p3 1 1 1)' })
+		expect(valuesOf('#000000')).toMatchObject({
+			rgb: 'rgb(0 0 0)',
+			hsl: 'hsl(0 0% 0%)',
+			oklch: 'oklch(0% 0 0)',
+			lch: 'lch(0% 0 0)',
+		})
+		expect(valuesOf('#ffffff')).toMatchObject({
+			rgb: 'rgb(255 255 255)',
+			hwb: 'hwb(0 100% 0%)',
+			p3: 'color(display-p3 1 1 1)',
+		})
 		expect(valuesOf('#808080').oklch).toMatch(/ 0 0\)$/)
 	})
 
@@ -44,7 +55,7 @@ describe('convertColor', () => {
 		expect(conversion.inSrgb).toBe(false)
 		expect(conversion.inP3).toBe(false)
 		expect(conversion.hex).toMatch(/^#[0-9a-f]{6}$/)
-		const byId = Object.fromEntries(conversion.values.map(value => [value.id, value]))
+		const byId = Object.fromEntries(conversion.values.map((value) => [value.id, value]))
 		expect(byId.oklch!.value).toBe('oklch(70% 0.3 150)')
 		expect(byId.oklch!.isMapped).toBe(false)
 		expect(byId.hex!.isMapped).toBe(true)
@@ -55,7 +66,7 @@ describe('convertColor', () => {
 		const conversion = convertColor('color(display-p3 0 1 0)')
 		expect(conversion.inSrgb).toBe(false)
 		expect(conversion.inP3).toBe(true)
-		expect(conversion.values.find(value => value.id === 'p3')!.value).toBe('color(display-p3 0 1 0)')
+		expect(conversion.values.find((value) => value.id === 'p3')!.value).toBe('color(display-p3 0 1 0)')
 	})
 
 	it('accepts named colors and bare hex, rejects invalid input', () => {

@@ -1,9 +1,28 @@
 import { describe, expect, it } from 'vitest'
 import { isInGamut } from './format'
 import { hueDifference } from './parse'
-import { harmonizeHue, isStatusKind, statusHueRanges, statusKinds, suggestStatusColor, suggestStatusColors } from './status'
+import {
+	harmonizeHue,
+	isStatusKind,
+	statusHueRanges,
+	statusKinds,
+	suggestStatusColor,
+	suggestStatusColors,
+} from './status'
 
-const brands = ['#1f6cb0', '#f68443', '#e11d48', '#16a34a', '#facc15', '#7c3aed', '#0891b2', '#808080', '#000000', '#ffffff', '#00ff00']
+const brands = [
+	'#1f6cb0',
+	'#f68443',
+	'#e11d48',
+	'#16a34a',
+	'#facc15',
+	'#7c3aed',
+	'#0891b2',
+	'#808080',
+	'#000000',
+	'#ffffff',
+	'#00ff00',
+]
 
 describe('harmonizeHue', () => {
 	it('moves halfway toward a close hue', () => {

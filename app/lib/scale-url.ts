@@ -49,7 +49,7 @@ export function parseNamesParam(value: string | undefined, count: number): (stri
 }
 
 export function toNamesParam(names: readonly (string | null)[]) {
-	const parts = names.map(name => name ?? '')
+	const parts = names.map((name) => name ?? '')
 	while (parts.length && !parts.at(-1)) parts.pop()
 	return parts.join(nameSeparator)
 }

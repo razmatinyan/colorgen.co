@@ -4,7 +4,12 @@ import { checkReadability, findFix, fixReadability, readabilityPairs } from './r
 import { generateSystem, type SystemSettings } from './system'
 import { resolveTokens, tokenNames } from './tokens'
 
-const settings: SystemSettings = { brand: parseColor('#1f6cb0')!, brand2: parseColor('#8b5cf6')!, neutralTint: 0.3, status: {} }
+const settings: SystemSettings = {
+	brand: parseColor('#1f6cb0')!,
+	brand2: parseColor('#8b5cf6')!,
+	neutralTint: 0.3,
+	status: {},
+}
 const brands = ['#1f6cb0', '#facc15', '#f68443', '#16a34a', '#e11d48', '#7c3aed', '#0a2540', '#18181b', '#ffffff']
 
 describe('readabilityPairs', () => {
@@ -13,7 +18,7 @@ describe('readabilityPairs', () => {
 			expect(tokenNames).toContain(pair.foreground)
 			expect(tokenNames).toContain(pair.background)
 		}
-		expect(new Set(readabilityPairs.map(pair => pair.id)).size).toBe(readabilityPairs.length)
+		expect(new Set(readabilityPairs.map((pair) => pair.id)).size).toBe(readabilityPairs.length)
 	})
 })
 
@@ -28,13 +33,13 @@ describe('checkReadability', () => {
 	})
 
 	it('passes everything for a mid-tone blue brand by default', () => {
-		expect(checkReadability(resolveTokens(generateSystem(settings))).filter(result => !result.passes)).toEqual([])
+		expect(checkReadability(resolveTokens(generateSystem(settings))).filter((result) => !result.passes)).toEqual([])
 	})
 
 	it('flags a pale brand on a white page', () => {
 		const system = generateSystem({ ...settings, brand: parseColor('#facc15')! })
-		const failing = checkReadability(resolveTokens(system)).filter(result => !result.passes)
-		expect(failing.some(result => result.pair.id === 'primary/background' && result.mode === 'light')).toBe(true)
+		const failing = checkReadability(resolveTokens(system)).filter((result) => !result.passes)
+		expect(failing.some((result) => result.pair.id === 'primary/background' && result.mode === 'light')).toBe(true)
 	})
 })
 
@@ -42,8 +47,12 @@ describe('findFix', () => {
 	it('moves the failing token to the nearest step that passes', () => {
 		const system = generateSystem(settings)
 		const tokens = resolveTokens(system, { 'muted-foreground': { light: 'neutral.300' } })
-		const pair = readabilityPairs.find(item => item.id === 'muted-foreground/muted')!
-		expect(findFix(system, tokens, pair, 'light')).toEqual({ token: 'muted-foreground', mode: 'light', ref: 'neutral.600' })
+		const pair = readabilityPairs.find((item) => item.id === 'muted-foreground/muted')!
+		expect(findFix(system, tokens, pair, 'light')).toEqual({
+			token: 'muted-foreground',
+			mode: 'light',
+			ref: 'neutral.600',
+		})
 	})
 })
 
@@ -51,7 +60,7 @@ describe('fixReadability', () => {
 	it.each(brands)('makes every pair pass for %s', (brand) => {
 		const system = generateSystem({ ...settings, brand: parseColor(brand)! })
 		const overrides = fixReadability(system, {})
-		expect(checkReadability(resolveTokens(system, overrides)).filter(result => !result.passes)).toEqual([])
+		expect(checkReadability(resolveTokens(system, overrides)).filter((result) => !result.passes)).toEqual([])
 	})
 
 	it('changes nothing when everything already passes', () => {

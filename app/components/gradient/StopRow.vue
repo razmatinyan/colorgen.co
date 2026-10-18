@@ -23,7 +23,10 @@ function changeColor(color: Oklch) {
 			:aria-controls="panelId"
 			@click="generator.toggleOpen(stop.id)"
 		>
-			<span class="size-10 shrink-0 rounded-lg ring-1 ring-foreground/10 ring-inset transition-colors duration-300" :style="{ background: stop.hex }" />
+			<span
+				class="size-10 shrink-0 rounded-lg ring-1 ring-foreground/10 transition-colors duration-300 ring-inset"
+				:style="{ background: stop.hex }"
+			/>
 			<span class="min-w-0 flex-1">
 				<span class="flex items-baseline justify-between gap-2">
 					<span class="truncate text-sm font-medium">{{ stop.label }}</span>
@@ -38,10 +41,14 @@ function changeColor(color: Oklch) {
 				:color="stop.color"
 				:label="`${stop.label} color`"
 				@change="changeColor"
-				@update="value => generator.updateColor(stop.id, value)"
+				@update="(value) => generator.updateColor(stop.id, value)"
 				@commit="generator.snapshot()"
 			/>
-			<ColorChannelSliders :color="stop.color" @update="patch => generator.updateColor(stop.id, patch)" @commit="generator.snapshot()" />
+			<ColorChannelSliders
+				:color="stop.color"
+				@update="(patch) => generator.updateColor(stop.id, patch)"
+				@commit="generator.snapshot()"
+			/>
 			<div v-if="generator.canRemove.value" class="flex justify-end">
 				<Button variant="ghost" size="sm" @click="generator.remove(stop.id)">
 					<Icon name="lucide:trash-2" data-icon="inline-start" /> Remove

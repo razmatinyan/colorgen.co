@@ -46,7 +46,7 @@ async function submit() {
 					<PopoverTrigger as-child>
 						<button
 							type="button"
-							class="size-9 shrink-0 rounded-full ring-1 ring-foreground/10 ring-inset outline-none transition-colors duration-500 focus-visible:ring-3 focus-visible:ring-ring/50"
+							class="size-9 shrink-0 rounded-full ring-1 ring-foreground/10 transition-colors duration-500 outline-none ring-inset focus-visible:ring-3 focus-visible:ring-ring/50"
 							:style="{ background: demo.builder.brandHex.value }"
 							aria-label="Open color picker"
 						/>
@@ -68,14 +68,18 @@ async function submit() {
 					@focus="isEditing = true"
 					@blur="isEditing = false"
 					@input="preview"
-				>
+				/>
 			</div>
 			<Button type="submit" size="lg" class="h-12 px-6">
 				Build my system <Icon name="lucide:arrow-right" data-icon="inline-end" />
 			</Button>
 		</form>
 		<p :id="hintId" class="text-sm" :class="isInvalid ? 'text-destructive' : 'text-muted-foreground'">
-			{{ isInvalid ? 'Enter a color like #2F5BEA, rgb(47 91 234) or a color name.' : 'Paste a HEX, RGB, HSL or OKLCH value, or pick one.' }}
+			{{
+				isInvalid
+					? 'Enter a color like #2F5BEA, rgb(47 91 234) or a color name.'
+					: 'Paste a HEX, RGB, HSL or OKLCH value, or pick one.'
+			}}
 		</p>
 		<div v-if="showSamples" class="flex flex-wrap items-center gap-2">
 			<span class="text-sm text-muted-foreground">No color yet? Try</span>
@@ -83,7 +87,7 @@ async function submit() {
 				v-for="hex in landingSamples"
 				:key="hex"
 				type="button"
-				class="size-7 rounded-full ring-1 ring-foreground/10 ring-inset transition-transform hover:scale-110 focus-visible:ring-3 focus-visible:ring-ring/50"
+				class="size-7 rounded-full ring-1 ring-foreground/10 transition-transform ring-inset hover:scale-110 focus-visible:ring-3 focus-visible:ring-ring/50"
 				:class="demo.builder.brandHex.value === hex && 'outline-2 outline-offset-2 outline-foreground'"
 				:style="{ background: hex }"
 				:aria-label="`Try ${hex.toUpperCase()}`"

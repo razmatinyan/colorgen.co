@@ -1,5 +1,7 @@
 <script setup lang="ts">
-withDefaults(defineProps<{ label: string, title: string, description?: string, align?: 'start' | 'center' }>(), { align: 'start' })
+withDefaults(defineProps<{ label: string; title: string; description?: string; align?: 'start' | 'center' }>(), {
+	align: 'start',
+})
 </script>
 
 <template>

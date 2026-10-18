@@ -37,9 +37,12 @@ describe('parseConvertRoute', () => {
 describe('parseExactOklch', () => {
 	const pathColor = parseColor(toHex(wideGreen))!
 
-	it.each(['0.7,0.3', '0.7,0.3,150,1', 'a,b,c', '1.2,0.3,150', '0.7,0.9,150', '0.7,0.3,360', '0.7,-0.1,150'])('ignores %j', (value) => {
-		expect(parseExactOklch(value, pathColor)).toBeNull()
-	})
+	it.each(['0.7,0.3', '0.7,0.3,150,1', 'a,b,c', '1.2,0.3,150', '0.7,0.9,150', '0.7,0.3,360', '0.7,-0.1,150'])(
+		'ignores %j',
+		(value) => {
+			expect(parseExactOklch(value, pathColor)).toBeNull()
+		},
+	)
 
 	it('ignores an exact color that does not match the path', () => {
 		expect(parseExactOklch('0.7,0.3,150', parseColor('#1f6cb0')!)).toBeNull()

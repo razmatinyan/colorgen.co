@@ -20,10 +20,15 @@ const modeLabel = { light: 'Light', dark: 'Dark' } as const
 				/>
 				<div class="min-w-0 flex-1">
 					<p class="text-sm font-medium">
-						{{ failing.length ? `${failing.length} of ${total} readability checks fail` : `All ${total} readability checks pass` }}
+						{{
+							failing.length
+								? `${failing.length} of ${total} readability checks fail`
+								: `All ${total} readability checks pass`
+						}}
 					</p>
 					<p class="text-sm text-muted-foreground">
-						WCAG 2.2 AA in light and dark mode: 4.5:1 for text, 3:1 for buttons and focus rings. APCA is shown for reference.
+						WCAG 2.2 AA in light and dark mode: 4.5:1 for text, 3:1 for buttons and focus rings. APCA is shown for
+						reference.
 					</p>
 				</div>
 				<Button v-if="failing.length" size="sm" @click="builder.fixAll()">
@@ -31,7 +36,10 @@ const modeLabel = { light: 'Light', dark: 'Dark' } as const
 				</Button>
 			</div>
 
-			<ul v-if="failing.length" class="grid grid-cols-1 gap-1 rounded-xl bg-background p-1 ring-1 ring-foreground/10 dark:bg-card">
+			<ul
+				v-if="failing.length"
+				class="grid grid-cols-1 gap-1 rounded-xl bg-background p-1 ring-1 ring-foreground/10 dark:bg-card"
+			>
 				<li
 					v-for="result in failing"
 					:key="`${result.pair.id}:${result.mode}`"
@@ -41,13 +49,15 @@ const modeLabel = { light: 'Light', dark: 'Dark' } as const
 						class="grid h-7 shrink-0 place-items-center rounded-md px-2 text-xs font-medium ring-1 ring-foreground/10 ring-inset"
 						:style="{ background: result.background, color: result.foreground }"
 						aria-hidden="true"
-					>Aa</span>
+						>Aa</span
+					>
 					<span class="min-w-0 flex-1">
 						{{ result.pair.label }}
 						<span class="text-muted-foreground">· {{ modeLabel[result.mode] }}</span>
 					</span>
 					<span class="text-muted-foreground tabular-nums">
-						{{ result.ratio.toFixed(2) }} of {{ result.pair.minRatio }} · APCA Lc {{ Math.round(Math.abs(result.apca)) }}
+						{{ result.ratio.toFixed(2) }} of {{ result.pair.minRatio }} · APCA Lc
+						{{ Math.round(Math.abs(result.apca)) }}
 					</span>
 					<Button variant="outline" size="sm" @click="builder.fixPair(result.pair.id, result.mode)">Fix</Button>
 				</li>

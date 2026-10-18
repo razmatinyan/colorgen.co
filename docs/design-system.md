@@ -14,32 +14,33 @@ Sygen follows **shadcn/ui's "Maia" style** (`components.json` → `"style": "rek
 
 Use shadcn-vue primitives from `app/components/ui/` first (Button, Card, Badge, Select, ToggleGroup, Kbd, Separator, Tooltip, Popover, Dialog…). Add new ones with the CLI — see AGENTS.md §2 for the two import fixes the CLI currently needs.
 
-| Pattern | How |
-|---|---|
-| Panels | `Card size="sm"` + `CardHeader` (`CardTitle`, `CardDescription`, optional `CardAction`) + `CardContent` |
-| Main action | `<Button>` (default variant) with an optional `<Kbd>` hint |
-| Secondary actions | `variant="outline"`; icon-only actions `variant="ghost" size="icon"` with a tooltip |
-| Segmented control | `ToggleGroup type="single" :spacing="1"` inside `rounded-4xl bg-muted p-1`; active item `data-[state=on]:bg-background` |
-| Selectable list item | `rounded-xl p-2.5`, `hover:bg-muted/50`, selected `bg-muted` |
-| Key/value block | `rounded-xl bg-muted/50 p-1` with `rounded-lg px-3 py-2` rows; label `text-muted-foreground`, value `font-medium tabular-nums` |
-| Status | `Badge variant="secondary"` + status tint (`bg-success/15 text-success`, `bg-warning/20`, `bg-destructive/10 text-destructive`) and a text label |
-| Swatch | `rounded-lg`/`rounded-xl` with `ring-1 ring-foreground/10 ring-inset` so light colors don't dissolve |
+| Pattern              | How                                                                                                                                              |
+| -------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------ |
+| Panels               | `Card size="sm"` + `CardHeader` (`CardTitle`, `CardDescription`, optional `CardAction`) + `CardContent`                                          |
+| Main action          | `<Button>` (default variant) with an optional `<Kbd>` hint                                                                                       |
+| Secondary actions    | `variant="outline"`; icon-only actions `variant="ghost" size="icon"` with a tooltip                                                              |
+| Segmented control    | `ToggleGroup type="single" :spacing="1"` inside `rounded-4xl bg-muted p-1`; active item `data-[state=on]:bg-background`                          |
+| Selectable list item | `rounded-xl p-2.5`, `hover:bg-muted/50`, selected `bg-muted`                                                                                     |
+| Key/value block      | `rounded-xl bg-muted/50 p-1` with `rounded-lg px-3 py-2` rows; label `text-muted-foreground`, value `font-medium tabular-nums`                   |
+| Status               | `Badge variant="secondary"` + status tint (`bg-success/15 text-success`, `bg-warning/20`, `bg-destructive/10 text-destructive`) and a text label |
+| Swatch               | `rounded-lg`/`rounded-xl` with `ring-1 ring-foreground/10 ring-inset` so light colors don't dissolve                                             |
 
 ## Color tokens
 
 shadcn's neutral palette in OKLCH (chroma 0), light and dark.
 
-| Token | Use |
-|---|---|
-| `background` / `foreground` | Page canvas and default text |
-| `card`, `popover` | Raised surfaces |
-| `muted` / `muted-foreground` | Fills for inputs, segmented controls, selected items; secondary text |
-| `primary` / `primary-foreground` | Main actions (near-black in light, near-white in dark) |
-| `secondary`, `accent` | Secondary buttons, hover fills |
-| `border`, `input`, `ring` | Hairlines, input borders, focus rings |
-| `success`, `warning`, `destructive` | Status only |
+| Token                               | Use                                                                  |
+| ----------------------------------- | -------------------------------------------------------------------- |
+| `background` / `foreground`         | Page canvas and default text                                         |
+| `card`, `popover`                   | Raised surfaces                                                      |
+| `muted` / `muted-foreground`        | Fills for inputs, segmented controls, selected items; secondary text |
+| `primary` / `primary-foreground`    | Main actions (near-black in light, near-white in dark)               |
+| `secondary`, `accent`               | Secondary buttons, hover fills                                       |
+| `border`, `input`, `ring`           | Hairlines, input borders, focus rings                                |
+| `success`, `warning`, `destructive` | Status only                                                          |
 
 Rules:
+
 - Components use token utilities only. No raw hex or arbitrary color values in app chrome.
 - User colors are applied via inline `style`. Previews that need many derived colors set scoped CSS variables (`--pv-*`) on their root and reference them with `bg-(--pv-primary)`.
 - Status is never conveyed by color alone.
@@ -50,12 +51,12 @@ Rules:
 
 Readable sizes — nothing smaller than 12px:
 
-| Use | Class |
-|---|---|
-| Page title | `text-xl font-semibold` (tool pages), `text-4xl`+ for landing display |
-| Card title | `CardTitle` (`text-base font-medium`) |
-| Body, labels, values, descriptions | `text-sm` (14px) — the default for almost everything |
-| Badges, chart legends, tiny meta | `text-xs` (12px) — minimum |
+| Use                                | Class                                                                 |
+| ---------------------------------- | --------------------------------------------------------------------- |
+| Page title                         | `text-xl font-semibold` (tool pages), `text-4xl`+ for landing display |
+| Card title                         | `CardTitle` (`text-base font-medium`)                                 |
+| Body, labels, values, descriptions | `text-sm` (14px) — the default for almost everything                  |
+| Badges, chart legends, tiny meta   | `text-xs` (12px) — minimum                                            |
 
 Labels and section headings are **sentence case**, `text-sm font-medium`, never uppercase. Tracking: headings `-0.022em` (`--tracking-heading`, applied in the base layer), body `-0.011em`, display `-0.035em` (`tracking-(--tracking-display)`).
 
@@ -83,12 +84,12 @@ Labels and section headings are **sentence case**, `text-sm font-medium`, never 
 
 Plain words, not color science, in the main UI:
 
-| Say | Not |
-|---|---|
-| Lightness · Intensity · Hue (shown as %, %, °) | L · C · H, Chroma |
-| No harmony/style picker — Generate picks a harmony internally | Harmony, Style, Triadic, … |
-| Readable as text? | Contrast ratio, WCAG (still shown as AA/AAA labels) |
-| A short "used for" hint under every role name (Primary → "Buttons, links, active states") | Bare role names |
+| Say                                                                                       | Not                                                 |
+| ----------------------------------------------------------------------------------------- | --------------------------------------------------- |
+| Lightness · Intensity · Hue (shown as %, %, °)                                            | L · C · H, Chroma                                   |
+| No harmony/style picker — Generate picks a harmony internally                             | Harmony, Style, Triadic, …                          |
+| Readable as text?                                                                         | Contrast ratio, WCAG (still shown as AA/AAA labels) |
+| A short "used for" hint under every role name (Primary → "Buttons, links, active states") | Bare role names                                     |
 
 Technical formats (HEX, RGB, HSL, OKLCH) appear only where the user copies or exports values. Every panel has a one-line description saying what to do in it.
 

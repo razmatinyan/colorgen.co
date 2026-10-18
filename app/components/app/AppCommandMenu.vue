@@ -24,7 +24,12 @@ const themes = [
 </script>
 
 <template>
-	<CommandDialog v-model:open="open" title="Command menu" description="Jump to a tool or change settings." class="sm:max-w-xl">
+	<CommandDialog
+		v-model:open="open"
+		title="Command menu"
+		description="Jump to a tool or change settings."
+		class="sm:max-w-xl"
+	>
 		<CommandInput placeholder="Search tools and actions…" />
 		<CommandList>
 			<CommandEmpty>Nothing found.</CommandEmpty>
@@ -52,7 +57,11 @@ const themes = [
 					v-for="theme in themes"
 					:key="theme.value"
 					:value="theme.label"
-					@select="run(() => { colorMode.preference = theme.value })"
+					@select="
+						run(() => {
+							colorMode.preference = theme.value
+						})
+					"
 				>
 					<Icon :name="theme.icon" />
 					{{ theme.label }}
@@ -69,7 +78,14 @@ const themes = [
 				<CommandItem value="Contact" @select="run(() => navigateTo('/contact'))">
 					<Icon name="lucide:mail" /> Contact
 				</CommandItem>
-				<CommandItem value="Source on GitHub" @select="run(() => navigateTo('https://github.com/razmatinyan/colorgen.co', { external: true, open: { target: '_blank' } }))">
+				<CommandItem
+					value="Source on GitHub"
+					@select="
+						run(() =>
+							navigateTo('https://github.com/razmatinyan/colorgen.co', { external: true, open: { target: '_blank' } }),
+						)
+					"
+				>
 					<Icon name="lucide:github" /> Source on GitHub
 				</CommandItem>
 			</CommandGroup>

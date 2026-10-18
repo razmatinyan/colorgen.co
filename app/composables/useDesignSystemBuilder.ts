@@ -32,7 +32,7 @@ export interface BuilderColor extends SystemScale {
 export type BuilderState = SystemSettings & { tokens: TokenOverrides }
 export type BrandId = 'brand' | 'brand2'
 
-const colorDetails: Record<SystemColorId, { label: string, hint: string }> = {
+const colorDetails: Record<SystemColorId, { label: string; hint: string }> = {
 	brand: { label: 'Brand', hint: 'Main buttons, links, focus rings' },
 	brand2: { label: 'Second brand', hint: 'Secondary buttons, highlights, charts' },
 	neutral: { label: 'Neutral', hint: 'Text, borders, backgrounds' },
@@ -51,10 +51,14 @@ export function tokenRefLabel(tokenRef: TokenRef) {
 }
 
 function withoutSecondBrandRefs(tokens: TokenOverrides): TokenOverrides {
-	return Object.fromEntries(Object.entries(tokens).map(([name, modes]) => [
-		name,
-		Object.fromEntries(Object.entries(modes ?? {}).filter(([, ref]) => !ref.startsWith('brand2.'))),
-	]).filter(([, modes]) => Object.keys(modes as object).length > 0))
+	return Object.fromEntries(
+		Object.entries(tokens)
+			.map(([name, modes]) => [
+				name,
+				Object.fromEntries(Object.entries(modes ?? {}).filter(([, ref]) => !ref.startsWith('brand2.'))),
+			])
+			.filter(([, modes]) => Object.keys(modes as object).length > 0),
+	)
 }
 
 export function useDesignSystemBuilder(initial: Partial<BuilderState> = {}) {
@@ -72,15 +76,17 @@ export function useDesignSystemBuilder(initial: Partial<BuilderState> = {}) {
 	const suggestedStatus = computed(() => suggestStatusColors(settings.value.brand))
 	const tokens = computed(() => resolveTokens(system.value, settings.value.tokens))
 	const readability = computed(() => checkReadability(tokens.value))
-	const failingReadability = computed(() => readability.value.filter(result => !result.passes))
+	const failingReadability = computed(() => readability.value.filter((result) => !result.passes))
 
-	const colors = computed<BuilderColor[]>(() => systemScales(system.value).map(scale => ({
-		...scale,
-		...colorDetails[scale.id],
-		hex: toHex(scale.base),
-		edited: isStatusKind(scale.id) && !!settings.value.status[scale.id],
-	})))
-	const selected = computed(() => colors.value.find(color => color.id === selectedId.value) ?? null)
+	const colors = computed<BuilderColor[]>(() =>
+		systemScales(system.value).map((scale) => ({
+			...scale,
+			...colorDetails[scale.id],
+			hex: toHex(scale.base),
+			edited: isStatusKind(scale.id) && !!settings.value.status[scale.id],
+		})),
+	)
+	const selected = computed(() => colors.value.find((color) => color.id === selectedId.value) ?? null)
 	const brandHex = computed(() => toHex(settings.value.brand))
 
 	function updateBrand(id: BrandId, patch: Partial<Oklch>) {
@@ -146,7 +152,7 @@ export function useDesignSystemBuilder(initial: Partial<BuilderState> = {}) {
 
 	function select(offset: number) {
 		const count = colors.value.length
-		const index = colors.value.findIndex(color => color.id === selectedId.value)
+		const index = colors.value.findIndex((color) => color.id === selectedId.value)
 		const nextIndex = index === -1 ? (offset > 0 ? 0 : count - 1) : (index + offset + count) % count
 		selectedId.value = colors.value[nextIndex]?.id ?? null
 	}

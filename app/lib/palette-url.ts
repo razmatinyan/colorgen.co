@@ -13,7 +13,7 @@ export function toHexPart(color: Oklch) {
 export function parseColorsParam(param: string | undefined): Oklch[] | null {
 	if (!param) return null
 	const colors = param.split('-').map(parseHexPart)
-	return colors.every(color => color !== null) ? colors : null
+	return colors.every((color) => color !== null) ? colors : null
 }
 
 export function toColorsParam(colors: readonly Oklch[]) {

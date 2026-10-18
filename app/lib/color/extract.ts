@@ -42,7 +42,12 @@ function samplePixels(pixels: ArrayLike<number>, maxSamples: number): Lab[] {
 	for (let index = 0; index < pixelCount; index += stride) {
 		const offset = index * 4
 		if (pixels[offset + 3]! < minAlpha) continue
-		const { l, a, b } = toOklab({ mode: 'rgb', r: pixels[offset]! / 255, g: pixels[offset + 1]! / 255, b: pixels[offset + 2]! / 255 })
+		const { l, a, b } = toOklab({
+			mode: 'rgb',
+			r: pixels[offset]! / 255,
+			g: pixels[offset + 1]! / 255,
+			b: pixels[offset + 2]! / 255,
+		})
 		samples.push([l, a, b])
 	}
 	return samples
@@ -50,7 +55,7 @@ function samplePixels(pixels: ArrayLike<number>, maxSamples: number): Lab[] {
 
 function initialCenters(samples: Lab[], k: number, rng: Rng): Lab[] {
 	const centers: Lab[] = [samples[Math.floor(rng() * samples.length)]!]
-	const nearest = samples.map(sample => distanceSquared(sample, centers[0]!))
+	const nearest = samples.map((sample) => distanceSquared(sample, centers[0]!))
 	while (centers.length < k) {
 		const total = nearest.reduce((sum, value) => sum + value, 0)
 		if (total === 0) break
@@ -102,24 +107,28 @@ function kMeans(samples: Lab[], k: number, rng: Rng, iterations: number): Cluste
 			sum[2]! += sample[2]
 			sum[3]! += 1
 		})
-		centers = sums.map((sum, index) => (sum[3]! > 0 ? [sum[0]! / sum[3]!, sum[1]! / sum[3]!, sum[2]! / sum[3]!] : centers[index]!))
+		centers = sums.map((sum, index) =>
+			sum[3]! > 0 ? [sum[0]! / sum[3]!, sum[1]! / sum[3]!, sum[2]! / sum[3]!] : centers[index]!,
+		)
 		if (!changed) break
 	}
 	const sizes = centers.map(() => 0)
-	assignment.forEach(index => sizes[index]!++)
-	return centers.map((center, index) => ({ center, size: sizes[index]! })).filter(cluster => cluster.size > 0)
+	assignment.forEach((index) => sizes[index]!++)
+	return centers.map((center, index) => ({ center, size: sizes[index]! })).filter((cluster) => cluster.size > 0)
 }
 
 function mergeClose(clusters: Cluster[]): Cluster[] {
 	const merged: Cluster[] = []
 	for (const cluster of [...clusters].sort((a, b) => b.size - a.size)) {
-		const target = merged.find(existing => distanceSquared(existing.center, cluster.center) < mergeDistance ** 2)
+		const target = merged.find((existing) => distanceSquared(existing.center, cluster.center) < mergeDistance ** 2)
 		if (!target) {
 			merged.push({ center: [...cluster.center], size: cluster.size })
 			continue
 		}
 		const total = target.size + cluster.size
-		target.center = target.center.map((value, index) => (value * target.size + cluster.center[index]! * cluster.size) / total) as Lab
+		target.center = target.center.map(
+			(value, index) => (value * target.size + cluster.center[index]! * cluster.size) / total,
+		) as Lab
 		target.size = total
 	}
 	return merged
@@ -135,14 +144,16 @@ export function extractColors(pixels: ArrayLike<number>, options: ExtractOptions
 	const count = Math.min(maxExtractCount, Math.max(1, Math.round(options.count ?? defaultExtractCount)))
 	const samples = samplePixels(pixels, options.maxSamples ?? 12000)
 	if (samples.length === 0) return []
-	const clusters = mergeClose(kMeans(samples, Math.min(samples.length, count * 2), options.rng ?? createRng(1), options.iterations ?? 16))
-	const colors = clusters.map(cluster => toExtracted(cluster, samples.length))
+	const clusters = mergeClose(
+		kMeans(samples, Math.min(samples.length, count * 2), options.rng ?? createRng(1), options.iterations ?? 16),
+	)
+	const colors = clusters.map((cluster) => toExtracted(cluster, samples.length))
 	const picked = colors.slice(0, count)
 	const accent = colors
 		.slice(count)
-		.filter(color => color.share >= accentMinShare && color.color.c >= accentMinChroma)
+		.filter((color) => color.share >= accentMinShare && color.color.c >= accentMinChroma)
 		.sort((a, b) => b.color.c - a.color.c)[0]
-	const mostColorful = Math.max(0, ...picked.map(color => color.color.c))
+	const mostColorful = Math.max(0, ...picked.map((color) => color.color.c))
 	if (accent && accent.color.c > mostColorful && picked.length === count) picked[picked.length - 1] = accent
 	const seen = new Set<string>()
 	return picked
@@ -155,8 +166,9 @@ export function extractColors(pixels: ArrayLike<number>, options: ExtractOptions
 }
 
 export function suggestBrandColor(colors: readonly ExtractedColor[]): ExtractedColor | null {
-	const score = ({ color, share }: ExtractedColor) => color.c * Math.sqrt(share) * Math.max(0.2, 1 - Math.abs(color.l - 0.6) * 1.4)
-	const candidates = colors.filter(color => color.color.c >= brandMinChroma)
+	const score = ({ color, share }: ExtractedColor) =>
+		color.c * Math.sqrt(share) * Math.max(0.2, 1 - Math.abs(color.l - 0.6) * 1.4)
+	const candidates = colors.filter((color) => color.color.c >= brandMinChroma)
 	if (candidates.length === 0) return null
 	return candidates.reduce((best, color) => (score(color) > score(best) ? color : best))
 }

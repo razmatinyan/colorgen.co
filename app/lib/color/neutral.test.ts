@@ -28,8 +28,8 @@ describe('generateNeutralScale', () => {
 
 	it.each(inputs)('returns 11 steps getting strictly darker for %s', (input) => {
 		const scale = generateNeutralScale(input, 0.5)
-		expect(scale.map(swatch => swatch.step)).toEqual([...scaleSteps])
-		const lightness = scale.map(swatch => swatch.color.l)
+		expect(scale.map((swatch) => swatch.step)).toEqual([...scaleSteps])
+		const lightness = scale.map((swatch) => swatch.color.l)
 		lightness.slice(1).forEach((l, index) => expect(l).toBeLessThan(lightness[index]!))
 	})
 
@@ -42,7 +42,7 @@ describe('generateNeutralScale', () => {
 
 	it('carries the brand hue', () => {
 		const brand = parseColor('#1f6cb0')!
-		const tinted = generateNeutralScale(brand, 0.6).filter(swatch => swatch.color.c > 0.01)
+		const tinted = generateNeutralScale(brand, 0.6).filter((swatch) => swatch.color.c > 0.01)
 		expect(tinted.length).toBeGreaterThan(5)
 		for (const swatch of tinted) expect(Math.abs(swatch.color.h - brand.h)).toBeLessThan(3)
 	})

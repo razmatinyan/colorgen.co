@@ -11,7 +11,7 @@ export const wcagCriteria = [
 	{ id: 'large-aaa', label: 'Large text', level: 'AAA', criterion: '1.4.6', minRatio: 4.5 },
 ] as const
 
-export type WcagCriterion = typeof wcagCriteria[number]
+export type WcagCriterion = (typeof wcagCriteria)[number]
 export type WcagCriterionId = WcagCriterion['id']
 
 export const apcaUsages = [
@@ -24,11 +24,11 @@ export const apcaUsages = [
 	{ id: 'invisible', minLc: 0, label: 'Not readable' },
 ] as const
 
-export type ApcaUsage = typeof apcaUsages[number]
+export type ApcaUsage = (typeof apcaUsages)[number]
 
 export function apcaUsage(lc: number): ApcaUsage {
 	const magnitude = Math.abs(lc)
-	return apcaUsages.find(usage => magnitude >= usage.minLc) ?? apcaUsages.at(-1)!
+	return apcaUsages.find((usage) => magnitude >= usage.minLc) ?? apcaUsages.at(-1)!
 }
 
 export interface ContrastCheck {
@@ -45,7 +45,7 @@ export function checkContrast(text: ColorInput, background: ColorInput): Contras
 		ratio,
 		lc,
 		usage: apcaUsage(lc),
-		criteria: wcagCriteria.map(criterion => ({ ...criterion, passes: ratio >= criterion.minRatio })),
+		criteria: wcagCriteria.map((criterion) => ({ ...criterion, passes: ratio >= criterion.minRatio })),
 	}
 }
 
@@ -82,7 +82,11 @@ function searchTowards(color: Oklch, against: string, minRatio: number, limit: 0
 	return withLightness(color, l)
 }
 
-export function findContrastFix(colorInput: ColorInput, againstInput: ColorInput, minRatio: number): ContrastFix | null {
+export function findContrastFix(
+	colorInput: ColorInput,
+	againstInput: ColorInput,
+	minRatio: number,
+): ContrastFix | null {
 	const color = toOklch(colorInput)
 	const against = toHex(againstInput)
 	const candidates = [searchTowards(color, against, minRatio, 0), searchTowards(color, against, minRatio, 1)]

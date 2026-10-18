@@ -3,22 +3,29 @@ import { wrapHue } from './parse'
 import { between, pick, shuffle, type Rng } from './random'
 import type { Oklch } from './types'
 
-export const harmonies = ['analogous', 'complementary', 'split-complementary', 'triadic', 'tetradic', 'monochromatic'] as const
-export type Harmony = typeof harmonies[number]
+export const harmonies = [
+	'analogous',
+	'complementary',
+	'split-complementary',
+	'triadic',
+	'tetradic',
+	'monochromatic',
+] as const
+export type Harmony = (typeof harmonies)[number]
 
 export const paletteRoles = ['primary', 'secondary', 'accent', 'highlight', 'neutral'] as const
-export type PaletteRole = typeof paletteRoles[number]
+export type PaletteRole = (typeof paletteRoles)[number]
 
 const hueOffsetsByHarmony: Record<Harmony, Record<PaletteRole, number>> = {
-	'analogous': { primary: 0, secondary: 30, accent: -30, highlight: 60, neutral: 0 },
-	'complementary': { primary: 0, secondary: 180, accent: 180, highlight: 0, neutral: 0 },
+	analogous: { primary: 0, secondary: 30, accent: -30, highlight: 60, neutral: 0 },
+	complementary: { primary: 0, secondary: 180, accent: 180, highlight: 0, neutral: 0 },
 	'split-complementary': { primary: 0, secondary: 150, accent: 210, highlight: 0, neutral: 0 },
-	'triadic': { primary: 0, secondary: 120, accent: 240, highlight: 0, neutral: 0 },
-	'tetradic': { primary: 0, secondary: 90, accent: 180, highlight: 270, neutral: 0 },
-	'monochromatic': { primary: 0, secondary: 0, accent: 0, highlight: 0, neutral: 0 },
+	triadic: { primary: 0, secondary: 120, accent: 240, highlight: 0, neutral: 0 },
+	tetradic: { primary: 0, secondary: 90, accent: 180, highlight: 270, neutral: 0 },
+	monochromatic: { primary: 0, secondary: 0, accent: 0, highlight: 0, neutral: 0 },
 }
 
-export const roleRanges: Record<PaletteRole, { lightness: [number, number], chroma: [number, number] }> = {
+export const roleRanges: Record<PaletteRole, { lightness: [number, number]; chroma: [number, number] }> = {
 	primary: { lightness: [0.48, 0.6], chroma: [0.12, 0.19] },
 	secondary: { lightness: [0.6, 0.72], chroma: [0.09, 0.15] },
 	accent: { lightness: [0.68, 0.79], chroma: [0.13, 0.2] },
@@ -55,7 +62,11 @@ export function flatteringLightness(lightness: number, hue: number) {
 	return hue >= min && hue <= max ? Math.max(lightness, minYellowLightness) : lightness
 }
 
-export function generatePalette({ rng = Math.random, harmony = pick(rng, harmonies), locked = [] }: GeneratePaletteOptions = {}): Oklch[] {
+export function generatePalette({
+	rng = Math.random,
+	harmony = pick(rng, harmonies),
+	locked = [],
+}: GeneratePaletteOptions = {}): Oklch[] {
 	const offsets = hueOffsetsByHarmony[harmony]
 	const anchorHue = anchorHueFrom(locked, offsets, rng)
 	return paletteRoles.map((role, index) => {
@@ -81,7 +92,7 @@ export interface SuggestPalettesOptions {
 
 export function suggestPalettes({ base, locked = [], rng = Math.random }: SuggestPalettesOptions): Oklch[][] {
 	const kept = [base, ...paletteRoles.slice(1).map((_, index) => locked[index + 1] ?? null)]
-	return shuffle(rng, harmonies).map(harmony => generatePalette({ rng, harmony, locked: kept }))
+	return shuffle(rng, harmonies).map((harmony) => generatePalette({ rng, harmony, locked: kept }))
 }
 
 export const startingColorCount = 8

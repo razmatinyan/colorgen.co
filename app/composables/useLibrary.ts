@@ -1,11 +1,22 @@
 import { createSharedComposable, useLocalStorage } from '@vueuse/core'
-import { clearRecents, emptyLibrary, parseLibrary, removeSaved, saveItem, upsertRecent, type LibraryData, type RecentItem, type RecentKind, type SavedItem } from '~/lib/library'
+import {
+	clearRecents,
+	emptyLibrary,
+	parseLibrary,
+	removeSaved,
+	saveItem,
+	upsertRecent,
+	type LibraryData,
+	type RecentItem,
+	type RecentKind,
+	type SavedItem,
+} from '~/lib/library'
 
 const storageKey = 'sygen-library'
 
 export const useLibrary = createSharedComposable(() => {
 	const library = useLocalStorage<LibraryData>(storageKey, emptyLibrary(), {
-		serializer: { read: parseLibrary, write: value => JSON.stringify(value) },
+		serializer: { read: parseLibrary, write: (value) => JSON.stringify(value) },
 		initOnMounted: true,
 	})
 
@@ -35,9 +46,13 @@ export function useRecentTracking(kind: RecentKind, snapshot: () => RecentSnapsh
 
 	onMounted(() => {
 		const id = `${Date.now().toString(36)}-${Math.random().toString(36).slice(2, 8)}`
-		watch(() => route.fullPath, (path) => {
-			const current = snapshot()
-			if (current) rememberRecent({ id, kind, path, visitedAt: Date.now(), ...current })
-		}, { immediate: true })
+		watch(
+			() => route.fullPath,
+			(path) => {
+				const current = snapshot()
+				if (current) rememberRecent({ id, kind, path, visitedAt: Date.now(), ...current })
+			},
+			{ immediate: true },
+		)
 	})
 }

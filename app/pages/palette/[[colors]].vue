@@ -20,7 +20,10 @@ const palette = usePaletteGenerator(initialColors)
 provide(paletteGeneratorKey, palette)
 
 const savePath = computed(() => router.resolve({ params: { colors: toColorsParam(palette.colors.value) } }).fullPath)
-const savedSnapshot = () => ({ title: `${describeColor(palette.colors.value[0]!)} palette`, colors: palette.hexes.value })
+const savedSnapshot = () => ({
+	title: `${describeColor(palette.colors.value[0]!)} palette`,
+	colors: palette.hexes.value,
+})
 useRecentTracking('palette', () => (colorsParam.value ? savedSnapshot() : null))
 
 const syncUrl = useDebounceFn((param: string) => {
@@ -30,10 +33,15 @@ watch(palette.hexes, () => syncUrl(toColorsParam(palette.colors.value)))
 
 const siteUrl = 'https://sygen.app'
 useSeoMeta({
-	title: () => (colorsParam.value
-		? `Palette ${colorsParam.value.split('-').map(hex => `#${hex.toUpperCase()}`).join(', ')} | Sygen`
-		: 'Color Palette Generator from Your Color, with Live UI Preview | Sygen'),
-	description: 'Start from your color and pick from six palettes built around it in OKLCH. Fine-tune every color, check text contrast, and preview it on real UI components. Free, no sign-up.',
+	title: () =>
+		colorsParam.value
+			? `Palette ${colorsParam.value
+					.split('-')
+					.map((hex) => `#${hex.toUpperCase()}`)
+					.join(', ')} | Sygen`
+			: 'Color Palette Generator from Your Color, with Live UI Preview | Sygen',
+	description:
+		'Start from your color and pick from six palettes built around it in OKLCH. Fine-tune every color, check text contrast, and preview it on real UI components. Free, no sign-up.',
 	ogTitle: 'Color Palette Generator from Your Color, with Live UI Preview | Sygen',
 	ogUrl: () => `${siteUrl}${route.path}`,
 })
@@ -51,8 +59,7 @@ const previewModes = [
 
 const primaryHex = computed(() => toHex(palette.colors.value[0]!))
 const builderPath = computed(() => `/builder/${toHexPart(palette.primary.value)}`)
-useHead({
-})
+useHead({})
 
 async function exportCss() {
 	await copy(palette.cssExport())
@@ -95,7 +102,13 @@ onKeyStroke(['z', 'Z'], (event) => {
 		<AppTopBar title="Palette generator">
 			<Tooltip>
 				<TooltipTrigger as-child>
-					<Button variant="ghost" size="icon-sm" aria-label="Undo" :disabled="!palette.canUndo.value" @click="palette.undo()">
+					<Button
+						variant="ghost"
+						size="icon-sm"
+						aria-label="Undo"
+						:disabled="!palette.canUndo.value"
+						@click="palette.undo()"
+					>
 						<Icon name="lucide:undo-2" />
 					</Button>
 				</TooltipTrigger>
@@ -103,7 +116,13 @@ onKeyStroke(['z', 'Z'], (event) => {
 			</Tooltip>
 			<Tooltip>
 				<TooltipTrigger as-child>
-					<Button variant="ghost" size="icon-sm" aria-label="Redo" :disabled="!palette.canRedo.value" @click="palette.redo()">
+					<Button
+						variant="ghost"
+						size="icon-sm"
+						aria-label="Redo"
+						:disabled="!palette.canRedo.value"
+						@click="palette.redo()"
+					>
 						<Icon name="lucide:redo-2" />
 					</Button>
 				</TooltipTrigger>
@@ -122,7 +141,8 @@ onKeyStroke(['z', 'Z'], (event) => {
 				<TooltipTrigger as-child>
 					<Button as-child size="sm">
 						<NuxtLink :to="builderPath" aria-label="Use in builder">
-							<Icon name="lucide:blocks" data-icon="inline-start" /> <span class="hidden sm:inline">Use in builder</span>
+							<Icon name="lucide:blocks" data-icon="inline-start" />
+							<span class="hidden sm:inline">Use in builder</span>
 						</NuxtLink>
 					</Button>
 				</TooltipTrigger>
@@ -130,11 +150,15 @@ onKeyStroke(['z', 'Z'], (event) => {
 			</Tooltip>
 		</AppTopBar>
 
-		<div class="grid min-h-0 flex-1 grid-cols-[minmax(0,1fr)] content-start gap-4 p-4 lg:grid-cols-[23rem_minmax(0,1fr)] lg:content-stretch">
+		<div
+			class="grid min-h-0 flex-1 grid-cols-[minmax(0,1fr)] content-start gap-4 p-4 lg:grid-cols-[23rem_minmax(0,1fr)] lg:content-stretch"
+		>
 			<Card size="sm" class="min-h-0">
 				<CardHeader>
 					<CardTitle>Your colors</CardTitle>
-					<CardDescription>Enter your color, then pick an option. Lock colors to keep them in every option.</CardDescription>
+					<CardDescription
+						>Enter your color, then pick an option. Lock colors to keep them in every option.</CardDescription
+					>
 				</CardHeader>
 				<CardContent class="flex min-h-0 flex-1 flex-col gap-6 overflow-x-hidden lg:overflow-y-auto">
 					<div class="-mx-2 grid grid-cols-1 gap-1">
@@ -153,7 +177,8 @@ onKeyStroke(['z', 'Z'], (event) => {
 							<Tooltip>
 								<TooltipTrigger as-child>
 									<Button variant="outline" size="sm" aria-label="More options" @click="palette.moreOptions()">
-										<Icon name="lucide:refresh-cw" data-icon="inline-start" /> <span class="hidden sm:inline">More options</span>
+										<Icon name="lucide:refresh-cw" data-icon="inline-start" />
+										<span class="hidden sm:inline">More options</span>
 									</Button>
 								</TooltipTrigger>
 								<TooltipContent>Six new palettes around your color <Kbd>Space</Kbd></TooltipContent>

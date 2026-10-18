@@ -1,5 +1,5 @@
 <script setup lang="ts">
-withDefaults(defineProps<{ title: string, titleAs?: 'h1' | 'p' }>(), { titleAs: 'h1' })
+withDefaults(defineProps<{ title: string; titleAs?: 'h1' | 'p' }>(), { titleAs: 'h1' })
 
 const modifierKey = useModifierKey()
 </script>
@@ -10,7 +10,13 @@ const modifierKey = useModifierKey()
 			<TooltipTrigger as-child>
 				<SidebarTrigger class="-ml-1" />
 			</TooltipTrigger>
-			<TooltipContent>Toggle sidebar <KbdGroup><Kbd>{{ modifierKey }}</Kbd><Kbd>B</Kbd></KbdGroup></TooltipContent>
+			<TooltipContent
+				>Toggle sidebar
+				<KbdGroup
+					><Kbd>{{ modifierKey }}</Kbd
+					><Kbd>B</Kbd></KbdGroup
+				></TooltipContent
+			>
 		</Tooltip>
 		<Separator orientation="vertical" class="mr-1 data-[orientation=vertical]:h-4" />
 		<component :is="titleAs" class="min-w-0 truncate text-sm font-medium">{{ title }}</component>

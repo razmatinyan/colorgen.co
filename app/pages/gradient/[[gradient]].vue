@@ -19,10 +19,13 @@ if (gradientParam.value && !initialStops) {
 const generator = useGradientGenerator({ stops: initialStops, options: parseGradientQuery(route.query) })
 provide(gradientGeneratorKey, generator)
 
-const stopHexes = computed(() => generator.stops.value.map(stop => stop.hex))
+const stopHexes = computed(() => generator.stops.value.map((stop) => stop.hex))
 
 const savePath = computed(() => router.resolve(target.value).fullPath)
-const savedSnapshot = () => ({ title: `${generator.stops.value[0]!.description} to ${generator.stops.value.at(-1)!.description.toLowerCase()} gradient`, colors: stopHexes.value })
+const savedSnapshot = () => ({
+	title: `${generator.stops.value[0]!.description} to ${generator.stops.value.at(-1)!.description.toLowerCase()} gradient`,
+	colors: stopHexes.value,
+})
 useRecentTracking('gradient', () => (gradientParam.value ? savedSnapshot() : null))
 
 const target = computed(() => ({
@@ -32,20 +35,22 @@ const target = computed(() => ({
 const syncUrl = useDebounceFn((next: typeof target.value) => {
 	if (router.resolve(next).fullPath !== route.fullPath) router.replace(next)
 }, 250)
-watch(target, next => syncUrl(next), { deep: true })
+watch(target, (next) => syncUrl(next), { deep: true })
 
 const siteUrl = 'https://sygen.app'
 const defaultTitle = 'Gradient Generator: Smooth OKLCH Gradients for CSS and Tailwind | Sygen'
-const pathHexes = computed(() => gradientParam.value?.split('-').map(hex => `#${hex.toUpperCase()}`) ?? [])
+const pathHexes = computed(() => gradientParam.value?.split('-').map((hex) => `#${hex.toUpperCase()}`) ?? [])
 useSeoMeta({
 	title: () => {
-		if (pathHexes.value.length === 2) return `Gradient from ${pathHexes.value[0]} to ${pathHexes.value[1]}: CSS and Tailwind | Sygen`
+		if (pathHexes.value.length === 2)
+			return `Gradient from ${pathHexes.value[0]} to ${pathHexes.value[1]}: CSS and Tailwind | Sygen`
 		if (pathHexes.value.length > 2) return `Gradient: ${pathHexes.value.join(', ')} | Sygen`
 		return defaultTitle
 	},
-	description: () => (pathHexes.value.length
-		? `A ${pathHexes.value.join(' to ')} gradient that stays vivid in the middle, with CSS, Tailwind classes and solid steps to copy.`
-		: 'Make linear, radial and conic gradients that stay vivid in the middle by blending in OKLCH. Copy CSS with a fallback for older browsers, Tailwind classes or solid steps. Free, no sign-up.'),
+	description: () =>
+		pathHexes.value.length
+			? `A ${pathHexes.value.join(' to ')} gradient that stays vivid in the middle, with CSS, Tailwind classes and solid steps to copy.`
+			: 'Make linear, radial and conic gradients that stay vivid in the middle by blending in OKLCH. Copy CSS with a fallback for older browsers, Tailwind classes or solid steps. Free, no sign-up.',
 	ogTitle: defaultTitle,
 	ogUrl: () => `${siteUrl}${route.path}`,
 })
@@ -67,7 +72,7 @@ async function copyCss() {
 
 async function copyLink() {
 	await copy(`${requestUrl.origin}${router.resolve(target.value).fullPath}`)
-	showToast('Link copied', 'success', { description: stopHexes.value.map(hex => hex.toUpperCase()).join(' → ') })
+	showToast('Link copied', 'success', { description: stopHexes.value.map((hex) => hex.toUpperCase()).join(' → ') })
 }
 
 onKeyStroke(['c', 'C'], (event) => {
@@ -99,7 +104,13 @@ onKeyStroke(['z', 'Z'], (event) => {
 		<AppTopBar title="Gradient generator">
 			<Tooltip>
 				<TooltipTrigger as-child>
-					<Button variant="ghost" size="icon-sm" aria-label="Undo" :disabled="!generator.canUndo.value" @click="generator.undo()">
+					<Button
+						variant="ghost"
+						size="icon-sm"
+						aria-label="Undo"
+						:disabled="!generator.canUndo.value"
+						@click="generator.undo()"
+					>
 						<Icon name="lucide:undo-2" />
 					</Button>
 				</TooltipTrigger>
@@ -107,7 +118,13 @@ onKeyStroke(['z', 'Z'], (event) => {
 			</Tooltip>
 			<Tooltip>
 				<TooltipTrigger as-child>
-					<Button variant="ghost" size="icon-sm" aria-label="Redo" :disabled="!generator.canRedo.value" @click="generator.redo()">
+					<Button
+						variant="ghost"
+						size="icon-sm"
+						aria-label="Redo"
+						:disabled="!generator.canRedo.value"
+						@click="generator.redo()"
+					>
 						<Icon name="lucide:redo-2" />
 					</Button>
 				</TooltipTrigger>
@@ -126,7 +143,8 @@ onKeyStroke(['z', 'Z'], (event) => {
 				<TooltipTrigger as-child>
 					<Button as-child variant="outline" size="sm">
 						<NuxtLink :to="builderPath" aria-label="Use in builder">
-							<Icon name="lucide:blocks" data-icon="inline-start" /> <span class="hidden sm:inline">Use in builder</span>
+							<Icon name="lucide:blocks" data-icon="inline-start" />
+							<span class="hidden sm:inline">Use in builder</span>
 						</NuxtLink>
 					</Button>
 				</TooltipTrigger>
@@ -142,7 +160,9 @@ onKeyStroke(['z', 'Z'], (event) => {
 			</Tooltip>
 		</AppTopBar>
 
-		<div class="grid min-h-0 flex-1 grid-cols-[minmax(0,1fr)] content-start gap-4 p-4 lg:grid-cols-[23rem_minmax(0,1fr)] lg:content-stretch">
+		<div
+			class="grid min-h-0 flex-1 grid-cols-[minmax(0,1fr)] content-start gap-4 p-4 lg:grid-cols-[23rem_minmax(0,1fr)] lg:content-stretch"
+		>
 			<Card size="sm" class="min-h-0">
 				<CardHeader>
 					<CardTitle>Your gradient</CardTitle>
@@ -154,7 +174,7 @@ onKeyStroke(['z', 'Z'], (event) => {
 						<button
 							v-if="generator.canAdd.value"
 							type="button"
-							class="flex items-center gap-3 rounded-xl p-2.5 text-left text-sm text-muted-foreground outline-none transition-colors hover:bg-muted/50 hover:text-foreground focus-visible:ring-3 focus-visible:ring-ring/50"
+							class="flex items-center gap-3 rounded-xl p-2.5 text-left text-sm text-muted-foreground transition-colors outline-none hover:bg-muted/50 hover:text-foreground focus-visible:ring-3 focus-visible:ring-ring/50"
 							@click="generator.add()"
 						>
 							<span class="grid size-10 shrink-0 place-items-center rounded-lg border border-dashed">

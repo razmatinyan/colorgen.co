@@ -2,31 +2,57 @@
 	<section id="contact">
 		<div class="container">
 			<h1 class="contact-title big-title text-center">Contact</h1>
-			<p class="contact-descr">We would love to hear from you! If you have any questions, comments, or feedback about our website, please don't hesitate to contact us using the form below or write directly to the <a href="mailto:razmatinyan28@gmail.com">razmatinyan28@gmail.com</a></p>
+			<p class="contact-descr">
+				We would love to hear from you! If you have any questions, comments, or feedback about our website, please don't
+				hesitate to contact us using the form below or write directly to the
+				<a href="mailto:razmatinyan28@gmail.com">razmatinyan28@gmail.com</a>
+			</p>
 
 			<div class="form">
-				<form
-						id="form"
-						action="https://formspree.io/f/xrgvewgr"
-						method="POST"
-						@submit.prevent="FormHandler($event)"
-					>
-						<div class="form-row first-row">
-							<label for="name">What's your name?</label>
-							<input v-model="name" id="name" type="text" class="field" name="name" required  placeholder="Raz Matinyan *" />
-						</div>
-						<div class="form-row second-row">
-							<label for="email">What's your email?</label>
-							<input v-model="email" id="email" type="email" class="field" name="email" required  placeholder="razmatinyan28@gmail.com" />
-						</div>
-						<div class="form-row third-row">
-							<label for="message">Your message</label>
-							<textarea v-model="message" id="message" type="text" class="field" name="message" rows="7" required placeholder="Hello. Can you help me with... *"></textarea>
-						</div>
-						<div class="form-button">
-							<button id="random-btn" :disabled="disableButton" class="gnr-btn btn btn-medium btn-blue btn-min-width-200">Submit</button>
-						</div>
-					</form>
+				<form id="form" action="https://formspree.io/f/xrgvewgr" method="POST" @submit.prevent="FormHandler($event)">
+					<div class="form-row first-row">
+						<label for="name">What's your name?</label>
+						<input
+							v-model="name"
+							id="name"
+							type="text"
+							class="field"
+							name="name"
+							required
+							placeholder="Raz Matinyan *"
+						/>
+					</div>
+					<div class="form-row second-row">
+						<label for="email">What's your email?</label>
+						<input
+							v-model="email"
+							id="email"
+							type="email"
+							class="field"
+							name="email"
+							required
+							placeholder="razmatinyan28@gmail.com"
+						/>
+					</div>
+					<div class="form-row third-row">
+						<label for="message">Your message</label>
+						<textarea
+							v-model="message"
+							id="message"
+							type="text"
+							class="field"
+							name="message"
+							rows="7"
+							required
+							placeholder="Hello. Can you help me with... *"
+						></textarea>
+					</div>
+					<div class="form-button">
+						<button id="random-btn" :disabled="disableButton" class="gnr-btn btn btn-medium btn-blue btn-min-width-200">
+							Submit
+						</button>
+					</div>
+				</form>
 			</div>
 		</div>
 
@@ -40,7 +66,6 @@
 				</DialogHeader>
 			</DialogContent>
 		</Dialog>
-
 	</section>
 </template>
 
@@ -49,32 +74,34 @@ useHead({
 	link: [
 		{
 			rel: 'canonical',
-			href: 'https://sygen.app/contact'
+			href: 'https://sygen.app/contact',
 		},
-	]
+	],
 })
 
 useSeoMeta({
 	title: 'Contact | Sygen',
-	description: "We would love to hear from you! If you have any questions, comments, or feedback about our website, please don't hesitate to contact us using the form.",
+	description:
+		"We would love to hear from you! If you have any questions, comments, or feedback about our website, please don't hesitate to contact us using the form.",
 	keywords: 'Color Palette, Contact, Generate, Generator, Sygen',
 	ogTitle: 'Contact | Sygen',
-	ogDescription: "We would love to hear from you! If you have any questions, comments, or feedback about our website, please don't hesitate to contact us using the form.",
+	ogDescription:
+		"We would love to hear from you! If you have any questions, comments, or feedback about our website, please don't hesitate to contact us using the form.",
 	ogUrl: `https://sygen.app/contact`,
 })
 
-const resultDialogOpen = ref(false);
-const customModalTitle = ref('');
-const name = ref('');
-const email = ref('');
-const message = ref('');
-const disableButton = ref(false);
-const formResult = ref('');
+const resultDialogOpen = ref(false)
+const customModalTitle = ref('')
+const name = ref('')
+const email = ref('')
+const message = ref('')
+const disableButton = ref(false)
+const formResult = ref('')
 
 async function FormHandler(event) {
-	const form = event.currentTarget;
-	const data = new FormData(form);
-	disableButton.value = true;
+	const form = event.currentTarget
+	const data = new FormData(form)
+	disableButton.value = true
 
 	try {
 		const response = await fetch(form.action, {
@@ -83,22 +110,22 @@ async function FormHandler(event) {
 			headers: {
 				Accept: 'application/json',
 			},
-		});
+		})
 
 		if (response.ok) {
-			customModalTitle.value = 'Thank you!';
-			formResult.value = 'We will answer you as soon as possible!';
-			resetForm();
+			customModalTitle.value = 'Thank you!'
+			formResult.value = 'We will answer you as soon as possible!'
+			resetForm()
 		} else {
-			customModalTitle.value = 'Oops...';
-			formResult.value = 'There was a problem while submitting your form. Try again later.';
+			customModalTitle.value = 'Oops...'
+			formResult.value = 'There was a problem while submitting your form. Try again later.'
 		}
 	} catch {
-		customModalTitle.value = 'Oops...';
-		formResult.value = 'There was a problem while submitting your form. Try again later.';
+		customModalTitle.value = 'Oops...'
+		formResult.value = 'There was a problem while submitting your form. Try again later.'
 	} finally {
-		disableButton.value = false;
-		resultDialogOpen.value = true;
+		disableButton.value = false
+		resultDialogOpen.value = true
 	}
 }
 
@@ -126,7 +153,7 @@ function resetForm() {
 .contact-descr > a {
 	display: inline-block;
 	color: inherit;
-	transition: color .2s ease;
+	transition: color 0.2s ease;
 }
 .contact-descr > a:hover {
 	color: var(--blue);

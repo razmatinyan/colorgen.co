@@ -14,13 +14,18 @@ const forwardedProps = useForwardProps(delegatedProps)
 </script>
 
 <template>
-  <SelectScrollUpButton
-    data-slot="select-scroll-up-button"
-    v-bind="forwardedProps"
-    :class="cn('bg-popover z-10 flex cursor-default items-center justify-center py-1 [&_svg:not([class*=size-])]:size-4', props.class)"
-  >
-    <slot>
-      <Icon name="lucide:chevron-up" />
-    </slot>
-  </SelectScrollUpButton>
+	<SelectScrollUpButton
+		data-slot="select-scroll-up-button"
+		v-bind="forwardedProps"
+		:class="
+			cn(
+				'z-10 flex cursor-default items-center justify-center bg-popover py-1 [&_svg:not([class*=size-])]:size-4',
+				props.class,
+			)
+		"
+	>
+		<slot>
+			<Icon name="lucide:chevron-up" />
+		</slot>
+	</SelectScrollUpButton>
 </template>

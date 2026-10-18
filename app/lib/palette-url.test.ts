@@ -5,11 +5,11 @@ import { parseColorsParam, parseHexPart, toColorsParam, toHexPart } from './pale
 describe('parseColorsParam', () => {
 	it('parses dash-separated hex colors', () => {
 		const colors = parseColorsParam('326789-78a6c8-e9eef2-e65c4f')!
-		expect(colors.map(color => toHex(color))).toEqual(['#326789', '#78a6c8', '#e9eef2', '#e65c4f'])
+		expect(colors.map((color) => toHex(color))).toEqual(['#326789', '#78a6c8', '#e9eef2', '#e65c4f'])
 	})
 
 	it('accepts short and uppercase hex', () => {
-		expect(parseColorsParam('F00-0f0')!.map(color => toHex(color))).toEqual(['#ff0000', '#00ff00'])
+		expect(parseColorsParam('F00-0f0')!.map((color) => toHex(color))).toEqual(['#ff0000', '#00ff00'])
 	})
 
 	it.each([undefined, '', 'red-blue', '326789-zzz', '326789--e65c4f', 'rgb(1,2,3)', '12345'])('rejects %j', (param) => {

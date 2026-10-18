@@ -45,11 +45,14 @@ describe('suggestDistinctColor', () => {
 		for (const input of existing) expect(Math.abs(hueDifference(color.h, parseColor(input)!.h))).toBeGreaterThan(60)
 	})
 
-	it.each([[[]], [['#808080']], [['#ffffff', '#000000']], [['#1f6cb0']]])('stays in sRGB and colored for %j', (existing) => {
-		const color = suggestDistinctColor(existing)
-		expect(isInGamut(color)).toBe(true)
-		expect(color.c).toBeGreaterThan(0.08)
-	})
+	it.each([[[]], [['#808080']], [['#ffffff', '#000000']], [['#1f6cb0']]])(
+		'stays in sRGB and colored for %j',
+		(existing) => {
+			const color = suggestDistinctColor(existing)
+			expect(isInGamut(color)).toBe(true)
+			expect(color.c).toBeGreaterThan(0.08)
+		},
+	)
 
 	it('is deterministic', () => {
 		expect(suggestDistinctColor(['#1f6cb0', '#16a34a'])).toEqual(suggestDistinctColor(['#1f6cb0', '#16a34a']))

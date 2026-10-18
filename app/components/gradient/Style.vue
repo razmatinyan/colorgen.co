@@ -11,7 +11,7 @@ const shapes = [
 	{ value: 'conic', label: 'Conic' },
 ] as const
 
-const blendDetails: Record<GradientSpace, { label: string, hint: string }> = {
+const blendDetails: Record<GradientSpace, { label: string; hint: string }> = {
 	oklch: { label: 'Vivid', hint: 'Stays bright in the middle · OKLCH' },
 	oklab: { label: 'Smooth', hint: 'Even lightness, softer middle · OKLab' },
 	srgb: { label: 'Classic', hint: 'Plain CSS default, can go gray · sRGB' },
@@ -25,7 +25,10 @@ const angle = computed({
 	get: () => generator.state.value.angle,
 	set: (value: number) => generator.setAngle(value),
 })
-const angleTrack = computed(() => `linear-gradient(to right, ${generator.blends.value.find(blend => blend.space === generator.state.value.space)!.hexes.join(', ')})`)
+const angleTrack = computed(
+	() =>
+		`linear-gradient(to right, ${generator.blends.value.find((blend) => blend.space === generator.state.value.space)!.hexes.join(', ')})`,
+)
 const blendLabelId = useId()
 </script>
 
@@ -44,7 +47,7 @@ const blendLabelId = useId()
 			:max="359"
 			:step="1"
 			:track="angleTrack"
-			:format="value => `${Math.round(value)}°`"
+			:format="(value) => `${Math.round(value)}°`"
 			@commit="generator.snapshot()"
 		/>
 
@@ -57,7 +60,7 @@ const blendLabelId = useId()
 					type="button"
 					role="radio"
 					:aria-checked="generator.state.value.space === blend.space"
-					class="grid gap-2 rounded-xl p-2.5 text-left outline-none transition-colors focus-visible:ring-3 focus-visible:ring-ring/50"
+					class="grid gap-2 rounded-xl p-2.5 text-left transition-colors outline-none focus-visible:ring-3 focus-visible:ring-ring/50"
 					:class="generator.state.value.space === blend.space ? 'bg-muted' : 'hover:bg-muted/50'"
 					@click="generator.setSpace(blend.space)"
 				>
@@ -65,7 +68,11 @@ const blendLabelId = useId()
 						<span class="font-medium">{{ blendDetails[blend.space].label }}</span>
 						<Icon v-if="generator.state.value.space === blend.space" name="lucide:check" class="size-4" />
 					</span>
-					<span class="h-3 rounded-full ring-1 ring-foreground/10 ring-inset" :style="{ background: `linear-gradient(to right, ${blend.hexes.join(', ')})` }" aria-hidden="true" />
+					<span
+						class="h-3 rounded-full ring-1 ring-foreground/10 ring-inset"
+						:style="{ background: `linear-gradient(to right, ${blend.hexes.join(', ')})` }"
+						aria-hidden="true"
+					/>
 					<span class="text-sm text-muted-foreground">{{ blendDetails[blend.space].hint }}</span>
 				</button>
 			</div>

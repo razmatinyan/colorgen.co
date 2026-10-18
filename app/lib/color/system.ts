@@ -4,7 +4,7 @@ import { statusKinds, suggestStatusColors, type StatusKind } from './status'
 import type { Oklch } from './types'
 
 export const systemColorIds = ['brand', 'brand2', 'neutral', ...statusKinds] as const
-export type SystemColorId = typeof systemColorIds[number]
+export type SystemColorId = (typeof systemColorIds)[number]
 
 export interface SystemSettings {
 	brand: Oklch
@@ -34,11 +34,18 @@ export function generateSystem({ brand, brand2, neutralTint, status }: SystemSet
 	return {
 		brand: anchoredScale('brand', brand),
 		brand2: brand2 ? anchoredScale('brand2', brand2) : null,
-		neutral: { id: 'neutral', base: neutralSwatches[neutralBaseIndex]!.color, anchorStep: null, swatches: neutralSwatches },
-		...Object.fromEntries(statusKinds.map(kind => [kind, anchoredScale(kind, status[kind] ?? suggested[kind])])) as Record<StatusKind, SystemScale>,
+		neutral: {
+			id: 'neutral',
+			base: neutralSwatches[neutralBaseIndex]!.color,
+			anchorStep: null,
+			swatches: neutralSwatches,
+		},
+		...(Object.fromEntries(
+			statusKinds.map((kind) => [kind, anchoredScale(kind, status[kind] ?? suggested[kind])]),
+		) as Record<StatusKind, SystemScale>),
 	}
 }
 
 export function systemScales(system: ColorSystem): SystemScale[] {
-	return systemColorIds.map(id => system[id]).filter((scale): scale is SystemScale => scale !== null)
+	return systemColorIds.map((id) => system[id]).filter((scale): scale is SystemScale => scale !== null)
 }

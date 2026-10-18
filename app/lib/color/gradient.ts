@@ -5,7 +5,7 @@ import { hueDifference, normalize, wrapHue } from './parse'
 import type { ColorInput, Oklch } from './types'
 
 export const gradientSpaces = ['oklch', 'oklab', 'srgb'] as const
-export type GradientSpace = typeof gradientSpaces[number]
+export type GradientSpace = (typeof gradientSpaces)[number]
 
 export const minGradientStops = 2
 export const maxGradientStops = 5
@@ -21,7 +21,7 @@ const lerp = (from: number, to: number, t: number) => from + (to - from) * t
 const clamp = (value: number, min: number, max: number) => Math.min(max, Math.max(min, value))
 const culori = ({ l, c, h }: Oklch) => ({ mode: 'oklch' as const, l, c, h })
 
-function fromCulori(color: { l?: number, c?: number, h?: number }, fallbackHue: number): Oklch {
+function fromCulori(color: { l?: number; c?: number; h?: number }, fallbackHue: number): Oklch {
 	return normalize({ l: color.l ?? 0, c: color.c ?? 0, h: color.h ?? fallbackHue })
 }
 
@@ -34,14 +34,24 @@ function mixInOklch(a: Oklch, b: Oklch, t: number): Oklch {
 function mixInOklab(a: Oklch, b: Oklch, t: number): Oklch {
 	const from = toOklab(culori(a))
 	const to = toOklab(culori(b))
-	const mixed = toOklchColor({ mode: 'oklab', l: lerp(from.l, to.l, t), a: lerp(from.a, to.a, t), b: lerp(from.b, to.b, t) })
+	const mixed = toOklchColor({
+		mode: 'oklab',
+		l: lerp(from.l, to.l, t),
+		a: lerp(from.a, to.a, t),
+		b: lerp(from.b, to.b, t),
+	})
 	return fromCulori(mixed, t < 0.5 ? a.h : b.h)
 }
 
 function mixInSrgb(a: Oklch, b: Oklch, t: number): Oklch {
 	const from = toRgb(culori(a))
 	const to = toRgb(culori(b))
-	const mixed = toOklchColor({ mode: 'rgb', r: lerp(from.r, to.r, t), g: lerp(from.g, to.g, t), b: lerp(from.b, to.b, t) })
+	const mixed = toOklchColor({
+		mode: 'rgb',
+		r: lerp(from.r, to.r, t),
+		g: lerp(from.g, to.g, t),
+		b: lerp(from.b, to.b, t),
+	})
 	return fromCulori(mixed, t < 0.5 ? a.h : b.h)
 }
 
@@ -106,7 +116,8 @@ export function suggestGradients(baseInput: ColorInput): GradientSuggestion[] {
 
 export function suggestNextStop(stops: readonly ColorInput[]): Oklch {
 	const last = toGamutOklch(stops.at(-1) ?? { l: 0.6, c: 0.15, h: 250 })
-	if (last.c < huelessChroma) return normalize(toGamutOklch({ ...last, l: last.l > 0.5 ? last.l - 0.25 : last.l + 0.25 }))
+	if (last.c < huelessChroma)
+		return normalize(toGamutOklch({ ...last, l: last.l > 0.5 ? last.l - 0.25 : last.l + 0.25 }))
 	return flattering({ ...last, h: wrapHue(last.h + 40) })
 }
 

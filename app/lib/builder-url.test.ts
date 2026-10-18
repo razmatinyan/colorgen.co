@@ -1,6 +1,13 @@
 import { describe, expect, it } from 'vitest'
 import { defaultNeutralTint, parseColor, toHex } from './color'
-import { parseBrandsParam, parseBuilderQuery, parseTokensParam, toBrandsParam, toBuilderQuery, toTokensParam } from './builder-url'
+import {
+	parseBrandsParam,
+	parseBuilderQuery,
+	parseTokensParam,
+	toBrandsParam,
+	toBuilderQuery,
+	toTokensParam,
+} from './builder-url'
 
 describe('parseBuilderQuery', () => {
 	it('falls back to defaults for an empty query', () => {
@@ -31,7 +38,11 @@ describe('parseBuilderQuery', () => {
 	})
 
 	it('ignores unknown keys and non-string values', () => {
-		expect(parseBuilderQuery({ brand: '000000', tint: 40, danger: null })).toEqual({ neutralTint: defaultNeutralTint, status: {}, tokens: {} })
+		expect(parseBuilderQuery({ brand: '000000', tint: 40, danger: null })).toEqual({
+			neutralTint: defaultNeutralTint,
+			status: {},
+			tokens: {},
+		})
 	})
 })
 
@@ -41,12 +52,22 @@ describe('toBuilderQuery', () => {
 	})
 
 	it('writes the tint as a whole percentage and status colors as hex', () => {
-		expect(toBuilderQuery({ neutralTint: 0.456, status: { warning: parseColor('#d97706')! }, tokens: { ring: { dark: 'white' } } }))
-			.toEqual({ tint: '46', warning: 'd97706', tokens: 'ring.dark~white' })
+		expect(
+			toBuilderQuery({
+				neutralTint: 0.456,
+				status: { warning: parseColor('#d97706')! },
+				tokens: { ring: { dark: 'white' } },
+			}),
+		).toEqual({ tint: '46', warning: 'd97706', tokens: 'ring.dark~white' })
 	})
 
 	it('round-trips with parseBuilderQuery', () => {
-		const query = { tint: '12', success: '15803d', info: '0369a1', tokens: 'primary.light~brand.700,primary.dark~brand.300,muted-foreground.light~neutral.700' }
+		const query = {
+			tint: '12',
+			success: '15803d',
+			info: '0369a1',
+			tokens: 'primary.light~brand.700,primary.dark~brand.300,muted-foreground.light~neutral.700',
+		}
 		expect(toBuilderQuery(parseBuilderQuery(query))).toEqual(query)
 	})
 })
@@ -89,7 +110,9 @@ describe('parseTokensParam', () => {
 	})
 
 	it('writes overrides in token order', () => {
-		expect(toTokensParam({ ring: { light: 'white' }, background: { dark: 'neutral.900' } })).toBe('background.dark~neutral.900,ring.light~white')
+		expect(toTokensParam({ ring: { light: 'white' }, background: { dark: 'neutral.900' } })).toBe(
+			'background.dark~neutral.900,ring.light~white',
+		)
 		expect(toTokensParam({})).toBe('')
 	})
 })

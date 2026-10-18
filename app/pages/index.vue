@@ -8,7 +8,8 @@ provide(designSystemBuilderKey, demo.builder)
 
 const siteUrl = 'https://sygen.app'
 const title = 'Sygen: Turn your brand color into a complete design system'
-const description = 'Brand, neutral and status color scales, light and dark tokens that pass WCAG, and exports for Tailwind, shadcn, CSS and Figma, from one brand color. Free, no sign-up.'
+const description =
+	'Brand, neutral and status color scales, light and dark tokens that pass WCAG, and exports for Tailwind, shadcn, CSS and Figma, from one brand color. Free, no sign-up.'
 
 useSeoMeta({
 	title,

@@ -4,9 +4,21 @@ import { landingDemoKey } from '~/composables/useLandingDemo'
 const { builder, builderPath } = inject(landingDemoKey)!
 
 const features = [
-	{ icon: 'lucide:swatch-book', title: 'Edit where you look', text: 'Every color opens right where it is listed, with plain Lightness, Intensity and Hue sliders.' },
-	{ icon: 'lucide:layers', title: 'Neutrals that belong to you', text: 'Grays carry a touch of your brand hue. Choose how much.' },
-	{ icon: 'lucide:link', title: 'Every change is a link', text: 'The whole system lives in the URL. Share it, bookmark it, come back later.' },
+	{
+		icon: 'lucide:swatch-book',
+		title: 'Edit where you look',
+		text: 'Every color opens right where it is listed, with plain Lightness, Intensity and Hue sliders.',
+	},
+	{
+		icon: 'lucide:layers',
+		title: 'Neutrals that belong to you',
+		text: 'Grays carry a touch of your brand hue. Choose how much.',
+	},
+	{
+		icon: 'lucide:link',
+		title: 'Every change is a link',
+		text: 'The whole system lives in the URL. Share it, bookmark it, come back later.',
+	},
 ]
 </script>
 
@@ -20,7 +32,13 @@ const features = [
 					description="Buttons, forms, alerts, charts and navigation, rendered with your tokens. Switch the site theme to see dark mode."
 				/>
 				<ul class="grid gap-4 sm:grid-cols-3 lg:grid-cols-1 xl:grid-cols-3">
-					<LandingReveal v-for="(feature, index) in features" :key="feature.title" as="li" :delay="index * 90" class="grid content-start gap-1.5">
+					<LandingReveal
+						v-for="(feature, index) in features"
+						:key="feature.title"
+						as="li"
+						:delay="index * 90"
+						class="grid content-start gap-1.5"
+					>
 						<Icon :name="feature.icon" class="size-5 text-muted-foreground" />
 						<p class="font-medium">{{ feature.title }}</p>
 						<p class="text-sm text-muted-foreground">{{ feature.text }}</p>
@@ -49,15 +67,20 @@ const features = [
 									class="flex items-center gap-3 rounded-xl p-2"
 									:class="index === 0 && 'bg-muted'"
 								>
-									<span class="size-8 shrink-0 rounded-lg ring-1 ring-foreground/10 ring-inset transition-colors duration-700" :style="{ background: color.hex }" />
+									<span
+										class="size-8 shrink-0 rounded-lg ring-1 ring-foreground/10 transition-colors duration-700 ring-inset"
+										:style="{ background: color.hex }"
+									/>
 									<span class="min-w-0 flex-1">
 										<span class="block truncate text-sm font-medium">{{ color.label }}</span>
-										<span class="block truncate text-xs text-muted-foreground tabular-nums">{{ color.hex.toUpperCase() }}</span>
+										<span class="block truncate text-xs text-muted-foreground tabular-nums">{{
+											color.hex.toUpperCase()
+										}}</span>
 									</span>
 								</div>
 							</div>
 						</div>
-						<div class="relative min-w-0 overflow-hidden p-4 mask-b-from-75%">
+						<div class="relative min-w-0 overflow-hidden mask-b-from-75% p-4">
 							<BuilderPreview mode="light" class="dark:hidden" />
 							<BuilderPreview mode="dark" class="hidden dark:block" />
 						</div>

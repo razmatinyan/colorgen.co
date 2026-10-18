@@ -60,18 +60,31 @@ export function useImageColors() {
 	const { showToast } = useAppToast()
 
 	const extracted = computed(() => (pixels.value ? extractColors(pixels.value, { count: count.value }) : []))
-	const colors = computed<ImageColorItem[]>(() => extracted.value.map(({ hex, color, share }) => ({ hex, name: describeColor(color), share })))
+	const colors = computed<ImageColorItem[]>(() =>
+		extracted.value.map(({ hex, color, share }) => ({ hex, name: describeColor(color), share })),
+	)
 	const suggestedBrand = computed(() => suggestBrandColor(extracted.value))
-	const brand = computed(() => colors.value.find(color => color.hex === (suggestedBrand.value ?? extracted.value[0])?.hex) ?? null)
+	const brand = computed(
+		() => colors.value.find((color) => color.hex === (suggestedBrand.value ?? extracted.value[0])?.hex) ?? null,
+	)
 	const isColorful = computed(() => suggestedBrand.value !== null)
 	const bare = (hex: string) => hex.slice(1)
 	const builderPath = computed(() => (brand.value ? `/builder/${bare(brand.value.hex)}` : '/builder'))
 	const palettePath = computed(() => {
 		if (!brand.value) return '/palette'
-		const others = colors.value.filter(color => color.hex !== brand.value!.hex)
-		return `/palette/${[brand.value, ...others].slice(0, paletteSize).map(color => bare(color.hex)).join('-')}`
+		const others = colors.value.filter((color) => color.hex !== brand.value!.hex)
+		return `/palette/${[brand.value, ...others]
+			.slice(0, paletteSize)
+			.map((color) => bare(color.hex))
+			.join('-')}`
 	})
-	const scalePath = computed(() => `/scale/${colors.value.slice(0, maxScaleColors).map(color => bare(color.hex)).join('-')}`)
+	const scalePath = computed(
+		() =>
+			`/scale/${colors.value
+				.slice(0, maxScaleColors)
+				.map((color) => bare(color.hex))
+				.join('-')}`,
+	)
 
 	function replaceImage(url: string, name: string) {
 		if (imageUrl.value?.startsWith('blob:')) URL.revokeObjectURL(imageUrl.value)
@@ -81,7 +94,7 @@ export function useImageColors() {
 
 	async function loadFile(file: File) {
 		if (!file.type.startsWith('image/')) {
-			showToast('That file isn\'t an image', 'error', { description: 'Use a JPG, PNG, WebP, GIF or AVIF file.' })
+			showToast("That file isn't an image", 'error', { description: 'Use a JPG, PNG, WebP, GIF or AVIF file.' })
 			return
 		}
 		isLoading.value = true
@@ -90,11 +103,9 @@ export function useImageColors() {
 			pixels.value = await readPixels(bitmap, bitmap.width, bitmap.height)
 			bitmap.close()
 			replaceImage(URL.createObjectURL(file), file.name)
-		}
-		catch {
-			showToast('Couldn\'t read this image', 'error', { description: 'Try another file or format.' })
-		}
-		finally {
+		} catch {
+			showToast("Couldn't read this image", 'error', { description: 'Try another file or format.' })
+		} finally {
 			isLoading.value = false
 		}
 	}

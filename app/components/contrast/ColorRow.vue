@@ -22,7 +22,10 @@ function changeColor(color: Oklch) {
 			:aria-controls="panelId"
 			@click="checker.toggleOpen(color.id)"
 		>
-			<span class="size-10 shrink-0 rounded-lg ring-1 ring-foreground/10 ring-inset transition-colors duration-200" :style="{ background: color.hex }" />
+			<span
+				class="size-10 shrink-0 rounded-lg ring-1 ring-foreground/10 transition-colors duration-200 ring-inset"
+				:style="{ background: color.hex }"
+			/>
 			<span class="min-w-0 flex-1">
 				<span class="flex items-baseline justify-between gap-2">
 					<span class="text-sm font-medium">{{ color.label }}</span>
@@ -37,10 +40,14 @@ function changeColor(color: Oklch) {
 				:color="color.color"
 				:label="color.id === 'text' ? 'Text color' : 'Background color'"
 				@change="changeColor"
-				@update="value => checker.update(color.id, value)"
+				@update="(value) => checker.update(color.id, value)"
 				@commit="checker.snapshot()"
 			/>
-			<ColorChannelSliders :color="color.color" @update="patch => checker.update(color.id, patch)" @commit="checker.snapshot()" />
+			<ColorChannelSliders
+				:color="color.color"
+				@update="(patch) => checker.update(color.id, patch)"
+				@commit="checker.snapshot()"
+			/>
 		</div>
 	</div>
 </template>

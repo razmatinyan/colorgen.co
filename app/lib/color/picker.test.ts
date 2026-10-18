@@ -38,7 +38,12 @@ describe('toHsv / fromHsv', () => {
 })
 
 describe('pureHue', () => {
-	it.each([[0, '#ff0000'], [60, '#ffff00'], [180, '#00ffff'], [300, '#ff00ff']] as const)('hue %d is %s', (h, hex) => {
+	it.each([
+		[0, '#ff0000'],
+		[60, '#ffff00'],
+		[180, '#00ffff'],
+		[300, '#ff00ff'],
+	] as const)('hue %d is %s', (h, hex) => {
 		expect(pureHue(h)).toBe(hex)
 	})
 })

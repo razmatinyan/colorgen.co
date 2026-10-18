@@ -1,5 +1,14 @@
 import type { InjectionKey } from 'vue'
-import { describeColor, generateScale, nearestStepIndex, scaleSteps, suggestDistinctColor, type Oklch, type ScaleStep, type ScaleSwatch } from '~/lib/color'
+import {
+	describeColor,
+	generateScale,
+	nearestStepIndex,
+	scaleSteps,
+	suggestDistinctColor,
+	type Oklch,
+	type ScaleStep,
+	type ScaleSwatch,
+} from '~/lib/color'
 import { maxScales, resolveScaleNames } from '~/lib/scale-url'
 import { defaultBrand } from '~/composables/useDesignSystemBuilder'
 
@@ -28,32 +37,41 @@ export interface ScaleGeneratorInitial {
 export function useScaleGenerator(initial: ScaleGeneratorInitial = {}) {
 	let lastId = 0
 	const colors = initial.colors?.length ? initial.colors : [defaultBrand]
-	const entries = ref<ScaleEntry[]>(colors.map((color, index) => ({ id: ++lastId, color, name: initial.names?.[index] ?? null })))
+	const entries = ref<ScaleEntry[]>(
+		colors.map((color, index) => ({ id: ++lastId, color, name: initial.names?.[index] ?? null })),
+	)
 	const history = useUndoHistory(entries)
 	const selectedId = ref<number | null>(entries.value[0]!.id)
 
-	const names = computed(() => resolveScaleNames(entries.value.map(entry => entry.color), entries.value.map(entry => entry.name)))
+	const names = computed(() =>
+		resolveScaleNames(
+			entries.value.map((entry) => entry.color),
+			entries.value.map((entry) => entry.name),
+		),
+	)
 
-	const scales = computed<ScaleItem[]>(() => entries.value.map((entry, index) => {
-		const swatches = generateScale(entry.color)
-		const anchorIndex = nearestStepIndex(entry.color.l)
-		return {
-			id: entry.id,
-			color: entry.color,
-			name: names.value[index]!,
-			customName: entry.name,
-			description: describeColor(swatches[anchorIndex]!.color),
-			hex: swatches[anchorIndex]!.hex,
-			swatches,
-			anchorStep: scaleSteps[anchorIndex]!,
-		}
-	}))
-	const selected = computed(() => scales.value.find(scale => scale.id === selectedId.value) ?? null)
+	const scales = computed<ScaleItem[]>(() =>
+		entries.value.map((entry, index) => {
+			const swatches = generateScale(entry.color)
+			const anchorIndex = nearestStepIndex(entry.color.l)
+			return {
+				id: entry.id,
+				color: entry.color,
+				name: names.value[index]!,
+				customName: entry.name,
+				description: describeColor(swatches[anchorIndex]!.color),
+				hex: swatches[anchorIndex]!.hex,
+				swatches,
+				anchorStep: scaleSteps[anchorIndex]!,
+			}
+		}),
+	)
+	const selected = computed(() => scales.value.find((scale) => scale.id === selectedId.value) ?? null)
 	const canAdd = computed(() => entries.value.length < maxScales)
 	const canRemove = computed(() => entries.value.length > 1)
 
 	function findEntry(id: number) {
-		return entries.value.find(entry => entry.id === id)
+		return entries.value.find((entry) => entry.id === id)
 	}
 
 	function updateColor(id: number, patch: Partial<Oklch>) {
@@ -71,7 +89,7 @@ export function useScaleGenerator(initial: ScaleGeneratorInitial = {}) {
 	function add() {
 		if (!canAdd.value) return
 		history.snapshot()
-		const entry = { id: ++lastId, color: suggestDistinctColor(entries.value.map(item => item.color)), name: null }
+		const entry = { id: ++lastId, color: suggestDistinctColor(entries.value.map((item) => item.color)), name: null }
 		entries.value = [...entries.value, entry]
 		selectedId.value = entry.id
 	}
@@ -79,14 +97,14 @@ export function useScaleGenerator(initial: ScaleGeneratorInitial = {}) {
 	function remove(id: number) {
 		if (!canRemove.value) return
 		history.snapshot()
-		const index = entries.value.findIndex(entry => entry.id === id)
-		entries.value = entries.value.filter(entry => entry.id !== id)
+		const index = entries.value.findIndex((entry) => entry.id === id)
+		entries.value = entries.value.filter((entry) => entry.id !== id)
 		if (selectedId.value === id) selectedId.value = entries.value[Math.max(0, index - 1)]?.id ?? null
 	}
 
 	function select(offset: number) {
 		const count = entries.value.length
-		const index = entries.value.findIndex(entry => entry.id === selectedId.value)
+		const index = entries.value.findIndex((entry) => entry.id === selectedId.value)
 		const nextIndex = index === -1 ? (offset > 0 ? 0 : count - 1) : (index + offset + count) % count
 		selectedId.value = entries.value[nextIndex]?.id ?? null
 	}

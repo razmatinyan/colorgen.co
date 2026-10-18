@@ -4,11 +4,13 @@ import { paletteGeneratorKey } from '~/composables/usePaletteGenerator'
 
 const palette = inject(paletteGeneratorKey)!
 
-const startingColors = computed(() => palette.startingColors.value.map(color => ({
-	color,
-	hex: toHex(color),
-	name: describeColor(color),
-})))
+const startingColors = computed(() =>
+	palette.startingColors.value.map((color) => ({
+		color,
+		hex: toHex(color),
+		name: describeColor(color),
+	})),
+)
 </script>
 
 <template>
@@ -20,7 +22,12 @@ const startingColors = computed(() => palette.startingColors.value.map(color => 
 			</div>
 			<Tooltip>
 				<TooltipTrigger as-child>
-					<Button variant="ghost" size="icon-sm" aria-label="Show other starting colors" @click="palette.moreStartingColors()">
+					<Button
+						variant="ghost"
+						size="icon-sm"
+						aria-label="Show other starting colors"
+						@click="palette.moreStartingColors()"
+					>
 						<Icon name="lucide:shuffle" />
 					</Button>
 				</TooltipTrigger>
@@ -33,7 +40,7 @@ const startingColors = computed(() => palette.startingColors.value.map(color => 
 					<TooltipTrigger as-child>
 						<button
 							type="button"
-							class="size-9 rounded-full ring-1 ring-foreground/10 ring-inset outline-none transition-transform duration-150 hover:scale-110 focus-visible:ring-3 focus-visible:ring-ring/50 active:scale-95 motion-reduce:transition-none"
+							class="size-9 rounded-full ring-1 ring-foreground/10 transition-transform duration-150 outline-none ring-inset hover:scale-110 focus-visible:ring-3 focus-visible:ring-ring/50 active:scale-95 motion-reduce:transition-none"
 							:style="{ background: item.hex }"
 							:aria-label="`Start from ${item.name}, ${item.hex.toUpperCase()}`"
 							@click="palette.startFrom(item.color)"

@@ -3,7 +3,8 @@ import { buildColorPage, colorPageSummary, colorPageTitle, parseColorPageParam }
 
 definePageMeta({
 	key: 'color',
-	validate: route => parseColorPageParam(typeof route.params.hex === 'string' ? route.params.hex : undefined) !== null,
+	validate: (route) =>
+		parseColorPageParam(typeof route.params.hex === 'string' ? route.params.hex : undefined) !== null,
 })
 
 const route = useRoute()

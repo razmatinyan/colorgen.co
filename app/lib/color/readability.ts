@@ -1,6 +1,16 @@
 import { apcaContrast, wcagLevel, wcagRatio, type WcagLevel } from './contrast'
 import type { ColorSystem } from './system'
-import { nearbyRefs, refHex, resolveTokens, tokenModes, type ResolvedTokens, type TokenMode, type TokenName, type TokenOverrides, type TokenRef } from './tokens'
+import {
+	nearbyRefs,
+	refHex,
+	resolveTokens,
+	tokenModes,
+	type ResolvedTokens,
+	type TokenMode,
+	type TokenName,
+	type TokenOverrides,
+	type TokenRef,
+} from './tokens'
 
 export const textRatio = 4.5
 export const nonTextRatio = 3
@@ -49,28 +59,32 @@ export interface ReadabilityResult {
 }
 
 export function checkReadability(tokens: ResolvedTokens): ReadabilityResult[] {
-	return tokenModes.flatMap(mode => readabilityPairs.map((pair) => {
-		const foreground = tokens[pair.foreground][mode].hex
-		const background = tokens[pair.background][mode].hex
-		const ratio = wcagRatio(foreground, background)
-		return {
-			pair,
-			mode,
-			foreground,
-			background,
-			ratio,
-			level: wcagLevel(ratio),
-			apca: apcaContrast(foreground, background),
-			passes: ratio >= pair.minRatio,
-		}
-	}))
+	return tokenModes.flatMap((mode) =>
+		readabilityPairs.map((pair) => {
+			const foreground = tokens[pair.foreground][mode].hex
+			const background = tokens[pair.background][mode].hex
+			const ratio = wcagRatio(foreground, background)
+			return {
+				pair,
+				mode,
+				foreground,
+				background,
+				ratio,
+				level: wcagLevel(ratio),
+				apca: apcaContrast(foreground, background),
+				passes: ratio >= pair.minRatio,
+			}
+		}),
+	)
 }
 
 function nearestPassing(system: ColorSystem, from: TokenRef, against: string, minRatio: number): TokenRef | null {
-	return nearbyRefs(from).find((ref) => {
-		const hex = refHex(system, ref)
-		return hex !== null && wcagRatio(hex, against) >= minRatio
-	}) ?? null
+	return (
+		nearbyRefs(from).find((ref) => {
+			const hex = refHex(system, ref)
+			return hex !== null && wcagRatio(hex, against) >= minRatio
+		}) ?? null
+	)
 }
 
 export interface ReadabilityFix {
@@ -79,7 +93,12 @@ export interface ReadabilityFix {
 	ref: TokenRef
 }
 
-export function findFix(system: ColorSystem, tokens: ResolvedTokens, pair: ReadabilityPair, mode: TokenMode): ReadabilityFix | null {
+export function findFix(
+	system: ColorSystem,
+	tokens: ResolvedTokens,
+	pair: ReadabilityPair,
+	mode: TokenMode,
+): ReadabilityFix | null {
 	const foreground = tokens[pair.foreground][mode]
 	const background = tokens[pair.background][mode]
 	const foregroundRef = nearestPassing(system, foreground.ref, background.hex, pair.minRatio)
@@ -94,17 +113,24 @@ export function withOverride(overrides: TokenOverrides, { token, mode, ref }: Re
 
 const maxFixRounds = 4
 
-export function fixReadability(system: ColorSystem, overrides: TokenOverrides, only?: { pairId: string, mode: TokenMode }): TokenOverrides {
+export function fixReadability(
+	system: ColorSystem,
+	overrides: TokenOverrides,
+	only?: { pairId: string; mode: TokenMode },
+): TokenOverrides {
 	let next = overrides
 	for (let round = 0; round < maxFixRounds; round++) {
 		const tokens = resolveTokens(system, next)
-		const failing = checkReadability(tokens).filter(result =>
-			!result.passes && (!only || (result.pair.id === only.pairId && result.mode === only.mode)))
+		const failing = checkReadability(tokens).filter(
+			(result) => !result.passes && (!only || (result.pair.id === only.pairId && result.mode === only.mode)),
+		)
 		if (!failing.length) return next
 		let changed = false
 		for (const result of failing) {
 			const current = resolveTokens(system, next)
-			const stillFails = wcagRatio(current[result.pair.foreground][result.mode].hex, current[result.pair.background][result.mode].hex) < result.pair.minRatio
+			const stillFails =
+				wcagRatio(current[result.pair.foreground][result.mode].hex, current[result.pair.background][result.mode].hex) <
+				result.pair.minRatio
 			const fix = stillFails ? findFix(system, current, result.pair, result.mode) : null
 			if (fix) {
 				next = withOverride(next, fix)

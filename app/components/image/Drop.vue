@@ -29,14 +29,22 @@ defineExpose({ chooseFile })
 
 <template>
 	<div class="grid w-full min-w-0 grid-cols-1 gap-5">
-		<input ref="fileInput" type="file" accept="image/*" class="sr-only" tabindex="-1" aria-hidden="true" @change="onFileChange">
+		<input
+			ref="fileInput"
+			type="file"
+			accept="image/*"
+			class="sr-only"
+			tabindex="-1"
+			aria-hidden="true"
+			@change="onFileChange"
+		/>
 
 		<div v-if="image.imageUrl.value" class="grid min-w-0 grid-cols-1 gap-3">
 			<img
 				:src="image.imageUrl.value"
 				:alt="image.imageName.value ?? 'Your image'"
 				class="block max-h-72 w-full max-w-full min-w-0 rounded-xl bg-muted object-contain ring-1 ring-foreground/10"
-			>
+			/>
 			<div class="flex items-center justify-between gap-2">
 				<p class="min-w-0 truncate text-sm text-muted-foreground">{{ image.imageName.value }}</p>
 				<div class="flex shrink-0 gap-1">
@@ -53,7 +61,7 @@ defineExpose({ chooseFile })
 		<button
 			v-else
 			type="button"
-			class="grid min-h-56 place-items-center content-center gap-3 rounded-xl border border-dashed p-6 text-center outline-none transition-colors hover:bg-muted/50 focus-visible:ring-3 focus-visible:ring-ring/50"
+			class="grid min-h-56 place-items-center content-center gap-3 rounded-xl border border-dashed p-6 text-center transition-colors outline-none hover:bg-muted/50 focus-visible:ring-3 focus-visible:ring-ring/50"
 			:class="isDragging && 'border-foreground/40 bg-muted/60'"
 			:aria-busy="image.isLoading.value"
 			@click="chooseFile"
@@ -62,11 +70,17 @@ defineExpose({ chooseFile })
 			@drop.prevent="onDrop"
 		>
 			<span class="grid size-11 place-items-center rounded-full bg-muted">
-				<Icon :name="image.isLoading.value ? 'lucide:loader-circle' : 'lucide:image-up'" class="size-5" :class="image.isLoading.value && 'animate-spin motion-reduce:animate-none'" />
+				<Icon
+					:name="image.isLoading.value ? 'lucide:loader-circle' : 'lucide:image-up'"
+					class="size-5"
+					:class="image.isLoading.value && 'animate-spin motion-reduce:animate-none'"
+				/>
 			</span>
 			<span class="grid gap-1">
 				<span class="text-sm font-medium">Drop an image or choose a file</span>
-				<span class="text-sm text-muted-foreground">Or paste one with <Kbd>{{ modifierKey }}</Kbd> <Kbd>V</Kbd></span>
+				<span class="text-sm text-muted-foreground"
+					>Or paste one with <Kbd>{{ modifierKey }}</Kbd> <Kbd>V</Kbd></span
+				>
 			</span>
 		</button>
 
@@ -76,11 +90,23 @@ defineExpose({ chooseFile })
 				<p class="text-sm text-muted-foreground">How many to pull out</p>
 			</div>
 			<div class="flex items-center gap-1 rounded-4xl bg-muted p-1" role="group" aria-label="Number of colors">
-				<Button variant="ghost" size="icon-sm" aria-label="Fewer colors" :disabled="image.count.value <= minExtractCount" @click="image.setCount(image.count.value - 1)">
+				<Button
+					variant="ghost"
+					size="icon-sm"
+					aria-label="Fewer colors"
+					:disabled="image.count.value <= minExtractCount"
+					@click="image.setCount(image.count.value - 1)"
+				>
 					<Icon name="lucide:minus" />
 				</Button>
 				<output class="w-6 text-center text-sm tabular-nums" aria-live="polite">{{ image.count.value }}</output>
-				<Button variant="ghost" size="icon-sm" aria-label="More colors" :disabled="image.count.value >= maxExtractCount" @click="image.setCount(image.count.value + 1)">
+				<Button
+					variant="ghost"
+					size="icon-sm"
+					aria-label="More colors"
+					:disabled="image.count.value >= maxExtractCount"
+					@click="image.setCount(image.count.value + 1)"
+				>
 					<Icon name="lucide:plus" />
 				</Button>
 			</div>

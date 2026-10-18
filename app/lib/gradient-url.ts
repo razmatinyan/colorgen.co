@@ -1,8 +1,16 @@
-import { isGradientSpace, maxGradientSteps, maxGradientStops, minGradientSteps, minGradientStops, type GradientSpace, type Oklch } from './color'
+import {
+	isGradientSpace,
+	maxGradientSteps,
+	maxGradientStops,
+	minGradientSteps,
+	minGradientStops,
+	type GradientSpace,
+	type Oklch,
+} from './color'
 import { parseColorsParam } from './palette-url'
 
 export const gradientTypes = ['linear', 'radial', 'conic'] as const
-export type GradientType = typeof gradientTypes[number]
+export type GradientType = (typeof gradientTypes)[number]
 
 export interface GradientOptions {
 	type: GradientType

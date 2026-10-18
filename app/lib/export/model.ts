@@ -37,7 +37,7 @@ export interface ExportScale {
 
 export interface ExportTokenValue extends ExportColor {
 	ref: TokenRef
-	primitive: { scale: string, step: ScaleStep } | null
+	primitive: { scale: string; step: ScaleStep } | null
 }
 
 export interface ExportToken {
@@ -51,7 +51,7 @@ export interface ExportModel {
 	tokens: ExportToken[]
 }
 
-function tokenValue({ ref, hex }: { ref: TokenRef, hex: string }): ExportTokenValue {
+function tokenValue({ ref, hex }: { ref: TokenRef; hex: string }): ExportTokenValue {
 	const parsed = parseTokenRef(ref)
 	return {
 		ref,
@@ -63,11 +63,15 @@ function tokenValue({ ref, hex }: { ref: TokenRef, hex: string }): ExportTokenVa
 
 export function buildExportModel(system: ColorSystem, tokens: ResolvedTokens): ExportModel {
 	return {
-		scales: systemScales(system).map(scale => ({
+		scales: systemScales(system).map((scale) => ({
 			name: exportScaleNames[scale.id],
 			steps: scale.swatches.map(({ step, hex, color }) => ({ step, hex, color })),
 		})),
-		tokens: tokenNames.map(name => ({ name, light: tokenValue(tokens[name].light), dark: tokenValue(tokens[name].dark) })),
+		tokens: tokenNames.map((name) => ({
+			name,
+			light: tokenValue(tokens[name].light),
+			dark: tokenValue(tokens[name].dark),
+		})),
 	}
 }
 
@@ -76,14 +80,17 @@ export function formatValue({ hex, color }: ExportColor, format: ValueFormat) {
 }
 
 export function scaleVariableLines(scales: readonly ExportScale[], prefix: string, format: ValueFormat) {
-	return scales.flatMap(scale => [
-		'',
-		...scale.steps.map(step => `  --${prefix}${scale.name}-${step.step}: ${formatValue(step, format)};`),
-	]).slice(1)
+	return scales
+		.flatMap((scale) => [
+			'',
+			...scale.steps.map((step) => `  --${prefix}${scale.name}-${step.step}: ${formatValue(step, format)};`),
+		])
+		.slice(1)
 }
 
 export function srgbComponents(hex: string): [number, number, number] {
-	const channel = (offset: number) => Math.round((Number.parseInt(hex.slice(offset, offset + 2), 16) / 255) * 10000) / 10000
+	const channel = (offset: number) =>
+		Math.round((Number.parseInt(hex.slice(offset, offset + 2), 16) / 255) * 10000) / 10000
 	return [channel(1), channel(3), channel(5)]
 }
 

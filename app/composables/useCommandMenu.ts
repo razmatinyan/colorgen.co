@@ -3,7 +3,11 @@ export function useCommandMenu() {
 
 	return {
 		open,
-		show: () => { open.value = true },
-		toggle: () => { open.value = !open.value },
+		show: () => {
+			open.value = true
+		},
+		toggle: () => {
+			open.value = !open.value
+		},
 	}
 }

@@ -23,11 +23,18 @@ describe('parseGradientQuery', () => {
 	})
 
 	it('reads valid options', () => {
-		expect(parseGradientQuery({ type: 'conic', angle: '45', space: 'srgb', steps: '9' })).toEqual({ type: 'conic', angle: 45, space: 'srgb', steps: 9 })
+		expect(parseGradientQuery({ type: 'conic', angle: '45', space: 'srgb', steps: '9' })).toEqual({
+			type: 'conic',
+			angle: 45,
+			space: 'srgb',
+			steps: 9,
+		})
 	})
 
 	it('ignores malformed and out-of-range values', () => {
-		expect(parseGradientQuery({ type: 'diamond', angle: '360', space: 'hsl', steps: '1' })).toEqual(defaultGradientOptions)
+		expect(parseGradientQuery({ type: 'diamond', angle: '360', space: 'hsl', steps: '1' })).toEqual(
+			defaultGradientOptions,
+		)
 		expect(parseGradientQuery({ angle: '-5', steps: '13' })).toEqual(defaultGradientOptions)
 		expect(parseGradientQuery({ angle: '4.5' }).angle).toBe(90)
 	})

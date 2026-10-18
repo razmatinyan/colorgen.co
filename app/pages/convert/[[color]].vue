@@ -24,7 +24,10 @@ const conversion = computed(() => converter.conversion.value)
 const hexLabel = computed(() => conversion.value.hex.toUpperCase())
 
 const savePath = computed(() => router.resolve(target.value).fullPath)
-const savedSnapshot = () => ({ title: `${converter.description.value} ${hexLabel.value}`, colors: [conversion.value.hex] })
+const savedSnapshot = () => ({
+	title: `${converter.description.value} ${hexLabel.value}`,
+	colors: [conversion.value.hex],
+})
 useRecentTracking('convert', () => (colorParam.value ? savedSnapshot() : null))
 
 const target = computed(() => {
@@ -34,7 +37,7 @@ const target = computed(() => {
 const syncUrl = useDebounceFn((next: typeof target.value) => {
 	if (router.resolve(next).fullPath !== route.fullPath) router.replace(next)
 }, 250)
-watch(target, next => syncUrl(next))
+watch(target, (next) => syncUrl(next))
 
 const siteUrl = 'https://sygen.app'
 const defaultTitle = 'Color Converter: HEX, RGB, HSL, OKLCH, Lab and Display P3 | Sygen'
@@ -43,12 +46,14 @@ const pathConversion = computed(() => {
 	return color ? convertColor(color) : null
 })
 useSeoMeta({
-	title: () => (pathConversion.value
-		? `${pathConversion.value.hex.toUpperCase()} to RGB, HSL, OKLCH and more | Sygen`
-		: defaultTitle),
+	title: () =>
+		pathConversion.value
+			? `${pathConversion.value.hex.toUpperCase()} to RGB, HSL, OKLCH and more | Sygen`
+			: defaultTitle,
 	description: () => {
-		if (!pathConversion.value) return 'Paste any CSS color and copy it as HEX, RGB, HSL, HWB, OKLCH, OKLab, LCH, Lab or Display P3. Colors outside sRGB stay exact. Free, no sign-up.'
-		const byId = Object.fromEntries(pathConversion.value.values.map(item => [item.id, item.value]))
+		if (!pathConversion.value)
+			return 'Paste any CSS color and copy it as HEX, RGB, HSL, HWB, OKLCH, OKLab, LCH, Lab or Display P3. Colors outside sRGB stay exact. Free, no sign-up.'
+		const byId = Object.fromEntries(pathConversion.value.values.map((item) => [item.id, item.value]))
 		return `${pathConversion.value.hex.toUpperCase()} is ${byId.rgb}, ${byId.hsl} and ${byId.oklch}. Copy it as HWB, OKLab, LCH, Lab or Display P3, then build shades or a full color system from it.`
 	},
 	ogTitle: defaultTitle,
@@ -105,7 +110,13 @@ onKeyStroke(['z', 'Z'], (event) => {
 		<AppTopBar title="Color converter">
 			<Tooltip>
 				<TooltipTrigger as-child>
-					<Button variant="ghost" size="icon-sm" aria-label="Undo" :disabled="!converter.canUndo.value" @click="converter.undo()">
+					<Button
+						variant="ghost"
+						size="icon-sm"
+						aria-label="Undo"
+						:disabled="!converter.canUndo.value"
+						@click="converter.undo()"
+					>
 						<Icon name="lucide:undo-2" />
 					</Button>
 				</TooltipTrigger>
@@ -113,7 +124,13 @@ onKeyStroke(['z', 'Z'], (event) => {
 			</Tooltip>
 			<Tooltip>
 				<TooltipTrigger as-child>
-					<Button variant="ghost" size="icon-sm" aria-label="Redo" :disabled="!converter.canRedo.value" @click="converter.redo()">
+					<Button
+						variant="ghost"
+						size="icon-sm"
+						aria-label="Redo"
+						:disabled="!converter.canRedo.value"
+						@click="converter.redo()"
+					>
 						<Icon name="lucide:redo-2" />
 					</Button>
 				</TooltipTrigger>
@@ -132,7 +149,8 @@ onKeyStroke(['z', 'Z'], (event) => {
 				<TooltipTrigger as-child>
 					<Button as-child size="sm">
 						<NuxtLink :to="`/builder/${conversion.hex.slice(1)}`" aria-label="Use in builder">
-							<Icon name="lucide:blocks" data-icon="inline-start" /> <span class="hidden sm:inline">Use in builder</span>
+							<Icon name="lucide:blocks" data-icon="inline-start" />
+							<span class="hidden sm:inline">Use in builder</span>
 						</NuxtLink>
 					</Button>
 				</TooltipTrigger>
@@ -140,7 +158,9 @@ onKeyStroke(['z', 'Z'], (event) => {
 			</Tooltip>
 		</AppTopBar>
 
-		<div class="grid min-h-0 flex-1 grid-cols-[minmax(0,1fr)] content-start gap-4 p-4 lg:grid-cols-[23rem_minmax(0,1fr)] lg:content-stretch">
+		<div
+			class="grid min-h-0 flex-1 grid-cols-[minmax(0,1fr)] content-start gap-4 p-4 lg:grid-cols-[23rem_minmax(0,1fr)] lg:content-stretch"
+		>
 			<Card size="sm" class="min-h-0">
 				<CardHeader>
 					<CardTitle>Your color</CardTitle>
@@ -148,7 +168,7 @@ onKeyStroke(['z', 'Z'], (event) => {
 				</CardHeader>
 				<CardContent class="flex min-h-0 flex-1 flex-col gap-5 overflow-x-hidden lg:overflow-y-auto">
 					<div
-						class="flex h-28 items-end justify-between gap-3 rounded-xl p-3 text-sm ring-1 ring-foreground/10 ring-inset transition-colors duration-200"
+						class="flex h-28 items-end justify-between gap-3 rounded-xl p-3 text-sm ring-1 ring-foreground/10 transition-colors duration-200 ring-inset"
 						:style="{ background: conversion.hex, color: readableTextColor(conversion.hex) }"
 					>
 						<span class="font-medium">{{ converter.description.value }}</span>
@@ -160,10 +180,14 @@ onKeyStroke(['z', 'Z'], (event) => {
 						picker-label="Open color picker"
 						hint="HEX, RGB, HSL, HWB, OKLCH, Lab, LCH, Display P3 or a CSS name."
 						@change="changeColor"
-						@update="value => converter.update(value)"
+						@update="(value) => converter.update(value)"
 						@commit="converter.snapshot()"
 					/>
-					<ColorChannelSliders :color="converter.color.value" @update="patch => converter.update(patch)" @commit="converter.snapshot()" />
+					<ColorChannelSliders
+						:color="converter.color.value"
+						@update="(patch) => converter.update(patch)"
+						@commit="converter.snapshot()"
+					/>
 					<p v-if="gamutNote" class="flex gap-2 rounded-xl bg-muted px-3 py-2.5 text-sm text-muted-foreground">
 						<Icon name="lucide:info" class="mt-0.5 size-4 shrink-0" />
 						{{ gamutNote }}

@@ -42,7 +42,9 @@ const tokens = computed(() => {
 
 const card = 'mb-4 break-inside-avoid rounded-2xl bg-(--pv-surface) p-5 ring-1 ring-(--pv-border)'
 const field = 'flex h-9 items-center rounded-full bg-(--pv-field) px-3.5 text-sm text-(--pv-muted)'
-const soft = (token: string, amount = 16) => ({ background: `color-mix(in oklch, var(${token}) ${amount}%, transparent)` })
+const soft = (token: string, amount = 16) => ({
+	background: `color-mix(in oklch, var(${token}) ${amount}%, transparent)`,
+})
 
 const bars = [
 	{ month: 'Dec', height: 58, tone: '--pv-bar-1' },
@@ -59,20 +61,31 @@ const area = computed(() => {
 	return { line: `M${points.join(' L')}`, fill: `M0,100 L${points.join(' L')} L300,100 Z` }
 })
 
-interface NavItem { label: string, icon: string, active?: boolean, count?: number }
+interface NavItem {
+	label: string
+	icon: string
+	active?: boolean
+	count?: number
+}
 
-const navGroups: { title: string, items: NavItem[] }[] = [
-	{ title: 'Workspace', items: [
-		{ label: 'Documents', icon: 'lucide:file-text' },
-		{ label: 'Reports', icon: 'lucide:chart-column', active: true },
-		{ label: 'Goals', icon: 'lucide:target' },
-		{ label: 'Calendar', icon: 'lucide:calendar' },
-	] },
-	{ title: 'Account', items: [
-		{ label: 'Profile', icon: 'lucide:user' },
-		{ label: 'Billing', icon: 'lucide:credit-card' },
-		{ label: 'Notifications', icon: 'lucide:bell', count: 3 },
-	] },
+const navGroups: { title: string; items: NavItem[] }[] = [
+	{
+		title: 'Workspace',
+		items: [
+			{ label: 'Documents', icon: 'lucide:file-text' },
+			{ label: 'Reports', icon: 'lucide:chart-column', active: true },
+			{ label: 'Goals', icon: 'lucide:target' },
+			{ label: 'Calendar', icon: 'lucide:calendar' },
+		],
+	},
+	{
+		title: 'Account',
+		items: [
+			{ label: 'Profile', icon: 'lucide:user' },
+			{ label: 'Billing', icon: 'lucide:credit-card' },
+			{ label: 'Notifications', icon: 'lucide:bell', count: 3 },
+		],
+	},
 ]
 
 const notifications = [
@@ -97,11 +110,19 @@ const team = [
 		<div class="columns-1 gap-4 @xl:columns-2 @4xl:columns-3">
 			<div :class="card" class="grid gap-4">
 				<div class="flex flex-wrap gap-2">
-					<span class="inline-flex h-9 items-center gap-1.5 rounded-full bg-(--pv-primary) px-4 text-sm font-medium text-(--pv-on-primary)">
+					<span
+						class="inline-flex h-9 items-center gap-1.5 rounded-full bg-(--pv-primary) px-4 text-sm font-medium text-(--pv-on-primary)"
+					>
 						Button <Icon name="lucide:arrow-right" class="size-4" />
 					</span>
-					<span class="inline-flex h-9 items-center rounded-full bg-(--pv-secondary) px-4 text-sm font-medium text-(--pv-on-secondary)">Secondary</span>
-					<span class="inline-flex h-9 items-center rounded-full px-4 text-sm font-medium ring-1 ring-(--pv-border) ring-inset">Outline</span>
+					<span
+						class="inline-flex h-9 items-center rounded-full bg-(--pv-secondary) px-4 text-sm font-medium text-(--pv-on-secondary)"
+						>Secondary</span
+					>
+					<span
+						class="inline-flex h-9 items-center rounded-full px-4 text-sm font-medium ring-1 ring-(--pv-border) ring-inset"
+						>Outline</span
+					>
 				</div>
 				<div :class="field" class="justify-between">
 					Search
@@ -110,13 +131,25 @@ const team = [
 				<div class="h-20 rounded-2xl bg-(--pv-field) px-3.5 py-2.5 text-sm text-(--pv-muted)">Message</div>
 				<div class="flex items-center justify-between gap-3">
 					<div class="flex gap-1.5">
-						<span class="rounded-full px-2.5 py-0.5 text-xs font-medium text-(--pv-primary)" :style="soft('--pv-primary')">Badge</span>
-						<span class="rounded-full bg-(--pv-accent) px-2.5 py-0.5 text-xs font-medium text-(--pv-on-accent)">New</span>
+						<span
+							class="rounded-full px-2.5 py-0.5 text-xs font-medium text-(--pv-primary)"
+							:style="soft('--pv-primary')"
+							>Badge</span
+						>
+						<span class="rounded-full bg-(--pv-accent) px-2.5 py-0.5 text-xs font-medium text-(--pv-on-accent)"
+							>New</span
+						>
 					</div>
 					<div class="flex items-center gap-2.5">
-						<span class="grid size-4.5 place-items-center rounded-full ring-2 ring-(--pv-primary) ring-inset"><span class="size-2 rounded-full bg-(--pv-primary)" /></span>
-						<span class="grid size-4.5 place-items-center rounded-md bg-(--pv-primary) text-(--pv-on-primary)"><Icon name="lucide:check" class="size-3.5" /></span>
-						<span class="flex h-5 w-9 items-center justify-end rounded-full bg-(--pv-primary) p-0.5"><span class="size-4 rounded-full bg-(--pv-on-primary)" /></span>
+						<span class="grid size-4.5 place-items-center rounded-full ring-2 ring-(--pv-primary) ring-inset"
+							><span class="size-2 rounded-full bg-(--pv-primary)"
+						/></span>
+						<span class="grid size-4.5 place-items-center rounded-md bg-(--pv-primary) text-(--pv-on-primary)"
+							><Icon name="lucide:check" class="size-3.5"
+						/></span>
+						<span class="flex h-5 w-9 items-center justify-end rounded-full bg-(--pv-primary) p-0.5"
+							><span class="size-4 rounded-full bg-(--pv-on-primary)"
+						/></span>
 					</div>
 				</div>
 			</div>
@@ -128,7 +161,10 @@ const team = [
 				</div>
 				<div class="flex h-36 items-end gap-3">
 					<div v-for="bar in bars" :key="bar.month" class="flex h-full flex-1 flex-col justify-end gap-2">
-						<span class="w-full rounded-xl transition-colors duration-300" :style="{ height: `${bar.height}%`, background: `var(${bar.tone})` }" />
+						<span
+							class="w-full rounded-xl transition-colors duration-300"
+							:style="{ height: `${bar.height}%`, background: `var(${bar.tone})` }"
+						/>
 						<span class="text-center text-xs text-(--pv-muted)">{{ bar.month }}</span>
 					</div>
 				</div>
@@ -144,7 +180,10 @@ const team = [
 						<p class="text-xs text-(--pv-muted)">Recurring</p>
 					</div>
 				</div>
-				<span class="flex h-9 items-center justify-center rounded-full text-sm font-medium ring-1 ring-(--pv-border) ring-inset">View full report</span>
+				<span
+					class="flex h-9 items-center justify-center rounded-full text-sm font-medium ring-1 ring-(--pv-border) ring-inset"
+					>View full report</span
+				>
 			</div>
 
 			<div :class="card" class="grid gap-4">
@@ -167,22 +206,38 @@ const team = [
 					</div>
 				</div>
 				<div class="grid gap-2">
-					<span class="flex h-9 items-center justify-center rounded-full bg-(--pv-primary) text-sm font-medium text-(--pv-on-primary)">Create project</span>
-					<span class="flex h-9 items-center justify-center rounded-full text-sm font-medium ring-1 ring-(--pv-border) ring-inset">Cancel</span>
+					<span
+						class="flex h-9 items-center justify-center rounded-full bg-(--pv-primary) text-sm font-medium text-(--pv-on-primary)"
+						>Create project</span
+					>
+					<span
+						class="flex h-9 items-center justify-center rounded-full text-sm font-medium ring-1 ring-(--pv-border) ring-inset"
+						>Cancel</span
+					>
 				</div>
 			</div>
 
 			<div :class="card" class="grid gap-3">
 				<p class="text-sm text-(--pv-muted)">Available balance</p>
 				<p class="text-3xl font-semibold tracking-tight tabular-nums">$1,211.29</p>
-				<span class="inline-flex w-fit items-center gap-1.5 rounded-full px-2.5 py-0.5 text-xs font-medium" :style="soft('--pv-accent', 20)">
+				<span
+					class="inline-flex w-fit items-center gap-1.5 rounded-full px-2.5 py-0.5 text-xs font-medium"
+					:style="soft('--pv-accent', 20)"
+				>
 					<span class="size-1.5 rounded-full bg-(--pv-accent)" /> Pending setup
 				</span>
 				<div class="mt-1 grid gap-2.5 rounded-xl bg-(--pv-field) p-3.5 text-sm">
-					<div class="flex justify-between"><span class="text-(--pv-muted)">Net revenue</span><span class="font-medium tabular-nums">$1,248.75</span></div>
-					<div class="flex justify-between"><span class="text-(--pv-muted)">Processing fee</span><span class="font-medium tabular-nums">−$37.46</span></div>
+					<div class="flex justify-between">
+						<span class="text-(--pv-muted)">Net revenue</span><span class="font-medium tabular-nums">$1,248.75</span>
+					</div>
+					<div class="flex justify-between">
+						<span class="text-(--pv-muted)">Processing fee</span><span class="font-medium tabular-nums">−$37.46</span>
+					</div>
 					<div class="h-px bg-(--pv-border)" />
-					<div class="flex justify-between"><span class="text-(--pv-muted)">Total</span><span class="font-semibold tabular-nums text-(--pv-secondary)">$1,211.29</span></div>
+					<div class="flex justify-between">
+						<span class="text-(--pv-muted)">Total</span
+						><span class="font-semibold text-(--pv-secondary) tabular-nums">$1,211.29</span>
+					</div>
 				</div>
 			</div>
 
@@ -198,7 +253,11 @@ const team = [
 					>
 						<Icon :name="item.icon" class="size-4" :class="!item.active && 'text-(--pv-muted)'" />
 						{{ item.label }}
-						<span v-if="item.count" class="ml-auto rounded-full bg-(--pv-accent) px-1.5 text-xs font-semibold text-(--pv-on-accent)">{{ item.count }}</span>
+						<span
+							v-if="item.count"
+							class="ml-auto rounded-full bg-(--pv-accent) px-1.5 text-xs font-semibold text-(--pv-on-accent)"
+							>{{ item.count }}</span
+						>
 					</span>
 				</div>
 			</div>
@@ -209,14 +268,29 @@ const team = [
 						<p class="font-medium">Visitors</p>
 						<p class="flex items-center gap-2 text-sm text-(--pv-muted)">
 							418.2K this month
-							<span class="rounded-full px-2 py-0.5 text-xs font-medium text-(--pv-secondary)" :style="soft('--pv-secondary', 18)">+10%</span>
+							<span
+								class="rounded-full px-2 py-0.5 text-xs font-medium text-(--pv-secondary)"
+								:style="soft('--pv-secondary', 18)"
+								>+10%</span
+							>
 						</p>
 					</div>
 					<span class="rounded-full px-3 py-1 text-sm font-medium ring-1 ring-(--pv-border) ring-inset">View</span>
 				</div>
-				<svg viewBox="0 0 300 100" preserveAspectRatio="none" class="-mx-5 h-24 w-[calc(100%+2.5rem)]" aria-hidden="true">
+				<svg
+					viewBox="0 0 300 100"
+					preserveAspectRatio="none"
+					class="-mx-5 h-24 w-[calc(100%+2.5rem)]"
+					aria-hidden="true"
+				>
 					<path :d="area.fill" fill="var(--pv-primary)" fill-opacity="0.18" />
-					<path :d="area.line" fill="none" stroke="var(--pv-primary)" stroke-width="2" vector-effect="non-scaling-stroke" />
+					<path
+						:d="area.line"
+						fill="none"
+						stroke="var(--pv-primary)"
+						stroke-width="2"
+						vector-effect="non-scaling-stroke"
+					/>
 				</svg>
 			</div>
 
@@ -226,15 +300,25 @@ const team = [
 						<p class="font-medium">New chat</p>
 						<p class="text-sm text-(--pv-muted)">Usually replies in minutes</p>
 					</div>
-					<span class="grid size-8 place-items-center rounded-full ring-1 ring-(--pv-border) ring-inset"><Icon name="lucide:refresh-cw" class="size-4" /></span>
+					<span class="grid size-8 place-items-center rounded-full ring-1 ring-(--pv-border) ring-inset"
+						><Icon name="lucide:refresh-cw" class="size-4"
+					/></span>
 				</div>
 				<div class="grid gap-2 text-sm">
-					<p class="max-w-[85%] rounded-2xl rounded-bl-md bg-(--pv-field) px-3.5 py-2">Can you send over the brand colors?</p>
-					<p class="max-w-[85%] justify-self-end rounded-2xl rounded-br-md bg-(--pv-primary) px-3.5 py-2 text-(--pv-on-primary)">Sure, exporting them now.</p>
+					<p class="max-w-[85%] rounded-2xl rounded-bl-md bg-(--pv-field) px-3.5 py-2">
+						Can you send over the brand colors?
+					</p>
+					<p
+						class="max-w-[85%] justify-self-end rounded-2xl rounded-br-md bg-(--pv-primary) px-3.5 py-2 text-(--pv-on-primary)"
+					>
+						Sure, exporting them now.
+					</p>
 				</div>
 				<div :class="field" class="justify-between pr-1">
 					Write a message…
-					<span class="grid size-7 place-items-center rounded-full bg-(--pv-primary) text-(--pv-on-primary)"><Icon name="lucide:send" class="size-3.5" /></span>
+					<span class="grid size-7 place-items-center rounded-full bg-(--pv-primary) text-(--pv-on-primary)"
+						><Icon name="lucide:send" class="size-3.5"
+					/></span>
 				</div>
 			</div>
 
@@ -265,7 +349,9 @@ const team = [
 					<p class="font-medium">Publish your first page</p>
 					<p class="mx-auto max-w-56 text-sm text-(--pv-muted)">Start from a template or a blank canvas.</p>
 				</div>
-				<span class="rounded-full bg-(--pv-primary) px-4 py-1.5 text-sm font-medium text-(--pv-on-primary)">Get started</span>
+				<span class="rounded-full bg-(--pv-primary) px-4 py-1.5 text-sm font-medium text-(--pv-on-primary)"
+					>Get started</span
+				>
 			</div>
 
 			<div :class="card" class="grid gap-4">
@@ -280,9 +366,12 @@ const team = [
 							:key="member.initials"
 							class="grid size-9 place-items-center rounded-full text-xs font-semibold ring-2 ring-(--pv-surface)"
 							:style="{ background: `var(--pv-${member.tone})`, color: `var(--pv-on-${member.tone})` }"
-						>{{ member.initials }}</span>
+							>{{ member.initials }}</span
+						>
 					</div>
-					<span class="inline-flex h-8 items-center gap-1.5 rounded-full px-3 text-sm font-medium ring-1 ring-(--pv-border) ring-inset">
+					<span
+						class="inline-flex h-8 items-center gap-1.5 rounded-full px-3 text-sm font-medium ring-1 ring-(--pv-border) ring-inset"
+					>
 						<Icon name="lucide:user-plus" class="size-4" /> Invite
 					</span>
 				</div>

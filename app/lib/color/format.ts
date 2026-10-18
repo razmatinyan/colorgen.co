@@ -12,7 +12,7 @@ const culori = ({ l, c, h }: Oklch) => ({ mode: 'oklch' as const, l, c, h })
 
 export function isInGamut(input: ColorInput) {
 	const { r, g, b } = toRgbColor(culori(toOklch(input)))
-	return [r, g, b].every(channel => channel >= -gamutTolerance && channel <= 1 + gamutTolerance)
+	return [r, g, b].every((channel) => channel >= -gamutTolerance && channel <= 1 + gamutTolerance)
 }
 
 export function toGamutOklch(input: ColorInput): Oklch {
@@ -41,9 +41,13 @@ export function toOklchString(input: ColorInput) {
 
 export function formatColor(input: ColorInput, format: ColorFormat) {
 	switch (format) {
-		case 'hex': return toHex(input)
-		case 'rgb': return toRgbString(input)
-		case 'hsl': return toHslString(input)
-		case 'oklch': return toOklchString(input)
+		case 'hex':
+			return toHex(input)
+		case 'rgb':
+			return toRgbString(input)
+		case 'hsl':
+			return toHslString(input)
+		case 'oklch':
+			return toOklchString(input)
 	}
 }

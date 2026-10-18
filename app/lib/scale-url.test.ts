@@ -1,6 +1,14 @@
 import { describe, expect, it } from 'vitest'
 import { parseColor, toHex } from './color'
-import { isScaleName, maxScales, parseNamesParam, parseScalesParam, resolveScaleNames, toNamesParam, toScaleName } from './scale-url'
+import {
+	isScaleName,
+	maxScales,
+	parseNamesParam,
+	parseScalesParam,
+	resolveScaleNames,
+	toNamesParam,
+	toScaleName,
+} from './scale-url'
 
 const blue = parseColor('#1f6cb0')!
 const orange = parseColor('#ffa500')!
@@ -8,8 +16,8 @@ const gray = parseColor('#808080')!
 
 describe('parseScalesParam', () => {
 	it('parses one or more colors', () => {
-		expect(parseScalesParam('1f6cb0')!.map(color => toHex(color))).toEqual(['#1f6cb0'])
-		expect(parseScalesParam('1f6cb0-f68443')!.map(color => toHex(color))).toEqual(['#1f6cb0', '#f68443'])
+		expect(parseScalesParam('1f6cb0')!.map((color) => toHex(color))).toEqual(['#1f6cb0'])
+		expect(parseScalesParam('1f6cb0-f68443')!.map((color) => toHex(color))).toEqual(['#1f6cb0', '#f68443'])
 	})
 
 	it(`rejects more than ${maxScales} colors`, () => {

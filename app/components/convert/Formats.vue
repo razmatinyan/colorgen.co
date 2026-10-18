@@ -33,7 +33,7 @@ async function copyValue(label: string, value: string) {
 					<TooltipTrigger as-child>
 						<button
 							type="button"
-							class="group flex w-full min-w-0 items-center gap-3 rounded-xl px-3 py-2.5 text-left outline-none transition-colors hover:bg-muted/50 focus-visible:ring-3 focus-visible:ring-ring/50"
+							class="group flex w-full min-w-0 items-center gap-3 rounded-xl px-3 py-2.5 text-left transition-colors outline-none hover:bg-muted/50 focus-visible:ring-3 focus-visible:ring-ring/50"
 							:aria-label="`Copy ${item.label}: ${item.value}`"
 							@click="copyValue(item.label, item.value)"
 						>
@@ -43,10 +43,15 @@ async function copyValue(label: string, value: string) {
 							</span>
 							<span class="min-w-0 flex-1 truncate text-sm tabular-nums">{{ item.value }}</span>
 							<Badge v-if="item.isMapped" variant="secondary" class="hidden sm:inline-flex">Closest match</Badge>
-							<Icon name="lucide:copy" class="size-4 shrink-0 text-muted-foreground opacity-60 transition-opacity group-hover:opacity-100" />
+							<Icon
+								name="lucide:copy"
+								class="size-4 shrink-0 text-muted-foreground opacity-60 transition-opacity group-hover:opacity-100"
+							/>
 						</button>
 					</TooltipTrigger>
-					<TooltipContent>Copy <Kbd>{{ index + 1 }}</Kbd></TooltipContent>
+					<TooltipContent
+						>Copy <Kbd>{{ index + 1 }}</Kbd></TooltipContent
+					>
 				</Tooltip>
 			</li>
 		</ol>

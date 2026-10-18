@@ -3,16 +3,16 @@ import type { HTMLAttributes } from 'vue'
 import { cn } from '@/lib/utils'
 
 const props = defineProps<{
-  class?: HTMLAttributes['class']
+	class?: HTMLAttributes['class']
 }>()
 </script>
 
 <template>
-  <div
-    data-slot="sidebar-header"
-    data-sidebar="header"
-    :class="cn('gap-2 p-2 [--radius:var(--radius-xl)] flex flex-col', props.class)"
-  >
-    <slot />
-  </div>
+	<div
+		data-slot="sidebar-header"
+		data-sidebar="header"
+		:class="cn('flex flex-col gap-2 p-2 [--radius:var(--radius-xl)]', props.class)"
+	>
+		<slot />
+	</div>
 </template>

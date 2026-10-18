@@ -4,12 +4,12 @@ import { isInteractiveTarget } from '~/lib/keyboard'
 import type { RecentKind } from '~/lib/library'
 import type { RecentSnapshot } from '~/composables/useLibrary'
 
-const props = defineProps<{ kind: RecentKind, path: string, snapshot: () => RecentSnapshot }>()
+const props = defineProps<{ kind: RecentKind; path: string; snapshot: () => RecentSnapshot }>()
 
 const { saved, save, removeSaved } = useLibrary()
 const { showToast } = useAppToast()
 
-const savedItem = computed(() => saved.value.find(item => item.path === props.path) ?? null)
+const savedItem = computed(() => saved.value.find((item) => item.path === props.path) ?? null)
 
 function toggle() {
 	const current = savedItem.value
@@ -21,7 +21,13 @@ function toggle() {
 		})
 		return
 	}
-	const entry = { id: `${Date.now().toString(36)}-${Math.random().toString(36).slice(2, 8)}`, kind: props.kind, path: props.path, savedAt: Date.now(), ...props.snapshot() }
+	const entry = {
+		id: `${Date.now().toString(36)}-${Math.random().toString(36).slice(2, 8)}`,
+		kind: props.kind,
+		path: props.path,
+		savedAt: Date.now(),
+		...props.snapshot(),
+	}
 	save(entry)
 	showToast('Saved to library', 'success', {
 		description: entry.title,

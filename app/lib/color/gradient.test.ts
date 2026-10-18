@@ -1,5 +1,12 @@
 import { describe, expect, it } from 'vitest'
-import { gradientColorAt, mixColors, sampleGradient, suggestGradients, suggestNextStop, isGradientSpace } from './gradient'
+import {
+	gradientColorAt,
+	mixColors,
+	sampleGradient,
+	suggestGradients,
+	suggestNextStop,
+	isGradientSpace,
+} from './gradient'
 import { isInGamut, toHex } from './format'
 import { parseColor } from './parse'
 
@@ -32,7 +39,7 @@ describe('mixColors', () => {
 		expect(middle.h).toBeCloseTo(10, 0)
 	})
 
-	it('keeps the colored end\'s hue when mixing with white or black', () => {
+	it("keeps the colored end's hue when mixing with white or black", () => {
 		const tint = mixColors(white, blue, 0.5, 'oklch')
 		expect(tint.h).toBeCloseTo(blue.h, 0)
 		const shade = mixColors(blue, black, 0.5, 'oklch')
@@ -79,23 +86,30 @@ describe('sampleGradient', () => {
 	})
 
 	it('moves lightness evenly in OKLab', () => {
-		const steps = sampleGradient([black, white], 5, 'oklab').map(color => color.l)
+		const steps = sampleGradient([black, white], 5, 'oklab').map((color) => color.l)
 		const gaps = steps.slice(1).map((l, index) => l - steps[index]!)
-		gaps.forEach(gap => expect(gap).toBeCloseTo(0.25, 2))
+		gaps.forEach((gap) => expect(gap).toBeCloseTo(0.25, 2))
 	})
 })
 
 describe('suggestGradients', () => {
 	it('starts every hue suggestion from the exact color', () => {
 		const suggestions = suggestGradients(blue)
-		expect(suggestions.map(item => item.id)).toEqual(['soft', 'deep', 'neighbor-after', 'neighbor-before', 'neighbors', 'opposite'])
-		suggestions.forEach(item => expect(item.stops.map(toHex)).toContain('#1f6cb0'))
-		suggestions.forEach(item => item.stops.forEach(stop => expect(isInGamut(stop)).toBe(true)))
+		expect(suggestions.map((item) => item.id)).toEqual([
+			'soft',
+			'deep',
+			'neighbor-after',
+			'neighbor-before',
+			'neighbors',
+			'opposite',
+		])
+		suggestions.forEach((item) => expect(item.stops.map(toHex)).toContain('#1f6cb0'))
+		suggestions.forEach((item) => item.stops.forEach((stop) => expect(isInGamut(stop)).toBe(true)))
 	})
 
 	it('only fades grays, black and white', () => {
 		for (const gray of ['#808080', '#000000', '#ffffff']) {
-			expect(suggestGradients(gray).map(item => item.id)).toEqual(['soft', 'deep'])
+			expect(suggestGradients(gray).map((item) => item.id)).toEqual(['soft', 'deep'])
 		}
 	})
 })

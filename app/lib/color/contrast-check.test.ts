@@ -8,8 +8,14 @@ describe('checkContrast', () => {
 	it('checks every WCAG criterion', () => {
 		const check = checkContrast('#777777', '#ffffff')
 		expect(check.ratio).toBeCloseTo(4.48, 2)
-		const passing = Object.fromEntries(check.criteria.map(criterion => [criterion.id, criterion.passes]))
-		expect(passing).toEqual({ 'body-aa': false, 'large-aa': true, 'ui-aa': true, 'body-aaa': false, 'large-aaa': false })
+		const passing = Object.fromEntries(check.criteria.map((criterion) => [criterion.id, criterion.passes]))
+		expect(passing).toEqual({
+			'body-aa': false,
+			'large-aa': true,
+			'ui-aa': true,
+			'body-aaa': false,
+			'large-aaa': false,
+		})
 	})
 
 	it('reports APCA with polarity and a usage', () => {
@@ -22,12 +28,20 @@ describe('checkContrast', () => {
 	})
 
 	it('lists criteria from AA to AAA', () => {
-		expect(wcagCriteria.map(criterion => criterion.level)).toEqual(['AA', 'AA', 'AA', 'AAA', 'AAA'])
+		expect(wcagCriteria.map((criterion) => criterion.level)).toEqual(['AA', 'AA', 'AA', 'AAA', 'AAA'])
 	})
 })
 
 describe('apcaUsage', () => {
-	it.each([[106, 'fluent'], [-80, 'body'], [60, 'content'], [59.9, 'large'], [30, 'spot'], [15, 'non-text'], [3, 'invisible']] as const)('Lc %d is %s', (lc, id) => {
+	it.each([
+		[106, 'fluent'],
+		[-80, 'body'],
+		[60, 'content'],
+		[59.9, 'large'],
+		[30, 'spot'],
+		[15, 'non-text'],
+		[3, 'invisible'],
+	] as const)('Lc %d is %s', (lc, id) => {
 		expect(apcaUsage(lc).id).toBe(id)
 	})
 })

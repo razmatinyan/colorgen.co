@@ -28,7 +28,10 @@ export function parseBrandsParam(param: string | undefined): BuilderBrands | nul
 }
 
 export function toBrandsParam({ brand, brand2 }: BuilderBrands) {
-	return [brand, brand2].filter((color): color is Oklch => color !== null).map(toHexPart).join('-')
+	return [brand, brand2]
+		.filter((color): color is Oklch => color !== null)
+		.map(toHexPart)
+		.join('-')
 }
 
 function firstString(value: unknown) {
@@ -55,10 +58,14 @@ export function parseTokensParam(value: string | undefined): TokenOverrides {
 }
 
 export function toTokensParam(tokens: TokenOverrides) {
-	return tokenNames.flatMap(name => tokenModes.flatMap((mode) => {
-		const ref = tokens[name]?.[mode]
-		return ref ? [`${name}.${mode}${refSeparator}${ref}`] : []
-	})).join(tokenSeparator)
+	return tokenNames
+		.flatMap((name) =>
+			tokenModes.flatMap((mode) => {
+				const ref = tokens[name]?.[mode]
+				return ref ? [`${name}.${mode}${refSeparator}${ref}`] : []
+			}),
+		)
+		.join(tokenSeparator)
 }
 
 export function parseBuilderQuery(query: BuilderQuery): BuilderOptions {

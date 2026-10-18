@@ -3,7 +3,7 @@ import { normalize, toOklch } from './parse'
 import type { ColorInput, Oklch } from './types'
 
 export const scaleSteps = [50, 100, 200, 300, 400, 500, 600, 700, 800, 900, 950] as const
-export type ScaleStep = typeof scaleSteps[number]
+export type ScaleStep = (typeof scaleSteps)[number]
 
 const stepLightness = [0.975, 0.94, 0.885, 0.805, 0.715, 0.625, 0.535, 0.45, 0.37, 0.29, 0.21] as const
 
@@ -36,11 +36,13 @@ export function toSwatches(colors: readonly Oklch[]): ScaleSwatch[] {
 export function generateScale(input: ColorInput): ScaleSwatch[] {
 	const base = toOklch(input)
 	const anchorIndex = nearestStepIndex(base.l)
-	return toSwatches(stepLightness.map((lightness, index) =>
-		index === anchorIndex ? base : { l: lightness, c: taperedChroma(base.c, lightness), h: base.h },
-	))
+	return toSwatches(
+		stepLightness.map((lightness, index) =>
+			index === anchorIndex ? base : { l: lightness, c: taperedChroma(base.c, lightness), h: base.h },
+		),
+	)
 }
 
 export function scaleHexes(input: ColorInput) {
-	return generateScale(input).map(swatch => swatch.hex)
+	return generateScale(input).map((swatch) => swatch.hex)
 }

@@ -1,5 +1,13 @@
 <script setup lang="ts">
-import { parseTokenRef, readableTextColor, tokenModes, wcagRatio, type TokenMode, type TokenName, type TokenRef } from '~/lib/color'
+import {
+	parseTokenRef,
+	readableTextColor,
+	tokenModes,
+	wcagRatio,
+	type TokenMode,
+	type TokenName,
+	type TokenRef,
+} from '~/lib/color'
 import { systemScaleLabels, type ColorPage } from '~/lib/color-page'
 
 const props = defineProps<{ page: ColorPage }>()
@@ -51,7 +59,11 @@ const facts = computed(() => {
 
 		<div class="grid grid-cols-1 gap-6 lg:grid-cols-[minmax(0,1.2fr)_minmax(0,1fr)]">
 			<div class="grid content-start gap-3 rounded-2xl bg-card p-4 ring-1 ring-foreground/10">
-				<div v-for="scale in page.system.scales" :key="scale.id" class="grid grid-cols-[4.5rem_minmax(0,1fr)] items-center gap-3">
+				<div
+					v-for="scale in page.system.scales"
+					:key="scale.id"
+					class="grid grid-cols-[4.5rem_minmax(0,1fr)] items-center gap-3"
+				>
 					<h3 class="truncate text-sm text-muted-foreground">{{ scale.label }}</h3>
 					<ol class="grid grid-cols-11 gap-1" :aria-label="`${scale.label} scale`">
 						<li
@@ -61,7 +73,12 @@ const facts = computed(() => {
 							:style="{ background: swatch.hex }"
 							:title="`${scale.label} ${swatch.step} · ${swatch.hex.toUpperCase()}`"
 						>
-							<span v-if="swatch.step === scale.anchorStep" class="size-1.5 rounded-full" :style="{ background: readableTextColor(swatch.hex) }" aria-hidden="true" />
+							<span
+								v-if="swatch.step === scale.anchorStep"
+								class="size-1.5 rounded-full"
+								:style="{ background: readableTextColor(swatch.hex) }"
+								aria-hidden="true"
+							/>
 							<span class="sr-only">{{ scale.label }} {{ swatch.step }}, {{ swatch.hex.toUpperCase() }}</span>
 						</li>
 					</ol>
@@ -83,16 +100,37 @@ const facts = computed(() => {
 					:aria-label="`${modeLabels[mode]} mode preview`"
 					role="img"
 				>
-					<div class="grid gap-3 rounded-xl border p-4" :style="{ background: token('card', mode), borderColor: token('border', mode) }">
+					<div
+						class="grid gap-3 rounded-xl border p-4"
+						:style="{ background: token('card', mode), borderColor: token('border', mode) }"
+					>
 						<div class="flex items-center justify-between gap-2">
 							<span class="text-sm font-semibold">{{ modeLabels[mode] }} mode</span>
-							<span class="rounded-full px-2 py-0.5 text-xs font-medium" :style="{ background: token('success', mode), color: token('success-foreground', mode) }">Active</span>
+							<span
+								class="rounded-full px-2 py-0.5 text-xs font-medium"
+								:style="{ background: token('success', mode), color: token('success-foreground', mode) }"
+								>Active</span
+							>
 						</div>
-						<span class="text-sm" :style="{ color: token('muted-foreground', mode) }">Invite your team to start building.</span>
-						<span class="h-8 rounded-full border px-3 text-sm/8" :style="{ borderColor: token('input', mode), color: token('muted-foreground', mode) }">name@company.com</span>
+						<span class="text-sm" :style="{ color: token('muted-foreground', mode) }"
+							>Invite your team to start building.</span
+						>
+						<span
+							class="h-8 rounded-full border px-3 text-sm/8"
+							:style="{ borderColor: token('input', mode), color: token('muted-foreground', mode) }"
+							>name@company.com</span
+						>
 						<span class="flex gap-2">
-							<span class="h-8 rounded-full px-3.5 text-sm/8 font-medium" :style="{ background: token('primary', mode), color: token('primary-foreground', mode) }">Send invite</span>
-							<span class="h-8 rounded-full px-3.5 text-sm/8 font-medium" :style="{ background: token('secondary', mode), color: token('secondary-foreground', mode) }">Cancel</span>
+							<span
+								class="h-8 rounded-full px-3.5 text-sm/8 font-medium"
+								:style="{ background: token('primary', mode), color: token('primary-foreground', mode) }"
+								>Send invite</span
+							>
+							<span
+								class="h-8 rounded-full px-3.5 text-sm/8 font-medium"
+								:style="{ background: token('secondary', mode), color: token('secondary-foreground', mode) }"
+								>Cancel</span
+							>
 						</span>
 					</div>
 				</div>

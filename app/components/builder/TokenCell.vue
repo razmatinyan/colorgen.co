@@ -2,25 +2,31 @@
 import { scaleRef, systemScales, type TokenMode, type TokenName, type TokenRef } from '~/lib/color'
 import { designSystemBuilderKey, tokenRefLabel } from '~/composables/useDesignSystemBuilder'
 
-const props = defineProps<{ name: TokenName, mode: TokenMode }>()
+const props = defineProps<{ name: TokenName; mode: TokenMode }>()
 const builder = inject(designSystemBuilderKey)!
 
 const open = ref(false)
 const token = computed(() => builder.tokens.value[props.name][props.mode])
 const modeLabel = computed(() => (props.mode === 'light' ? 'Light' : 'Dark'))
 
-const checks = computed(() => builder.readability.value.filter(result =>
-	result.mode === props.mode && (result.pair.foreground === props.name || result.pair.background === props.name)))
-const failing = computed(() => checks.value.filter(result => !result.passes && result.pair.foreground === props.name))
+const checks = computed(() =>
+	builder.readability.value.filter(
+		(result) =>
+			result.mode === props.mode && (result.pair.foreground === props.name || result.pair.background === props.name),
+	),
+)
+const failing = computed(() => checks.value.filter((result) => !result.passes && result.pair.foreground === props.name))
 
-const rows = computed(() => systemScales(builder.system.value).map(scale => ({
-	id: scale.id,
-	label: tokenRefLabel(scaleRef(scale.id, 50)).replace(/ 50$/, ''),
-	options: [
-		...(scale.id === 'neutral' ? [{ ref: 'white' as TokenRef, hex: '#ffffff' }] : []),
-		...scale.swatches.map(swatch => ({ ref: scaleRef(scale.id, swatch.step) as TokenRef, hex: swatch.hex })),
-	],
-})))
+const rows = computed(() =>
+	systemScales(builder.system.value).map((scale) => ({
+		id: scale.id,
+		label: tokenRefLabel(scaleRef(scale.id, 50)).replace(/ 50$/, ''),
+		options: [
+			...(scale.id === 'neutral' ? [{ ref: 'white' as TokenRef, hex: '#ffffff' }] : []),
+			...scale.swatches.map((swatch) => ({ ref: scaleRef(scale.id, swatch.step) as TokenRef, hex: swatch.hex })),
+		],
+	})),
+)
 
 function choose(tokenRef: TokenRef) {
 	builder.setToken(props.name, props.mode, tokenRef)
@@ -36,10 +42,13 @@ function reset() {
 		<PopoverTrigger as-child>
 			<button
 				type="button"
-				class="flex w-full min-w-0 items-center gap-2.5 rounded-xl p-1.5 pr-2.5 text-left ring-1 ring-foreground/10 outline-none transition-colors ring-inset hover:bg-muted/60 focus-visible:ring-3 focus-visible:ring-ring/50 data-[state=open]:bg-muted"
+				class="flex w-full min-w-0 items-center gap-2.5 rounded-xl p-1.5 pr-2.5 text-left ring-1 ring-foreground/10 transition-colors outline-none ring-inset hover:bg-muted/60 focus-visible:ring-3 focus-visible:ring-ring/50 data-[state=open]:bg-muted"
 				:aria-label="`${name}, ${modeLabel} mode: ${tokenRefLabel(token.ref)}${failing.length ? ', not readable' : ''}. Change`"
 			>
-				<span class="size-7 shrink-0 rounded-lg ring-1 ring-foreground/10 ring-inset transition-colors duration-300" :style="{ background: token.hex }" />
+				<span
+					class="size-7 shrink-0 rounded-lg ring-1 ring-foreground/10 transition-colors duration-300 ring-inset"
+					:style="{ background: token.hex }"
+				/>
 				<span class="min-w-0 flex-1 truncate text-sm">{{ tokenRefLabel(token.ref) }}</span>
 				<span v-if="token.edited" class="size-1.5 shrink-0 rounded-full bg-foreground/60" aria-hidden="true" />
 				<Badge v-if="failing.length" variant="secondary" class="shrink-0 bg-destructive/10 text-destructive">
@@ -47,7 +56,11 @@ function reset() {
 				</Badge>
 			</button>
 		</PopoverTrigger>
-		<PopoverContent :align="mode === 'light' ? 'start' : 'end'" :collision-padding="12" class="w-[22.5rem] max-w-[calc(100vw-1.5rem)] gap-4 p-4">
+		<PopoverContent
+			:align="mode === 'light' ? 'start' : 'end'"
+			:collision-padding="12"
+			class="w-[22.5rem] max-w-[calc(100vw-1.5rem)] gap-4 p-4"
+		>
 			<div class="flex items-start justify-between gap-3">
 				<div class="min-w-0">
 					<p class="truncate text-sm font-medium">{{ name }}</p>
@@ -66,7 +79,7 @@ function reset() {
 							v-for="option in row.options"
 							:key="option.ref"
 							type="button"
-							class="size-5.5 rounded-md ring-1 ring-foreground/10 ring-inset outline-none transition-transform hover:scale-110 focus-visible:ring-3 focus-visible:ring-ring/50"
+							class="size-5.5 rounded-md ring-1 ring-foreground/10 transition-transform outline-none ring-inset hover:scale-110 focus-visible:ring-3 focus-visible:ring-ring/50"
 							:class="option.ref === token.ref && 'ring-2 ring-foreground ring-offset-2 ring-offset-popover'"
 							:style="{ background: option.hex }"
 							:aria-label="tokenRefLabel(option.ref)"
@@ -79,11 +92,18 @@ function reset() {
 			</div>
 
 			<ul v-if="checks.length" class="grid grid-cols-1 gap-1 rounded-xl bg-muted/50 p-1">
-				<li v-for="check in checks" :key="check.pair.id" class="flex items-center justify-between gap-3 rounded-lg px-2.5 py-1.5 text-sm">
+				<li
+					v-for="check in checks"
+					:key="check.pair.id"
+					class="flex items-center justify-between gap-3 rounded-lg px-2.5 py-1.5 text-sm"
+				>
 					<span class="min-w-0 truncate text-muted-foreground">{{ check.pair.label }}</span>
 					<span class="flex shrink-0 items-center gap-2">
 						<span class="tabular-nums">{{ check.ratio.toFixed(1) }}</span>
-						<Badge variant="secondary" :class="check.passes ? 'bg-success/15 text-success' : 'bg-destructive/10 text-destructive'">
+						<Badge
+							variant="secondary"
+							:class="check.passes ? 'bg-success/15 text-success' : 'bg-destructive/10 text-destructive'"
+						>
 							{{ check.passes ? 'Pass' : 'Fail' }}
 						</Badge>
 					</span>

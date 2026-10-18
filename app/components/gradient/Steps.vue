@@ -24,11 +24,23 @@ async function copyStep(index: number, hex: string) {
 				<p class="text-sm text-muted-foreground">Solid colors along the gradient. Click one to copy it.</p>
 			</div>
 			<div class="flex items-center gap-1 rounded-4xl bg-muted p-1" role="group" aria-label="Number of steps">
-				<Button variant="ghost" size="icon-sm" aria-label="Fewer steps" :disabled="count <= minGradientSteps" @click="generator.setSteps(count - 1)">
+				<Button
+					variant="ghost"
+					size="icon-sm"
+					aria-label="Fewer steps"
+					:disabled="count <= minGradientSteps"
+					@click="generator.setSteps(count - 1)"
+				>
 					<Icon name="lucide:minus" />
 				</Button>
 				<output class="w-6 text-center text-sm tabular-nums" aria-live="polite">{{ count }}</output>
-				<Button variant="ghost" size="icon-sm" aria-label="More steps" :disabled="count >= maxGradientSteps" @click="generator.setSteps(count + 1)">
+				<Button
+					variant="ghost"
+					size="icon-sm"
+					aria-label="More steps"
+					:disabled="count >= maxGradientSteps"
+					@click="generator.setSteps(count + 1)"
+				>
 					<Icon name="lucide:plus" />
 				</Button>
 			</div>
@@ -37,7 +49,7 @@ async function copyStep(index: number, hex: string) {
 			<li v-for="(step, index) in generator.steps.value" :key="index">
 				<button
 					type="button"
-					class="flex h-16 w-full items-end rounded-xl p-2 text-left text-xs ring-1 ring-foreground/10 ring-inset outline-none transition-[color,background-color,transform] duration-200 focus-visible:ring-3 focus-visible:ring-ring/50 active:scale-[0.97]"
+					class="flex h-16 w-full items-end rounded-xl p-2 text-left text-xs ring-1 ring-foreground/10 transition-[color,background-color,transform] duration-200 outline-none ring-inset focus-visible:ring-3 focus-visible:ring-ring/50 active:scale-[0.97]"
 					:style="{ background: step.hex, color: readableTextColor(step.hex) }"
 					:aria-label="`Copy step ${index + 1}, ${step.hex.toUpperCase()}`"
 					@click="copyStep(index, step.hex)"

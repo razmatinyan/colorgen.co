@@ -3,7 +3,16 @@ import { useDocumentVisibility, useIntervalFn, usePreferredReducedMotion } from 
 import { parseColor, type Oklch } from '~/lib/color'
 import { toBrandsParam } from '~/lib/builder-url'
 
-export const landingSamples = ['#2f5bea', '#0f9488', '#f0603c', '#7c3aed', '#2f7d4a', '#e11d64', '#d99a0b', '#1e293b'] as const
+export const landingSamples = [
+	'#2f5bea',
+	'#0f9488',
+	'#f0603c',
+	'#7c3aed',
+	'#2f7d4a',
+	'#e11d64',
+	'#d99a0b',
+	'#1e293b',
+] as const
 
 const cycleInterval = 3800
 
@@ -18,11 +27,15 @@ export function useLandingDemo() {
 		builder.settings.value = { ...builder.settings.value, brand, brand2: null, status: {}, tokens: {} }
 	}
 
-	const cycle = useIntervalFn(() => {
-		if (visibility.value !== 'visible') return
-		sampleIndex.value = (sampleIndex.value + 1) % landingSamples.length
-		showBrand(parseColor(landingSamples[sampleIndex.value]!)!)
-	}, cycleInterval, { immediate: false })
+	const cycle = useIntervalFn(
+		() => {
+			if (visibility.value !== 'visible') return
+			sampleIndex.value = (sampleIndex.value + 1) % landingSamples.length
+			showBrand(parseColor(landingSamples[sampleIndex.value]!)!)
+		},
+		cycleInterval,
+		{ immediate: false },
+	)
 
 	onMounted(() => {
 		if (reducedMotion.value !== 'reduce') cycle.resume()

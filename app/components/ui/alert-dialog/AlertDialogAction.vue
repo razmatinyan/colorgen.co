@@ -8,26 +8,28 @@ import { AlertDialogAction } from 'reka-ui'
 import { buttonVariants } from '@/components/ui/button'
 
 const props = withDefaults(
-  defineProps<AlertDialogActionProps & {
-    class?: HTMLAttributes['class']
-    variant?: ButtonVariants['variant']
-    size?: ButtonVariants['size']
-  }>(),
-  {
-    variant: 'default',
-    size: 'default',
-  },
+	defineProps<
+		AlertDialogActionProps & {
+			class?: HTMLAttributes['class']
+			variant?: ButtonVariants['variant']
+			size?: ButtonVariants['size']
+		}
+	>(),
+	{
+		variant: 'default',
+		size: 'default',
+	},
 )
 
 const delegatedProps = reactiveOmit(props, 'class', 'variant', 'size')
 </script>
 
 <template>
-  <AlertDialogAction
-    data-slot="alert-dialog-action"
-    v-bind="delegatedProps"
-    :class="cn('', buttonVariants({ variant, size }), props.class)"
-  >
-    <slot />
-  </AlertDialogAction>
+	<AlertDialogAction
+		data-slot="alert-dialog-action"
+		v-bind="delegatedProps"
+		:class="cn('', buttonVariants({ variant, size }), props.class)"
+	>
+		<slot />
+	</AlertDialogAction>
 </template>

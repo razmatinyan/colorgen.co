@@ -2,14 +2,14 @@
 import type { Oklch } from '~/lib/color'
 
 const props = defineProps<{ color: Oklch }>()
-const emit = defineEmits<{ update: [patch: Partial<Oklch>], commit: [] }>()
+const emit = defineEmits<{ update: [patch: Partial<Oklch>]; commit: [] }>()
 
 const maxChroma = 0.37
 
 function channel(key: keyof Oklch) {
 	return computed({
 		get: () => props.color[key],
-		set: value => emit('update', { [key]: value }),
+		set: (value) => emit('update', { [key]: value }),
 	})
 }
 const lightness = channel('l')
@@ -29,8 +29,33 @@ const tracks = computed(() => {
 
 <template>
 	<div class="grid gap-4">
-		<ColorGradientSlider v-model="lightness" label="Lightness" :min="0" :max="1" :track="tracks.l" :format="v => `${Math.round(v * 100)}%`" @commit="emit('commit')" />
-		<ColorGradientSlider v-model="intensity" label="Intensity" :min="0" :max="maxChroma" :track="tracks.c" :format="v => `${Math.round((v / maxChroma) * 100)}%`" @commit="emit('commit')" />
-		<ColorGradientSlider v-model="hue" label="Hue" :min="0" :max="360" :step="0.1" :track="tracks.h" :format="v => `${Math.round(v)}°`" @commit="emit('commit')" />
+		<ColorGradientSlider
+			v-model="lightness"
+			label="Lightness"
+			:min="0"
+			:max="1"
+			:track="tracks.l"
+			:format="(v) => `${Math.round(v * 100)}%`"
+			@commit="emit('commit')"
+		/>
+		<ColorGradientSlider
+			v-model="intensity"
+			label="Intensity"
+			:min="0"
+			:max="maxChroma"
+			:track="tracks.c"
+			:format="(v) => `${Math.round((v / maxChroma) * 100)}%`"
+			@commit="emit('commit')"
+		/>
+		<ColorGradientSlider
+			v-model="hue"
+			label="Hue"
+			:min="0"
+			:max="360"
+			:step="0.1"
+			:track="tracks.h"
+			:format="(v) => `${Math.round(v)}°`"
+			@commit="emit('commit')"
+		/>
 	</div>
 </template>

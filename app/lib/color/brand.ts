@@ -26,8 +26,8 @@ function isAvoidedHue(hue: number) {
 export function suggestSecondBrand(brandInput: ColorInput): Oklch {
 	const brand = toOklch(brandInput)
 	const baseHue = brand.c < achromaticChroma ? fallbackHue : brand.h
-	const candidates = secondBrandHueOffsets.map(offset => wrapHue(baseHue + offset))
-	const hue = candidates.find(candidate => !isAvoidedHue(candidate)) ?? candidates[0]!
+	const candidates = secondBrandHueOffsets.map((offset) => wrapHue(baseHue + offset))
+	const hue = candidates.find((candidate) => !isAvoidedHue(candidate)) ?? candidates[0]!
 	return toGamutOklch({
 		l: clamp(brand.l, ...lightnessRange),
 		c: Math.max(brand.c, minChroma),
@@ -40,11 +40,11 @@ const distinctHueCandidates = Array.from({ length: 12 }, (_, index) => index * 3
 export function suggestDistinctColor(existing: readonly ColorInput[]): Oklch {
 	const colors = existing.map(toOklch)
 	const reference = colors[0]
-	const chromatic = colors.filter(color => color.c >= achromaticChroma)
+	const chromatic = colors.filter((color) => color.c >= achromaticChroma)
 	if (!reference || !chromatic.length) return suggestSecondBrand(reference ?? { l: 0.55, c: 0.15, h: fallbackHue - 60 })
-	const distanceToUsed = (hue: number) => Math.min(...chromatic.map(color => Math.abs(hueDifference(hue, color.h))))
+	const distanceToUsed = (hue: number) => Math.min(...chromatic.map((color) => Math.abs(hueDifference(hue, color.h))))
 	const hue = distinctHueCandidates
-		.filter(candidate => candidate < unflatteringHueRange[0] || candidate > unflatteringHueRange[1])
+		.filter((candidate) => candidate < unflatteringHueRange[0] || candidate > unflatteringHueRange[1])
 		.reduce((best, candidate) => (distanceToUsed(candidate) > distanceToUsed(best) ? candidate : best))
 	return toGamutOklch({
 		l: clamp(reference.l, ...lightnessRange),

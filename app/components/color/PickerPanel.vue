@@ -1,11 +1,22 @@
 <script setup lang="ts">
-import { formatColor, fromHsv, isInGamut, parseColor, pureHue, toHex, toHsv, type ColorFormat, type Hsv, type Oklch } from '~/lib/color'
+import {
+	formatColor,
+	fromHsv,
+	isInGamut,
+	parseColor,
+	pureHue,
+	toHex,
+	toHsv,
+	type ColorFormat,
+	type Hsv,
+	type Oklch,
+} from '~/lib/color'
 
 const props = defineProps<{ color: Oklch }>()
-const emit = defineEmits<{ update: [color: Oklch], commit: [] }>()
+const emit = defineEmits<{ update: [color: Oklch]; commit: [] }>()
 
 type EyeDropperConstructor = new () => { open: () => Promise<{ sRGBHex: string }> }
-type PickerPoint = { x: number, y: number }
+type PickerPoint = { x: number; y: number }
 
 const keyStep = 0.01
 const largeKeyStep = 0.1
@@ -19,21 +30,26 @@ const draft = ref('')
 const isEditing = ref(false)
 const isInvalid = ref(false)
 
-const formats: { value: ColorFormat, label: string }[] = [
+const formats: { value: ColorFormat; label: string }[] = [
 	{ value: 'hex', label: 'HEX' },
 	{ value: 'rgb', label: 'RGB' },
 	{ value: 'hsl', label: 'HSL' },
 	{ value: 'oklch', label: 'OKLCH' },
 ]
 
-watch(() => props.color, (color) => {
-	hsv.value = toHsv(color, hsv.value)
-})
+watch(
+	() => props.color,
+	(color) => {
+		hsv.value = toHsv(color, hsv.value)
+	},
+)
 
 const point = computed<PickerPoint>(() => ({ x: hsv.value.s, y: 1 - hsv.value.v }))
 const hex = computed(() => toHex(props.color))
 const planeHue = computed(() => pureHue(hsv.value.h))
-const valueText = computed(() => `Saturation ${Math.round(hsv.value.s * 100)}%, brightness ${Math.round(hsv.value.v * 100)}%`)
+const valueText = computed(
+	() => `Saturation ${Math.round(hsv.value.s * 100)}%, brightness ${Math.round(hsv.value.v * 100)}%`,
+)
 
 const hueModel = computed({
 	get: () => hsv.value.h,
@@ -41,12 +57,16 @@ const hueModel = computed({
 })
 const hueTrack = `linear-gradient(to right, ${Array.from({ length: 13 }, (_, index) => pureHue(index * 30)).join(', ')})`
 
-watch([() => props.color, format], () => {
-	if (!isEditing.value) {
-		draft.value = formattedValue(props.color)
-		isInvalid.value = false
-	}
-}, { immediate: true })
+watch(
+	[() => props.color, format],
+	() => {
+		if (!isEditing.value) {
+			draft.value = formattedValue(props.color)
+			isInvalid.value = false
+		}
+	},
+	{ immediate: true },
+)
 
 onMounted(() => {
 	eyeDropper.value = (window as Window & { EyeDropper?: EyeDropperConstructor }).EyeDropper ?? null
@@ -109,7 +129,8 @@ function onKeydown(event: KeyboardEvent) {
 }
 
 function onHueKeydown(event: KeyboardEvent) {
-	if (['ArrowLeft', 'ArrowRight', 'ArrowUp', 'ArrowDown', 'PageUp', 'PageDown', 'Home', 'End'].includes(event.key)) emit('commit')
+	if (['ArrowLeft', 'ArrowRight', 'ArrowUp', 'ArrowDown', 'PageUp', 'PageDown', 'Home', 'End'].includes(event.key))
+		emit('commit')
 }
 
 function applyDraft() {
@@ -136,8 +157,7 @@ async function pickFromScreen() {
 		if (!picked) return
 		emit('commit')
 		emit('update', picked)
-	}
-	catch {
+	} catch {
 		return
 	}
 }
@@ -182,15 +202,23 @@ async function pickFromScreen() {
 			:style="{ '--picker-hue': hueTrack, '--picker-thumb': planeHue }"
 			@pointerdown="emit('commit')"
 			@keydown="onHueKeydown"
-		>
+		/>
 		<div class="flex items-center gap-2">
 			<Tooltip>
 				<TooltipTrigger as-child>
-					<Button variant="outline" size="icon-sm" :disabled="!eyeDropper" aria-label="Pick a color from the screen" @click="pickFromScreen">
+					<Button
+						variant="outline"
+						size="icon-sm"
+						:disabled="!eyeDropper"
+						aria-label="Pick a color from the screen"
+						@click="pickFromScreen"
+					>
 						<Icon name="lucide:pipette" />
 					</Button>
 				</TooltipTrigger>
-				<TooltipContent>{{ eyeDropper ? 'Pick from the screen' : 'Screen picker is unavailable in this browser' }}</TooltipContent>
+				<TooltipContent>{{
+					eyeDropper ? 'Pick from the screen' : 'Screen picker is unavailable in this browser'
+				}}</TooltipContent>
 			</Tooltip>
 			<Select v-model="format">
 				<SelectTrigger size="sm" class="w-23 shrink-0" aria-label="Color format">
@@ -239,7 +267,9 @@ async function pickFromScreen() {
 	appearance: none;
 	border-radius: 9999px;
 	background: var(--picker-thumb);
-	box-shadow: 0 0 0 1.5px white, 0 0 0 2.5px oklch(0 0 0 / 35%);
+	box-shadow:
+		0 0 0 1.5px white,
+		0 0 0 2.5px oklch(0 0 0 / 35%);
 }
 
 .picker-hue::-moz-range-thumb {
@@ -248,14 +278,20 @@ async function pickFromScreen() {
 	border: 0;
 	border-radius: 9999px;
 	background: var(--picker-thumb);
-	box-shadow: 0 0 0 1.5px white, 0 0 0 2.5px oklch(0 0 0 / 35%);
+	box-shadow:
+		0 0 0 1.5px white,
+		0 0 0 2.5px oklch(0 0 0 / 35%);
 }
 
 .picker-hue:focus-visible::-webkit-slider-thumb {
-	box-shadow: 0 0 0 1.5px white, 0 0 0 4px color-mix(in oklch, var(--ring) 55%, transparent);
+	box-shadow:
+		0 0 0 1.5px white,
+		0 0 0 4px color-mix(in oklch, var(--ring) 55%, transparent);
 }
 
 .picker-hue:focus-visible::-moz-range-thumb {
-	box-shadow: 0 0 0 1.5px white, 0 0 0 4px color-mix(in oklch, var(--ring) 55%, transparent);
+	box-shadow:
+		0 0 0 1.5px white,
+		0 0 0 4px color-mix(in oklch, var(--ring) 55%, transparent);
 }
 </style>

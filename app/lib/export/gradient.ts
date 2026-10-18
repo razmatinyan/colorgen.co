@@ -33,7 +33,7 @@ function gradientPrelude({ type, angle }: GradientExport, interpolation: string)
 
 export function toCssGradient(gradient: GradientExport, format: ValueFormat = 'hex') {
 	const interpolation = gradient.space === 'srgb' ? '' : gradient.space
-	const stops = gradient.stops.map(stop => stopValue(stop, format))
+	const stops = gradient.stops.map((stop) => stopValue(stop, format))
 	return `${gradient.type}-gradient(${[gradientPrelude(gradient, interpolation), ...stops].join(', ')})`
 }
 
@@ -45,16 +45,17 @@ export function toFallbackGradient(gradient: GradientExport) {
 }
 
 export function toGradientCss(gradient: GradientExport, format: ValueFormat = 'hex', selector = '.gradient') {
-	const lines = gradient.space === 'srgb'
-		? [`  background: ${toCssGradient(gradient, format)};`]
-		: [`  background: ${toFallbackGradient(gradient)};`, `  background: ${toCssGradient(gradient, format)};`]
+	const lines =
+		gradient.space === 'srgb'
+			? [`  background: ${toCssGradient(gradient, format)};`]
+			: [`  background: ${toFallbackGradient(gradient)};`, `  background: ${toCssGradient(gradient, format)};`]
 	return [`${selector} {`, ...lines, '}', ''].join('\n')
 }
 
 const tailwindDirectStops = 3
 
 export function toTailwindGradient(gradient: GradientExport) {
-	const hexes = gradient.stops.map(stop => toHex(stop))
+	const hexes = gradient.stops.map((stop) => toHex(stop))
 	if (hexes.length > tailwindDirectStops) {
 		return `bg-[${toCssGradient(gradient, 'hex').replaceAll(' ', '_')}]`
 	}
@@ -65,14 +66,14 @@ export function toTailwindGradient(gradient: GradientExport) {
 	}[gradient.type]
 	const [from, ...rest] = hexes
 	const to = rest.pop()!
-	return [
-		`${base}/${gradient.space}`,
-		`from-[${from}]`,
-		...rest.map(hex => `via-[${hex}]`),
-		`to-[${to}]`,
-	].join(' ')
+	return [`${base}/${gradient.space}`, `from-[${from}]`, ...rest.map((hex) => `via-[${hex}]`), `to-[${to}]`].join(' ')
 }
 
 export function toNumberedVariables(colors: readonly ColorInput[], format: ValueFormat = 'hex', name = 'gradient') {
-	return [':root {', ...colors.map((color, index) => `  --${name}-${index + 1}: ${stopValue(toOklch(color), format)};`), '}', ''].join('\n')
+	return [
+		':root {',
+		...colors.map((color, index) => `  --${name}-${index + 1}: ${stopValue(toOklch(color), format)};`),
+		'}',
+		'',
+	].join('\n')
 }

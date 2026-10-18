@@ -25,7 +25,9 @@ const valueFormats = [
 	{ value: 'hex', label: 'HEX' },
 ] as const
 
-const scales = computed<ExportScale[]>(() => generator.scales.value.map(scale => ({ name: scale.name, steps: scale.swatches })))
+const scales = computed<ExportScale[]>(() =>
+	generator.scales.value.map((scale) => ({ name: scale.name, steps: scale.swatches })),
+)
 
 const instructions = computed<Record<ExportFormat, string>>(() => {
 	const example = scales.value[0]!.name
@@ -61,7 +63,9 @@ function downloadFile() {
 
 <template>
 	<Dialog v-model:open="open">
-		<DialogContent class="grid max-h-[min(92dvh,52rem)] grid-cols-1 grid-rows-[auto_auto_minmax(0,1fr)_auto] gap-4 p-5 sm:max-w-3xl sm:p-6">
+		<DialogContent
+			class="grid max-h-[min(92dvh,52rem)] grid-cols-1 grid-rows-[auto_auto_minmax(0,1fr)_auto] gap-4 p-5 sm:max-w-3xl sm:p-6"
+		>
 			<DialogHeader>
 				<DialogTitle>Export your scales</DialogTitle>
 				<DialogDescription>Every step from 50 to 950, ready to paste into code or Figma.</DialogDescription>
@@ -70,26 +74,33 @@ function downloadFile() {
 			<div class="grid min-w-0 gap-3">
 				<div class="flex min-w-0 flex-wrap items-center gap-2 *:max-w-full *:overflow-x-auto">
 					<AppSegmentedControl v-model="format" :options="formats" label="Export format" />
-					<AppSegmentedControl v-if="format !== 'json'" v-model="valueFormat" :options="valueFormats" label="Color format" />
+					<AppSegmentedControl
+						v-if="format !== 'json'"
+						v-model="valueFormat"
+						:options="valueFormats"
+						label="Color format"
+					/>
 				</div>
 				<p class="text-sm text-muted-foreground">{{ instructions[format] }}</p>
 			</div>
 
-			<div class="grid min-h-0 grid-rows-[auto_minmax(0,1fr)] overflow-hidden rounded-xl bg-muted/50 ring-1 ring-foreground/10">
+			<div
+				class="grid min-h-0 grid-rows-[auto_minmax(0,1fr)] overflow-hidden rounded-xl bg-muted/50 ring-1 ring-foreground/10"
+			>
 				<div class="flex items-center justify-between gap-3 border-b px-4 py-2 text-sm">
 					<span class="truncate font-medium">{{ file.name }}</span>
 					<span class="shrink-0 text-muted-foreground tabular-nums">{{ lineCount }} lines</span>
 				</div>
-				<pre class="min-h-0 overflow-auto p-4 font-sans text-xs/relaxed tabular-nums" tabindex="0" :aria-label="`Contents of ${file.name}`">{{ file.content }}</pre>
+				<pre
+					class="min-h-0 overflow-auto p-4 font-sans text-xs/relaxed tabular-nums"
+					tabindex="0"
+					:aria-label="`Contents of ${file.name}`"
+					>{{ file.content }}</pre>
 			</div>
 
 			<DialogFooter class="flex-wrap gap-2 sm:justify-end">
-				<Button variant="outline" @click="copyFile">
-					<Icon name="lucide:copy" data-icon="inline-start" /> Copy
-				</Button>
-				<Button @click="downloadFile">
-					<Icon name="lucide:download" data-icon="inline-start" /> Download
-				</Button>
+				<Button variant="outline" @click="copyFile"> <Icon name="lucide:copy" data-icon="inline-start" /> Copy </Button>
+				<Button @click="downloadFile"> <Icon name="lucide:download" data-icon="inline-start" /> Download </Button>
 			</DialogFooter>
 		</DialogContent>
 	</Dialog>

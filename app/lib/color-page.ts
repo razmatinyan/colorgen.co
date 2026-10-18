@@ -79,7 +79,7 @@ export interface ColorPage {
 	family: string
 	intensity: 'muted' | 'moderate' | 'vivid' | 'neutral'
 	cssNames: string[]
-	values: { id: string, label: string, value: string }[]
+	values: { id: string; label: string; value: string }[]
 	shades: ScaleSwatch[]
 	anchorStep: ScaleStep
 	readability: ReadabilityRow[]
@@ -93,12 +93,12 @@ export interface ColorPage {
 }
 
 export const harmonyLabels: Record<Harmony, string> = {
-	'analogous': 'Analogous',
-	'complementary': 'Complementary',
+	analogous: 'Analogous',
+	complementary: 'Complementary',
 	'split-complementary': 'Split complementary',
-	'triadic': 'Triadic',
-	'tetradic': 'Tetradic',
-	'monochromatic': 'Monochromatic',
+	triadic: 'Triadic',
+	tetradic: 'Tetradic',
+	monochromatic: 'Monochromatic',
 }
 
 export const systemScaleLabels: Record<SystemColorId, string> = {
@@ -123,12 +123,41 @@ function intensityOf(color: Oklch): ColorPage['intensity'] {
 }
 
 function readabilityRows(hex: string, color: Oklch): ReadabilityRow[] {
-	const fixAgainst = (background: string) => (wcagRatio(hex, background) >= readableRatio ? null : findContrastFix(color, background, readableRatio))
+	const fixAgainst = (background: string) =>
+		wcagRatio(hex, background) >= readableRatio ? null : findContrastFix(color, background, readableRatio)
 	return [
-		{ id: 'white-on-color', label: 'White text on it', text: lightText, background: hex, check: checkContrast(lightText, hex), fix: null },
-		{ id: 'dark-on-color', label: 'Dark text on it', text: darkText, background: hex, check: checkContrast(darkText, hex), fix: null },
-		{ id: 'color-on-white', label: 'As text on white', text: hex, background: lightText, check: checkContrast(hex, lightText), fix: fixAgainst(lightText) },
-		{ id: 'color-on-dark', label: 'As text on a dark background', text: hex, background: darkText, check: checkContrast(hex, darkText), fix: fixAgainst(darkText) },
+		{
+			id: 'white-on-color',
+			label: 'White text on it',
+			text: lightText,
+			background: hex,
+			check: checkContrast(lightText, hex),
+			fix: null,
+		},
+		{
+			id: 'dark-on-color',
+			label: 'Dark text on it',
+			text: darkText,
+			background: hex,
+			check: checkContrast(darkText, hex),
+			fix: null,
+		},
+		{
+			id: 'color-on-white',
+			label: 'As text on white',
+			text: hex,
+			background: lightText,
+			check: checkContrast(hex, lightText),
+			fix: fixAgainst(lightText),
+		},
+		{
+			id: 'color-on-dark',
+			label: 'As text on a dark background',
+			text: hex,
+			background: darkText,
+			check: checkContrast(hex, darkText),
+			fix: fixAgainst(darkText),
+		},
 	]
 }
 
@@ -171,7 +200,12 @@ function relatedColors(hex: string, color: Oklch): RelatedColor[] {
 function systemPreview(color: Oklch): ColorPage['system'] {
 	const system = generateSystem({ brand: color, brand2: null, neutralTint: defaultNeutralTint, status: {} })
 	return {
-		scales: systemScales(system).map(scale => ({ id: scale.id, label: systemScaleLabels[scale.id], anchorStep: scale.anchorStep, swatches: scale.swatches })),
+		scales: systemScales(system).map((scale) => ({
+			id: scale.id,
+			label: systemScaleLabels[scale.id],
+			anchorStep: scale.anchorStep,
+			swatches: scale.swatches,
+		})),
 		tokens: resolveTokens(system),
 	}
 }
@@ -189,7 +223,7 @@ export function buildColorPage(hex: string): ColorPage {
 		intensity: intensityOf(color),
 		cssNames: conversion.names,
 		values: conversion.values
-			.filter(value => (shownFormatIds as readonly string[]).includes(value.id))
+			.filter((value) => (shownFormatIds as readonly string[]).includes(value.id))
 			.map(({ id, label, value }) => ({ id, label, value })),
 		shades: generateScale(color),
 		anchorStep: scaleSteps[nearestStepIndex(color.l)]!,
@@ -217,9 +251,10 @@ export function colorPageSummary(page: ColorPage) {
 	const [whiteOnColor, darkOnColor, onWhite] = page.readability
 	const bestOnColor = whiteOnColor!.check.ratio >= darkOnColor!.check.ratio ? whiteOnColor! : darkOnColor!
 	const textName = bestOnColor === whiteOnColor ? 'White' : 'Dark'
-	const asText = onWhite!.check.ratio >= readableRatio
-		? `It is readable as text on white (${onWhite!.check.ratio.toFixed(1)}:1).`
-		: `On white it reaches only ${onWhite!.check.ratio.toFixed(1)}:1, so use a darker shade for text.`
+	const asText =
+		onWhite!.check.ratio >= readableRatio
+			? `It is readable as text on white (${onWhite!.check.ratio.toFixed(1)}:1).`
+			: `On white it reaches only ${onWhite!.check.ratio.toFixed(1)}:1, so use a darker shade for text.`
 	return `${label} is ${withArticle(page.name.toLowerCase())} ${intensityWords[page.intensity]}, at step ${page.anchorStep} of its 50–950 scale. ${textName} text on it has a contrast of ${bestOnColor.check.ratio.toFixed(1)}:1. ${asText}`
 }
 

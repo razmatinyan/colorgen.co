@@ -1,5 +1,14 @@
 import type { InjectionKey } from 'vue'
-import { checkContrast, describeColor, findContrastFix, toHex, wcagCriteria, type ContrastFix, type Oklch, type WcagCriterionId } from '~/lib/color'
+import {
+	checkContrast,
+	describeColor,
+	findContrastFix,
+	toHex,
+	wcagCriteria,
+	type ContrastFix,
+	type Oklch,
+	type WcagCriterionId,
+} from '~/lib/color'
 import type { ContrastPair } from '~/lib/contrast-url'
 import { defaultBrand } from '~/composables/useDesignSystemBuilder'
 
@@ -14,7 +23,7 @@ export interface ContrastColor {
 	description: string
 }
 
-const colorDetails: Record<ContrastColorId, { label: string, hint: string }> = {
+const colorDetails: Record<ContrastColorId, { label: string; hint: string }> = {
 	text: { label: 'Text', hint: 'Text, icons or borders' },
 	background: { label: 'Background', hint: 'What the text sits on' },
 }
@@ -32,24 +41,28 @@ export function useContrastChecker(initial: Partial<ContrastPair> = {}) {
 	const targetId = ref<WcagCriterionId>('body-aa')
 
 	const hexes = computed(() => ({ text: toHex(pair.value.text), background: toHex(pair.value.background) }))
-	const colors = computed<ContrastColor[]>(() => contrastColorIds.map(id => ({
-		id,
-		...colorDetails[id],
-		color: pair.value[id],
-		hex: hexes.value[id],
-		description: describeColor(hexes.value[id]),
-	})))
-	const selected = computed(() => colors.value.find(color => color.id === selectedId.value) ?? null)
+	const colors = computed<ContrastColor[]>(() =>
+		contrastColorIds.map((id) => ({
+			id,
+			...colorDetails[id],
+			color: pair.value[id],
+			hex: hexes.value[id],
+			description: describeColor(hexes.value[id]),
+		})),
+	)
+	const selected = computed(() => colors.value.find((color) => color.id === selectedId.value) ?? null)
 
 	const check = computed(() => checkContrast(hexes.value.text, hexes.value.background))
-	const target = computed(() => wcagCriteria.find(criterion => criterion.id === targetId.value)!)
+	const target = computed(() => wcagCriteria.find((criterion) => criterion.id === targetId.value)!)
 	const passesTarget = computed(() => check.value.ratio >= target.value.minRatio)
 	const fixes = computed<Record<ContrastColorId, ContrastFix | null>>(() => ({
 		text: findContrastFix(pair.value.text, hexes.value.background, target.value.minRatio),
 		background: findContrastFix(pair.value.background, hexes.value.text, target.value.minRatio),
 	}))
 
-	const brandColor = computed(() => (pair.value.text.c >= pair.value.background.c ? pair.value.text : pair.value.background))
+	const brandColor = computed(() =>
+		pair.value.text.c >= pair.value.background.c ? pair.value.text : pair.value.background,
+	)
 
 	function update(id: ContrastColorId, patch: Partial<Oklch>) {
 		pair.value[id] = { ...pair.value[id], ...patch }

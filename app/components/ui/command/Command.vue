@@ -8,8 +8,8 @@ import { reactive, ref, watch } from 'vue'
 import { provideCommandContext } from '.'
 
 const props = withDefaults(defineProps<ListboxRootProps & { class?: HTMLAttributes['class'] }>(), {
-  modelValue: '',
-  highlightOnHover: true,
+	modelValue: '',
+	highlightOnHover: true,
 })
 
 const emits = defineEmits<ListboxRootEmits>()
@@ -23,59 +23,63 @@ const allGroups = ref<Map<string, Set<string>>>(new Map())
 
 const { contains } = useFilter({ sensitivity: 'base' })
 const filterState = reactive({
-  search: '',
-  filtered: {
-    count: 0,
-    items: new Map() as Map<string, number>,
-    groups: new Set() as Set<string>,
-  },
+	search: '',
+	filtered: {
+		count: 0,
+		items: new Map() as Map<string, number>,
+		groups: new Set() as Set<string>,
+	},
 })
 
 function filterItems() {
-  if (!filterState.search) {
-    filterState.filtered.count = allItems.value.size
-    return
-  }
+	if (!filterState.search) {
+		filterState.filtered.count = allItems.value.size
+		return
+	}
 
-  filterState.filtered.groups = new Set()
-  let itemCount = 0
+	filterState.filtered.groups = new Set()
+	let itemCount = 0
 
-  for (const [id, value] of allItems.value) {
-    const score = contains(value, filterState.search)
-    filterState.filtered.items.set(id, score ? 1 : 0)
-    if (score)
-      itemCount++
-  }
+	for (const [id, value] of allItems.value) {
+		const score = contains(value, filterState.search)
+		filterState.filtered.items.set(id, score ? 1 : 0)
+		if (score) itemCount++
+	}
 
-  for (const [groupId, group] of allGroups.value) {
-    for (const itemId of group) {
-      if (filterState.filtered.items.get(itemId)! > 0) {
-        filterState.filtered.groups.add(groupId)
-        break
-      }
-    }
-  }
+	for (const [groupId, group] of allGroups.value) {
+		for (const itemId of group) {
+			if (filterState.filtered.items.get(itemId)! > 0) {
+				filterState.filtered.groups.add(groupId)
+				break
+			}
+		}
+	}
 
-  filterState.filtered.count = itemCount
+	filterState.filtered.count = itemCount
 }
 
-watch(() => filterState.search, () => {
-  filterItems()
-})
+watch(
+	() => filterState.search,
+	() => {
+		filterItems()
+	},
+)
 
 provideCommandContext({
-  allItems,
-  allGroups,
-  filterState,
+	allItems,
+	allGroups,
+	filterState,
 })
 </script>
 
 <template>
-  <ListboxRoot
-    data-slot="command"
-    v-bind="forwarded"
-    :class="cn('bg-popover text-popover-foreground rounded-2xl p-1 flex size-full flex-col overflow-hidden', props.class)"
-  >
-    <slot />
-  </ListboxRoot>
+	<ListboxRoot
+		data-slot="command"
+		v-bind="forwarded"
+		:class="
+			cn('flex size-full flex-col overflow-hidden rounded-2xl bg-popover p-1 text-popover-foreground', props.class)
+		"
+	>
+		<slot />
+	</ListboxRoot>
 </template>

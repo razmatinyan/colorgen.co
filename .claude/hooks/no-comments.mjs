@@ -19,8 +19,8 @@ function walk(path) {
 	const stats = statSync(path)
 	if (stats.isFile()) return codeExtensions.has(extname(path)) ? [path] : []
 	return readdirSync(path)
-		.filter(name => !ignoredDirs.has(name))
-		.flatMap(name => walk(join(path, name)))
+		.filter((name) => !ignoredDirs.has(name))
+		.flatMap((name) => walk(join(path, name)))
 }
 
 if (process.argv[2] === '--scan') {
@@ -41,18 +41,18 @@ const filePath = toolInput.file_path ?? ''
 
 if (!codeExtensions.has(extname(filePath))) process.exit(0)
 
-const written = [
-	toolInput.content,
-	toolInput.new_string,
-	...(toolInput.edits ?? []).map(edit => edit.new_string),
-].filter(Boolean).join('\n')
+const written = [toolInput.content, toolInput.new_string, ...(toolInput.edits ?? []).map((edit) => edit.new_string)]
+	.filter(Boolean)
+	.join('\n')
 
 const hits = findComments(written)
 if (hits.length) {
-	console.error([
-		`Blocked: ${filePath} would contain code comments. This project does not allow comments in code (AGENTS.md).`,
-		'Remove them and express intent through naming instead:',
-		...hits.slice(0, 10).map(hit => `  ${hit.text}`),
-	].join('\n'))
+	console.error(
+		[
+			`Blocked: ${filePath} would contain code comments. This project does not allow comments in code (AGENTS.md).`,
+			'Remove them and express intent through naming instead:',
+			...hits.slice(0, 10).map((hit) => `  ${hit.text}`),
+		].join('\n'),
+	)
 	process.exit(2)
 }

@@ -14,14 +14,14 @@ describe('generateSystem', () => {
 		expect(Object.keys(system)).toEqual([...systemColorIds])
 		for (const id of systemColorIds) {
 			expect(system[id]!.id).toBe(id)
-			expect(system[id]!.swatches.map(swatch => swatch.step)).toEqual([...scaleSteps])
+			expect(system[id]!.swatches.map((swatch) => swatch.step)).toEqual([...scaleSteps])
 		}
 	})
 
 	it('contains the exact brand color at its anchor step', () => {
 		const { brand: brandScale } = generateSystem(settings)
 		expect(brandScale.anchorStep).not.toBeNull()
-		expect(brandScale.swatches.find(swatch => swatch.step === brandScale.anchorStep)!.hex).toBe('#1f6cb0')
+		expect(brandScale.swatches.find((swatch) => swatch.step === brandScale.anchorStep)!.hex).toBe('#1f6cb0')
 	})
 
 	it('suggests status colors from the brand', () => {
@@ -33,7 +33,7 @@ describe('generateSystem', () => {
 		const edited = parseColor('#b91c1c')!
 		const system = generateSystem({ ...settings, status: { danger: edited } })
 		expect(system.danger.base).toEqual(edited)
-		expect(system.danger.swatches.some(swatch => swatch.hex === '#b91c1c')).toBe(true)
+		expect(system.danger.swatches.some((swatch) => swatch.hex === '#b91c1c')).toBe(true)
 		expect(toHex(system.success.base)).toBe(toHex(suggestStatusColor('success', brand)))
 	})
 
@@ -53,12 +53,12 @@ describe('generateSystem', () => {
 describe('second brand color', () => {
 	it('is absent unless set', () => {
 		expect(generateSystem(settings).brand2).toBeNull()
-		expect(systemScales(generateSystem(settings)).map(scale => scale.id)).not.toContain('brand2')
+		expect(systemScales(generateSystem(settings)).map((scale) => scale.id)).not.toContain('brand2')
 	})
 
 	it('gets a full anchored scale when set', () => {
 		const system = generateSystem({ ...settings, brand2: parseColor('#8b5cf6')! })
-		expect(system.brand2!.swatches.some(swatch => swatch.hex === '#8b5cf6')).toBe(true)
-		expect(systemScales(system).map(scale => scale.id)).toEqual([...systemColorIds])
+		expect(system.brand2!.swatches.some((swatch) => swatch.hex === '#8b5cf6')).toBe(true)
+		expect(systemScales(system).map((scale) => scale.id)).toEqual([...systemColorIds])
 	})
 })

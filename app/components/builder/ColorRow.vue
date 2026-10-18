@@ -17,7 +17,10 @@ const panelId = useId()
 			:aria-controls="panelId"
 			@click="builder.toggleOpen(color.id)"
 		>
-			<span class="size-10 shrink-0 rounded-lg ring-1 ring-foreground/10 ring-inset transition-colors duration-300" :style="{ background: color.hex }" />
+			<span
+				class="size-10 shrink-0 rounded-lg ring-1 ring-foreground/10 transition-colors duration-300 ring-inset"
+				:style="{ background: color.hex }"
+			/>
 			<span class="min-w-0 flex-1">
 				<span class="flex items-baseline justify-between gap-2">
 					<span class="flex items-center gap-2 text-sm font-medium">
@@ -31,7 +34,10 @@ const panelId = useId()
 		</button>
 
 		<div v-if="isOpen" :id="panelId">
-			<div class="mx-2.5 mb-4 flex h-2 overflow-hidden rounded-full outline outline-foreground/10 -outline-offset-1" aria-hidden="true">
+			<div
+				class="mx-2.5 mb-4 flex h-2 overflow-hidden rounded-full outline -outline-offset-1 outline-foreground/10"
+				aria-hidden="true"
+			>
 				<span v-for="swatch in color.swatches" :key="swatch.step" class="flex-1" :style="{ background: swatch.hex }" />
 			</div>
 			<BuilderColorEditor :color="color" />

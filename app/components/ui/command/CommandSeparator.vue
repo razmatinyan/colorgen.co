@@ -11,11 +11,7 @@ const delegatedProps = reactiveOmit(props, 'class')
 </script>
 
 <template>
-  <Separator
-    data-slot="command-separator"
-    v-bind="delegatedProps"
-    :class="cn('bg-border/50 my-1 h-px', props.class)"
-  >
-    <slot />
-  </Separator>
+	<Separator data-slot="command-separator" v-bind="delegatedProps" :class="cn('my-1 h-px bg-border/50', props.class)">
+		<slot />
+	</Separator>
 </template>

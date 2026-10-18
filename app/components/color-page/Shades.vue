@@ -38,7 +38,7 @@ async function copySnippet() {
 			<li v-for="swatch in page.shades" :key="swatch.step">
 				<NuxtLink
 					:to="`/color/${swatch.hex.slice(1)}`"
-					class="flex h-20 w-full flex-col justify-between rounded-xl p-2 text-xs ring-1 ring-foreground/10 ring-inset outline-none transition-transform duration-200 focus-visible:ring-3 focus-visible:ring-ring/50 active:scale-[0.97] sm:h-28"
+					class="flex h-20 w-full flex-col justify-between rounded-xl p-2 text-xs ring-1 ring-foreground/10 transition-transform duration-200 outline-none ring-inset focus-visible:ring-3 focus-visible:ring-ring/50 active:scale-[0.97] sm:h-28"
 					:style="{ background: swatch.hex, color: readableTextColor(swatch.hex) }"
 					:aria-label="`${scaleName}-${swatch.step}, ${swatch.hex.toUpperCase()}${swatch.step === page.anchorStep ? ', this color' : ''}`"
 					:aria-current="swatch.step === page.anchorStep ? 'page' : undefined"
@@ -59,7 +59,11 @@ async function copySnippet() {
 					<Icon name="lucide:copy" data-icon="inline-start" /> Copy
 				</Button>
 			</div>
-			<pre class="max-h-72 overflow-auto px-4 pb-4 font-sans text-xs/relaxed tabular-nums" tabindex="0" aria-label="Tailwind theme for these shades">{{ snippet }}</pre>
+			<pre
+				class="max-h-72 overflow-auto px-4 pb-4 font-sans text-xs/relaxed tabular-nums"
+				tabindex="0"
+				aria-label="Tailwind theme for these shades"
+				>{{ snippet }}</pre>
 		</div>
 	</ColorPageSection>
 </template>

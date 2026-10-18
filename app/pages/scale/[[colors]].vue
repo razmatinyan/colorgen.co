@@ -25,15 +25,18 @@ provide(scaleGeneratorKey, generator)
 
 const savePath = computed(() => router.resolve(target.value).fullPath)
 const savedSnapshot = () => ({
-	title: generator.scales.value.length === 1 ? `${generator.scales.value[0]!.description} scale` : `${generator.scales.value.length} scales`,
-	colors: generator.scales.value.map(scale => scale.hex),
+	title:
+		generator.scales.value.length === 1
+			? `${generator.scales.value[0]!.description} scale`
+			: `${generator.scales.value.length} scales`,
+	colors: generator.scales.value.map((scale) => scale.hex),
 })
 useRecentTracking('scale', () => (colorsParam.value ? savedSnapshot() : null))
 
 const target = computed(() => {
-	const names = toNamesParam(generator.entries.value.map(entry => entry.name))
+	const names = toNamesParam(generator.entries.value.map((entry) => entry.name))
 	return {
-		params: { colors: toColorsParam(generator.entries.value.map(entry => entry.color)) },
+		params: { colors: toColorsParam(generator.entries.value.map((entry) => entry.color)) },
 		query: names ? { names } : {},
 	}
 })
@@ -41,18 +44,19 @@ const target = computed(() => {
 const syncUrl = useDebounceFn((next: typeof target.value) => {
 	if (router.resolve(next).fullPath !== route.fullPath) router.replace(next)
 }, 250)
-watch(target, next => syncUrl(next))
+watch(target, (next) => syncUrl(next))
 
 const siteUrl = 'https://sygen.app'
 const defaultTitle = 'Shade Scale Generator: 50–950 Color Scales for Tailwind | Sygen'
-const pathHexes = computed(() => colorsParam.value?.split('-').map(hex => `#${hex.toUpperCase()}`) ?? [])
+const pathHexes = computed(() => colorsParam.value?.split('-').map((hex) => `#${hex.toUpperCase()}`) ?? [])
 useSeoMeta({
 	title: () => {
 		if (pathHexes.value.length === 1) return `${pathHexes.value[0]} Shades: 50–950 Color Scale | Sygen`
 		if (pathHexes.value.length > 1) return `Color scales for ${pathHexes.value.join(', ')} | Sygen`
 		return defaultTitle
 	},
-	description: 'Turn any color into an even 50–950 shade scale in OKLCH, with your exact color kept at its step. Check which text is readable on every shade and export to Tailwind, CSS or design tokens. Free, no sign-up.',
+	description:
+		'Turn any color into an even 50–950 shade scale in OKLCH, with your exact color kept at its step. Check which text is readable on every shade and export to Tailwind, CSS or design tokens. Free, no sign-up.',
 	ogTitle: defaultTitle,
 	ogUrl: () => `${siteUrl}${route.path}`,
 })
@@ -72,9 +76,12 @@ const views = [
 	{ value: 'readability', label: 'Readability', icon: 'lucide:type' },
 ] as const
 const readabilityScale = computed(() => generator.selected.value ?? generator.scales.value[0]!)
-const viewDetails = computed<Record<ScaleView, { title: string, description: string }>>(() => ({
+const viewDetails = computed<Record<ScaleView, { title: string; description: string }>>(() => ({
 	shades: { title: 'Shades', description: 'Every color from 50 (lightest) to 950 (darkest)' },
-	readability: { title: 'Readability', description: `White and dark text on every step of ${readabilityScale.value.name}` },
+	readability: {
+		title: 'Readability',
+		description: `White and dark text on every step of ${readabilityScale.value.name}`,
+	},
 }))
 
 const exportOpen = ref(false)
@@ -113,7 +120,13 @@ onKeyStroke(['z', 'Z'], (event) => {
 		<AppTopBar title="Shade scale generator">
 			<Tooltip>
 				<TooltipTrigger as-child>
-					<Button variant="ghost" size="icon-sm" aria-label="Undo" :disabled="!generator.canUndo.value" @click="generator.undo()">
+					<Button
+						variant="ghost"
+						size="icon-sm"
+						aria-label="Undo"
+						:disabled="!generator.canUndo.value"
+						@click="generator.undo()"
+					>
 						<Icon name="lucide:undo-2" />
 					</Button>
 				</TooltipTrigger>
@@ -121,7 +134,13 @@ onKeyStroke(['z', 'Z'], (event) => {
 			</Tooltip>
 			<Tooltip>
 				<TooltipTrigger as-child>
-					<Button variant="ghost" size="icon-sm" aria-label="Redo" :disabled="!generator.canRedo.value" @click="generator.redo()">
+					<Button
+						variant="ghost"
+						size="icon-sm"
+						aria-label="Redo"
+						:disabled="!generator.canRedo.value"
+						@click="generator.redo()"
+					>
 						<Icon name="lucide:redo-2" />
 					</Button>
 				</TooltipTrigger>
@@ -132,7 +151,8 @@ onKeyStroke(['z', 'Z'], (event) => {
 				<TooltipTrigger as-child>
 					<Button as-child variant="outline" size="sm">
 						<NuxtLink :to="builderPath" aria-label="Use in builder">
-							<Icon name="lucide:blocks" data-icon="inline-start" /> <span class="hidden sm:inline">Use in builder</span>
+							<Icon name="lucide:blocks" data-icon="inline-start" />
+							<span class="hidden sm:inline">Use in builder</span>
 						</NuxtLink>
 					</Button>
 				</TooltipTrigger>
@@ -148,7 +168,9 @@ onKeyStroke(['z', 'Z'], (event) => {
 			</Tooltip>
 		</AppTopBar>
 
-		<div class="grid min-h-0 flex-1 grid-cols-[minmax(0,1fr)] content-start gap-4 p-4 lg:grid-cols-[23rem_minmax(0,1fr)] lg:content-stretch">
+		<div
+			class="grid min-h-0 flex-1 grid-cols-[minmax(0,1fr)] content-start gap-4 p-4 lg:grid-cols-[23rem_minmax(0,1fr)] lg:content-stretch"
+		>
 			<Card size="sm" class="min-h-0">
 				<CardHeader>
 					<CardTitle>Your colors</CardTitle>
@@ -160,7 +182,7 @@ onKeyStroke(['z', 'Z'], (event) => {
 						<button
 							v-if="generator.canAdd.value"
 							type="button"
-							class="flex items-center gap-3 rounded-xl p-2.5 text-left text-sm text-muted-foreground outline-none transition-colors hover:bg-muted/50 hover:text-foreground focus-visible:ring-3 focus-visible:ring-ring/50"
+							class="flex items-center gap-3 rounded-xl p-2.5 text-left text-sm text-muted-foreground transition-colors outline-none hover:bg-muted/50 hover:text-foreground focus-visible:ring-3 focus-visible:ring-ring/50"
 							@click="generator.add()"
 						>
 							<span class="grid size-10 shrink-0 place-items-center rounded-lg border border-dashed">

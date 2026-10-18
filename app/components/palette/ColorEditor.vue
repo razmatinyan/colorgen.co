@@ -10,17 +10,19 @@ const { showToast } = useAppToast()
 
 const hex = computed(() => toHex(props.color))
 
-const copyFormats: { format: ColorFormat, label: string }[] = [
+const copyFormats: { format: ColorFormat; label: string }[] = [
 	{ format: 'hex', label: 'HEX' },
 	{ format: 'rgb', label: 'RGB' },
 	{ format: 'hsl', label: 'HSL' },
 	{ format: 'oklch', label: 'OKLCH' },
 ]
 
-const copyValues = computed(() => copyFormats.map(({ format, label }) => ({
-	label,
-	value: format === 'hex' ? hex.value.toUpperCase() : formatColor(props.color, format),
-})))
+const copyValues = computed(() =>
+	copyFormats.map(({ format, label }) => ({
+		label,
+		value: format === 'hex' ? hex.value.toUpperCase() : formatColor(props.color, format),
+	})),
+)
 
 const checks = computed(() => {
 	const pageBackground = scaleHexes(palette.colors.value.at(-1)!)[0]!
@@ -28,7 +30,7 @@ const checks = computed(() => {
 		{ label: 'On white', against: '#ffffff' },
 		{ label: 'On black', against: '#000000' },
 		{ label: 'On page background', against: pageBackground },
-	].map(check => ({ ...check, ratio: wcagRatio(hex.value, check.against) }))
+	].map((check) => ({ ...check, ratio: wcagRatio(hex.value, check.against) }))
 })
 
 function changeColor(next: Oklch) {
@@ -48,10 +50,14 @@ async function copyValue(value: string) {
 			:color="color"
 			:label="color.id === 'primary' ? 'Your color' : `${color.role} color`"
 			@change="changeColor"
-			@update="value => palette.update(color.id, value)"
+			@update="(value) => palette.update(color.id, value)"
 			@commit="palette.snapshot()"
 		/>
-		<ColorChannelSliders :color="color" @update="patch => palette.update(color.id, patch)" @commit="palette.snapshot()" />
+		<ColorChannelSliders
+			:color="color"
+			@update="(patch) => palette.update(color.id, patch)"
+			@commit="palette.snapshot()"
+		/>
 
 		<section class="grid grid-cols-1 gap-2">
 			<h3 class="text-sm font-medium">Copy as</h3>

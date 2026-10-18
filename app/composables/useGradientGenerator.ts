@@ -50,18 +50,20 @@ export function useGradientGenerator(initial: GradientGeneratorInitial = {}) {
 	const colors = initial.stops?.length ? initial.stops : [defaultBrand, suggestNextStop([defaultBrand])]
 	const state = ref<GradientState>({
 		...(initial.options ?? defaultGradientOptions),
-		stops: colors.map(color => ({ id: ++lastId, color })),
+		stops: colors.map((color) => ({ id: ++lastId, color })),
 	})
 	const history = useUndoHistory(state)
 	const selectedId = ref<number | null>(state.value.stops[0]!.id)
 
-	const stops = computed<GradientStopItem[]>(() => state.value.stops.map((stop, index, all) => ({
-		...stop,
-		hex: toHex(stop.color),
-		label: stopLabel(index, all.length),
-		description: describeColor(stop.color),
-	})))
-	const colorsInOrder = computed(() => state.value.stops.map(stop => stop.color))
+	const stops = computed<GradientStopItem[]>(() =>
+		state.value.stops.map((stop, index, all) => ({
+			...stop,
+			hex: toHex(stop.color),
+			label: stopLabel(index, all.length),
+			description: describeColor(stop.color),
+		})),
+	)
+	const colorsInOrder = computed(() => state.value.stops.map((stop) => stop.color))
 	const gradient = computed<GradientExport>(() => ({
 		stops: colorsInOrder.value,
 		type: state.value.type,
@@ -69,18 +71,30 @@ export function useGradientGenerator(initial: GradientGeneratorInitial = {}) {
 		space: state.value.space,
 	}))
 	const css = computed(() => toCssGradient(gradient.value))
-	const steps = computed(() => sampleGradient(colorsInOrder.value, state.value.steps, state.value.space).map(color => ({ color, hex: toHex(color) })))
-	const blends = computed(() => gradientSpaces.map(space => ({
-		space,
-		hexes: sampleGradient(colorsInOrder.value, previewSamples, space).map(color => toHex(color)),
-	})))
-	const ideas = computed(() => suggestGradients(colorsInOrder.value[0]!).map(idea => ({ ...idea, hexes: idea.stops.map(stop => toHex(stop)) })))
-	const selected = computed(() => stops.value.find(stop => stop.id === selectedId.value) ?? null)
+	const steps = computed(() =>
+		sampleGradient(colorsInOrder.value, state.value.steps, state.value.space).map((color) => ({
+			color,
+			hex: toHex(color),
+		})),
+	)
+	const blends = computed(() =>
+		gradientSpaces.map((space) => ({
+			space,
+			hexes: sampleGradient(colorsInOrder.value, previewSamples, space).map((color) => toHex(color)),
+		})),
+	)
+	const ideas = computed(() =>
+		suggestGradients(colorsInOrder.value[0]!).map((idea) => ({
+			...idea,
+			hexes: idea.stops.map((stop) => toHex(stop)),
+		})),
+	)
+	const selected = computed(() => stops.value.find((stop) => stop.id === selectedId.value) ?? null)
 	const canAdd = computed(() => state.value.stops.length < maxGradientStops)
 	const canRemove = computed(() => state.value.stops.length > minGradientStops)
 
 	function findStop(id: number) {
-		return state.value.stops.find(stop => stop.id === id)
+		return state.value.stops.find((stop) => stop.id === id)
 	}
 
 	function updateColor(id: number, patch: Partial<Oklch>) {
@@ -122,8 +136,8 @@ export function useGradientGenerator(initial: GradientGeneratorInitial = {}) {
 	function remove(id: number) {
 		if (!canRemove.value) return
 		history.snapshot()
-		const index = state.value.stops.findIndex(stop => stop.id === id)
-		state.value.stops = state.value.stops.filter(stop => stop.id !== id)
+		const index = state.value.stops.findIndex((stop) => stop.id === id)
+		state.value.stops = state.value.stops.filter((stop) => stop.id !== id)
 		if (selectedId.value === id) selectedId.value = state.value.stops[Math.max(0, index - 1)]?.id ?? null
 	}
 
@@ -134,13 +148,13 @@ export function useGradientGenerator(initial: GradientGeneratorInitial = {}) {
 
 	function applyIdea(colors: readonly Oklch[]) {
 		history.snapshot()
-		state.value.stops = colors.map(color => ({ id: ++lastId, color }))
+		state.value.stops = colors.map((color) => ({ id: ++lastId, color }))
 		selectedId.value = state.value.stops[0]!.id
 	}
 
 	function select(offset: number) {
 		const count = state.value.stops.length
-		const index = state.value.stops.findIndex(stop => stop.id === selectedId.value)
+		const index = state.value.stops.findIndex((stop) => stop.id === selectedId.value)
 		const nextIndex = index === -1 ? (offset > 0 ? 0 : count - 1) : (index + offset + count) % count
 		selectedId.value = state.value.stops[nextIndex]?.id ?? null
 	}

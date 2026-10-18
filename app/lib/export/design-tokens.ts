@@ -1,22 +1,27 @@
 import { tokenModes, type TokenMode } from '../color'
 import { dtcgColor, type ExportModel, type ExportScale, type ExportTokenValue } from './model'
 
-type TokenTree = { [key: string]: TokenTree | { $type: 'color', $value: unknown } }
+type TokenTree = { [key: string]: TokenTree | { $type: 'color'; $value: unknown } }
 
 const colorToken = ($value: unknown) => ({ $type: 'color' as const, $value })
 
 const numberArray = /\[\s*(-?[\d.]+(?:,\s*-?[\d.]+)*)\s*\]/g
 
 export function toJson(value: unknown) {
-	const json = JSON.stringify(value, null, 2).replace(numberArray, (_, items: string) => `[${items.split(/,\s*/).join(', ')}]`)
+	const json = JSON.stringify(value, null, 2).replace(
+		numberArray,
+		(_, items: string) => `[${items.split(/,\s*/).join(', ')}]`,
+	)
 	return `${json}\n`
 }
 
 function scalePrimitives(scales: readonly ExportScale[]): TokenTree {
-	return Object.fromEntries(scales.map(scale => [
-		scale.name,
-		Object.fromEntries(scale.steps.map(step => [String(step.step), colorToken(dtcgColor(step.hex))])),
-	]))
+	return Object.fromEntries(
+		scales.map((scale) => [
+			scale.name,
+			Object.fromEntries(scale.steps.map((step) => [String(step.step), colorToken(dtcgColor(step.hex))])),
+		]),
+	)
 }
 
 function primitives(model: ExportModel): TokenTree {
@@ -28,7 +33,7 @@ function alias(value: ExportTokenValue) {
 }
 
 function semantic(model: ExportModel, mode: TokenMode, valueOf: (value: ExportTokenValue) => unknown): TokenTree {
-	return Object.fromEntries(model.tokens.map(token => [token.name, colorToken(valueOf(token[mode]))]))
+	return Object.fromEntries(model.tokens.map((token) => [token.name, colorToken(valueOf(token[mode]))]))
 }
 
 export function toDesignTokens(model: ExportModel) {
@@ -40,7 +45,7 @@ export function toDesignTokens(model: ExportModel) {
 export function toFigmaTokens(model: ExportModel, mode: TokenMode) {
 	const tree: TokenTree = {
 		color: primitives(model),
-		theme: semantic(model, mode, value => dtcgColor(value.hex)),
+		theme: semantic(model, mode, (value) => dtcgColor(value.hex)),
 	}
 	return toJson(tree)
 }

@@ -15,7 +15,7 @@ export const conversionFormats = [
 	{ id: 'p3', label: 'Display P3', gamut: 'p3' },
 ] as const
 
-export type ConversionFormat = typeof conversionFormats[number]
+export type ConversionFormat = (typeof conversionFormats)[number]
 export type ConversionFormatId = ConversionFormat['id']
 
 export interface ConvertedValue {
@@ -54,7 +54,7 @@ function percent(value: number, digits: number) {
 }
 
 function inUnitRange(...channels: number[]) {
-	return channels.every(channel => channel >= -gamutTolerance && channel <= 1 + gamutTolerance)
+	return channels.every((channel) => channel >= -gamutTolerance && channel <= 1 + gamutTolerance)
 }
 
 export function isInP3(input: ColorInput) {
@@ -76,7 +76,7 @@ function formatValue(id: ConversionFormatId, color: Oklch, hex: string, inP3: bo
 		case 'hex':
 			return hex
 		case 'rgb':
-			return `rgb(${[srgb.r, srgb.g, srgb.b].map(channel => Math.round(channel * 255)).join(' ')})`
+			return `rgb(${[srgb.r, srgb.g, srgb.b].map((channel) => Math.round(channel * 255)).join(' ')})`
 		case 'hsl': {
 			const { h, s, l } = toHsl(srgb)
 			return `hsl(${trim(h ?? 0, 1)} ${percent(s, 1)} ${percent(l, 1)})`
@@ -101,7 +101,7 @@ function formatValue(id: ConversionFormatId, color: Oklch, hex: string, inP3: bo
 		}
 		case 'p3': {
 			const { r, g, b } = toP3(inP3 ? culoriOklch(color) : clampChroma(culoriOklch(color), 'oklch', 'p3'))
-			return `color(display-p3 ${[r, g, b].map(channel => trim(Math.min(1, Math.max(0, channel)), 5)).join(' ')})`
+			return `color(display-p3 ${[r, g, b].map((channel) => trim(Math.min(1, Math.max(0, channel)), 5)).join(' ')})`
 		}
 	}
 }
@@ -117,7 +117,7 @@ export function convertColor(input: ColorInput): ColorConversion {
 		inSrgb,
 		inP3,
 		names: cssColorNames(hex),
-		values: conversionFormats.map(format => ({
+		values: conversionFormats.map((format) => ({
 			id: format.id,
 			label: format.label,
 			value: formatValue(format.id, color, hex, inP3),

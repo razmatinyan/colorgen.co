@@ -1,12 +1,32 @@
 import { describe, expect, it } from 'vitest'
 import { generateScale, generateSystem, parseColor, resolveTokens, tokenNames, type SystemSettings } from '../color'
-import { buildExportModel, dtcgColor, srgbComponents, toCssScales, toCssVariables, toDesignTokens, toFigmaTokens, toScaleDesignTokens, toTailwindCss, toTailwindScales, type ExportScale } from '.'
+import {
+	buildExportModel,
+	dtcgColor,
+	srgbComponents,
+	toCssScales,
+	toCssVariables,
+	toDesignTokens,
+	toFigmaTokens,
+	toScaleDesignTokens,
+	toTailwindCss,
+	toTailwindScales,
+	type ExportScale,
+} from '.'
 
-const settings: SystemSettings = { brand: parseColor('#1f6cb0')!, brand2: parseColor('#8b5cf6')!, neutralTint: 0.3, status: {} }
+const settings: SystemSettings = {
+	brand: parseColor('#1f6cb0')!,
+	brand2: parseColor('#8b5cf6')!,
+	neutralTint: 0.3,
+	status: {},
+}
 const system = generateSystem(settings)
 const tokens = resolveTokens(system)
 const model = buildExportModel(system, tokens)
-const singleBrandModel = buildExportModel(generateSystem({ ...settings, brand2: null }), resolveTokens(generateSystem({ ...settings, brand2: null })))
+const singleBrandModel = buildExportModel(
+	generateSystem({ ...settings, brand2: null }),
+	resolveTokens(generateSystem({ ...settings, brand2: null })),
+)
 
 function block(css: string, selector: string) {
 	const start = css.indexOf(`${selector} {`)
@@ -14,22 +34,30 @@ function block(css: string, selector: string) {
 }
 
 function declarations(css: string) {
-	return Object.fromEntries([...css.matchAll(/--([\w-]+): ([^;]+);/g)].map(match => [match[1], match[2]]))
+	return Object.fromEntries([...css.matchAll(/--([\w-]+): ([^;]+);/g)].map((match) => [match[1], match[2]]))
 }
 
 describe('buildExportModel', () => {
 	it('lists every scale with 11 steps, naming the second brand brand-2', () => {
-		expect(model.scales.map(scale => scale.name)).toEqual(['brand', 'brand-2', 'neutral', 'success', 'warning', 'danger', 'info'])
+		expect(model.scales.map((scale) => scale.name)).toEqual([
+			'brand',
+			'brand-2',
+			'neutral',
+			'success',
+			'warning',
+			'danger',
+			'info',
+		])
 		for (const scale of model.scales) expect(scale.steps).toHaveLength(11)
-		expect(singleBrandModel.scales.map(scale => scale.name)).not.toContain('brand-2')
+		expect(singleBrandModel.scales.map((scale) => scale.name)).not.toContain('brand-2')
 	})
 
 	it('lists every token with its light and dark value', () => {
-		expect(model.tokens.map(token => token.name)).toEqual([...tokenNames])
-		const primary = model.tokens.find(token => token.name === 'primary')!
+		expect(model.tokens.map((token) => token.name)).toEqual([...tokenNames])
+		const primary = model.tokens.find((token) => token.name === 'primary')!
 		expect(primary.light.hex).toBe(tokens.primary.light.hex)
 		expect(primary.light.primitive).toEqual({ scale: 'brand', step: 600 })
-		expect(model.tokens.find(token => token.name === 'background')!.light.primitive).toBeNull()
+		expect(model.tokens.find((token) => token.name === 'background')!.light.primitive).toBeNull()
 	})
 })
 
@@ -114,7 +142,9 @@ describe('toDesignTokens', () => {
 				const token = tree[mode][name]
 				expect(token.$type).toBe('color')
 				const path = token.$value.match(/^\{(.+)\}$/)[1].split('.')
-				expect(path.reduce((node: Record<string, unknown>, key: string) => node[key] as Record<string, unknown>, tree)).toHaveProperty('$value')
+				expect(
+					path.reduce((node: Record<string, unknown>, key: string) => node[key] as Record<string, unknown>, tree),
+				).toHaveProperty('$value')
 			}
 		}
 	})

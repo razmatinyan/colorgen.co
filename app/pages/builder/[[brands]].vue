@@ -25,7 +25,7 @@ provide(designSystemBuilderKey, builder)
 const savePath = computed(() => router.resolve(target.value).fullPath)
 const savedSnapshot = () => ({
 	title: `${describeColor(builder.settings.value.brand)} system`,
-	colors: builder.colors.value.map(color => toHex(color.base)),
+	colors: builder.colors.value.map((color) => toHex(color.base)),
 })
 useRecentTracking('builder', () => (brandsParam.value ? savedSnapshot() : null))
 
@@ -38,15 +38,20 @@ const syncUrl = useDebounceFn((next: typeof target.value) => {
 	const resolved = router.resolve(next)
 	if (resolved.fullPath !== route.fullPath) router.replace(next)
 }, 250)
-watch(target, next => syncUrl(next))
+watch(target, (next) => syncUrl(next))
 
 const siteUrl = 'https://sygen.app'
 const defaultTitle = 'Design System Color Builder: Brand, Neutral and Status Scales | Sygen'
 useSeoMeta({
-	title: () => (brandsParam.value
-		? `Design system colors for ${brandsParam.value.split('-').map(hex => `#${hex.toUpperCase()}`).join(' and ')} | Sygen`
-		: defaultTitle),
-	description: 'Enter your brand color and get a complete UI color system: brand scales, brand-tinted neutrals, success, warning, danger and info, plus readable light and dark tokens for shadcn and Tailwind. Free, no sign-up.',
+	title: () =>
+		brandsParam.value
+			? `Design system colors for ${brandsParam.value
+					.split('-')
+					.map((hex) => `#${hex.toUpperCase()}`)
+					.join(' and ')} | Sygen`
+			: defaultTitle,
+	description:
+		'Enter your brand color and get a complete UI color system: brand scales, brand-tinted neutrals, success, warning, danger and info, plus readable light and dark tokens for shadcn and Tailwind. Free, no sign-up.',
 	ogTitle: defaultTitle,
 	ogUrl: () => `${siteUrl}${route.path}`,
 })
@@ -65,7 +70,7 @@ const views = [
 	{ value: 'tokens', label: 'Tokens', icon: 'lucide:list-tree' },
 	{ value: 'scales', label: 'Scales', icon: 'lucide:chart-column' },
 ] as const
-const viewDetails: Record<BuilderView, { title: string, description: string }> = {
+const viewDetails: Record<BuilderView, { title: string; description: string }> = {
 	preview: { title: 'Preview', description: 'Your tokens applied to common UI elements' },
 	tokens: { title: 'Tokens', description: 'The named colors your app uses, for light and dark mode' },
 	scales: { title: 'Scales', description: 'Every color from 50 (lightest) to 950 (darkest)' },
@@ -116,7 +121,13 @@ onKeyStroke(['z', 'Z'], (event) => {
 		<AppTopBar title="Design system builder">
 			<Tooltip>
 				<TooltipTrigger as-child>
-					<Button variant="ghost" size="icon-sm" aria-label="Undo" :disabled="!builder.canUndo.value" @click="builder.undo()">
+					<Button
+						variant="ghost"
+						size="icon-sm"
+						aria-label="Undo"
+						:disabled="!builder.canUndo.value"
+						@click="builder.undo()"
+					>
 						<Icon name="lucide:undo-2" />
 					</Button>
 				</TooltipTrigger>
@@ -124,7 +135,13 @@ onKeyStroke(['z', 'Z'], (event) => {
 			</Tooltip>
 			<Tooltip>
 				<TooltipTrigger as-child>
-					<Button variant="ghost" size="icon-sm" aria-label="Redo" :disabled="!builder.canRedo.value" @click="builder.redo()">
+					<Button
+						variant="ghost"
+						size="icon-sm"
+						aria-label="Redo"
+						:disabled="!builder.canRedo.value"
+						@click="builder.redo()"
+					>
 						<Icon name="lucide:redo-2" />
 					</Button>
 				</TooltipTrigger>
@@ -149,7 +166,9 @@ onKeyStroke(['z', 'Z'], (event) => {
 			</Tooltip>
 		</AppTopBar>
 
-		<div class="grid min-h-0 flex-1 grid-cols-[minmax(0,1fr)] content-start gap-4 p-4 lg:grid-cols-[23rem_minmax(0,1fr)] lg:content-stretch">
+		<div
+			class="grid min-h-0 flex-1 grid-cols-[minmax(0,1fr)] content-start gap-4 p-4 lg:grid-cols-[23rem_minmax(0,1fr)] lg:content-stretch"
+		>
 			<Card size="sm" class="min-h-0">
 				<CardHeader>
 					<CardTitle>Your colors</CardTitle>
@@ -162,7 +181,7 @@ onKeyStroke(['z', 'Z'], (event) => {
 							<button
 								v-if="color.id === 'brand' && !builder.settings.value.brand2"
 								type="button"
-								class="flex items-center gap-3 rounded-xl p-2.5 text-left text-sm text-muted-foreground outline-none transition-colors hover:bg-muted/50 hover:text-foreground focus-visible:ring-3 focus-visible:ring-ring/50"
+								class="flex items-center gap-3 rounded-xl p-2.5 text-left text-sm text-muted-foreground transition-colors outline-none hover:bg-muted/50 hover:text-foreground focus-visible:ring-3 focus-visible:ring-ring/50"
 								@click="builder.addSecondBrand()"
 							>
 								<span class="grid size-10 shrink-0 place-items-center rounded-lg border border-dashed">
@@ -182,7 +201,12 @@ onKeyStroke(['z', 'Z'], (event) => {
 						<CardDescription>{{ viewDetails[view].description }}</CardDescription>
 					</div>
 					<div class="flex flex-wrap gap-2">
-						<AppSegmentedControl v-if="view === 'preview'" v-model="previewMode" :options="previewModes" label="Preview mode" />
+						<AppSegmentedControl
+							v-if="view === 'preview'"
+							v-model="previewMode"
+							:options="previewModes"
+							label="Preview mode"
+						/>
 						<AppSegmentedControl v-model="view" :options="views" label="View" />
 					</div>
 				</CardHeader>

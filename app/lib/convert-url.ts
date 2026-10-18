@@ -15,7 +15,7 @@ function round(value: number, digits: number) {
 
 export function parseExactOklch(value: string | undefined, pathColor: Oklch): Oklch | null {
 	const parts = value?.split(exactSeparator) ?? []
-	if (parts.length !== 3 || parts.some(part => !/^-?\d+(?:\.\d+)?$/.test(part))) return null
+	if (parts.length !== 3 || parts.some((part) => !/^-?\d+(?:\.\d+)?$/.test(part))) return null
 	const [l, c, h] = parts.map(Number) as [number, number, number]
 	if (l < 0 || l > 1 || c < 0 || c > maxChroma || h < 0 || h >= 360) return null
 	const exact = normalize({ l, c, h })
