@@ -1,5 +1,6 @@
 export * from './types'
 export * from './parse'
+export * from './difference'
 export * from './format'
 export * from './contrast'
 export * from './contrast-check'

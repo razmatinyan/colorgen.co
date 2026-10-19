@@ -11,7 +11,7 @@ import {
 
 describe('parseBuilderQuery', () => {
 	it('falls back to defaults for an empty query', () => {
-		expect(parseBuilderQuery({})).toEqual({ neutralTint: defaultNeutralTint, status: {}, tokens: {} })
+		expect(parseBuilderQuery({})).toEqual({ neutralTint: defaultNeutralTint, neutralHue: null, status: {}, tokens: {} })
 	})
 
 	it('reads the neutral tint as a percentage', () => {
@@ -22,6 +22,15 @@ describe('parseBuilderQuery', () => {
 
 	it.each(['101', '-5', '4.5', 'abc', '', '1000'])('ignores tint %j', (tint) => {
 		expect(parseBuilderQuery({ tint }).neutralTint).toBe(defaultNeutralTint)
+	})
+
+	it('reads the neutral hue in whole degrees', () => {
+		expect(parseBuilderQuery({ 'neutral-hue': '0' }).neutralHue).toBe(0)
+		expect(parseBuilderQuery({ 'neutral-hue': '257' }).neutralHue).toBe(257)
+	})
+
+	it.each(['360', '-5', '25.5', 'abc', ''])('ignores neutral hue %j', (hue) => {
+		expect(parseBuilderQuery({ 'neutral-hue': hue }).neutralHue).toBeNull()
 	})
 
 	it('reads edited status colors and ignores malformed ones', () => {
@@ -40,6 +49,7 @@ describe('parseBuilderQuery', () => {
 	it('ignores unknown keys and non-string values', () => {
 		expect(parseBuilderQuery({ brand: '000000', tint: 40, danger: null })).toEqual({
 			neutralTint: defaultNeutralTint,
+			neutralHue: null,
 			status: {},
 			tokens: {},
 		})
@@ -48,13 +58,14 @@ describe('parseBuilderQuery', () => {
 
 describe('toBuilderQuery', () => {
 	it('omits default values', () => {
-		expect(toBuilderQuery({ neutralTint: defaultNeutralTint, status: {}, tokens: {} })).toEqual({})
+		expect(toBuilderQuery({ neutralTint: defaultNeutralTint, neutralHue: null, status: {}, tokens: {} })).toEqual({})
 	})
 
 	it('writes the tint as a whole percentage and status colors as hex', () => {
 		expect(
 			toBuilderQuery({
 				neutralTint: 0.456,
+				neutralHue: null,
 				status: { warning: parseColor('#d97706')! },
 				tokens: { ring: { dark: 'white' } },
 			}),
@@ -64,6 +75,7 @@ describe('toBuilderQuery', () => {
 	it('round-trips with parseBuilderQuery', () => {
 		const query = {
 			tint: '12',
+			'neutral-hue': '257',
 			success: '15803d',
 			info: '0369a1',
 			tokens: 'primary.light~brand.700,primary.dark~brand.300,muted-foreground.light~neutral.700',

@@ -106,24 +106,13 @@ watch(
 				</Tooltip>
 				<ClientOnly>
 					<SidebarMenu v-if="recents.length">
-						<SidebarMenuItem v-for="item in recents" :key="item.id">
-							<SidebarMenuButton as-child :is-active="route.fullPath === item.path">
-								<NuxtLink :to="item.path">
-									<span
-										class="flex h-4 w-7 shrink-0 overflow-hidden rounded-[5px] outline -outline-offset-1 outline-foreground/10"
-										aria-hidden="true"
-									>
-										<span
-											v-for="(color, index) in item.colors"
-											:key="index"
-											class="flex-1"
-											:style="{ background: color }"
-										/>
-									</span>
-									<span>{{ item.title }}</span>
-								</NuxtLink>
-							</SidebarMenuButton>
-						</SidebarMenuItem>
+						<AppRecentItem
+							v-for="(item, index) in recents"
+							:key="item.id"
+							:item="item"
+							:index="index"
+							:is-active="route.fullPath === item.path"
+						/>
 					</SidebarMenu>
 					<div
 						v-else

@@ -10,6 +10,7 @@ export interface SystemSettings {
 	brand: Oklch
 	brand2: Oklch | null
 	neutralTint: number
+	neutralHue?: number | null
 	status: Partial<Record<StatusKind, Oklch>>
 }
 
@@ -28,9 +29,9 @@ function anchoredScale(id: SystemColorId, base: Oklch): SystemScale {
 	return { id, base, anchorStep: scaleSteps[nearestStepIndex(base.l)]!, swatches: generateScale(base) }
 }
 
-export function generateSystem({ brand, brand2, neutralTint, status }: SystemSettings): ColorSystem {
+export function generateSystem({ brand, brand2, neutralTint, neutralHue = null, status }: SystemSettings): ColorSystem {
 	const suggested = suggestStatusColors(brand)
-	const neutralSwatches = generateNeutralScale(brand, neutralTint)
+	const neutralSwatches = generateNeutralScale(brand, neutralTint, neutralHue)
 	return {
 		brand: anchoredScale('brand', brand),
 		brand2: brand2 ? anchoredScale('brand2', brand2) : null,

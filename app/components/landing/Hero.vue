@@ -5,11 +5,11 @@
 		<div class="grid gap-7">
 			<LandingReveal>
 				<NuxtLink
-					to="/builder"
+					to="/builder?import"
 					class="inline-flex w-fit items-center gap-2 rounded-full bg-muted py-1 pr-3 pl-1 text-sm text-muted-foreground transition-colors hover:text-foreground"
 				>
 					<Badge class="rounded-full">New</Badge>
-					Light and dark tokens with readability checks
+					Import your shadcn theme and fix it
 					<Icon name="lucide:arrow-right" class="size-3.5" />
 				</NuxtLink>
 			</LandingReveal>
@@ -24,8 +24,17 @@
 					and Figma. Free, no sign-up.
 				</p>
 			</LandingReveal>
-			<LandingReveal :delay="240" class="max-w-xl">
+			<LandingReveal :delay="240" class="grid max-w-xl gap-3">
 				<LandingColorField />
+				<p class="text-sm text-muted-foreground">
+					Already have a theme?
+					<NuxtLink
+						to="/builder?import"
+						class="font-medium text-foreground underline-offset-4 hover:underline focus-visible:underline"
+						>Import your colors</NuxtLink
+					>
+					from CSS, Tailwind or design tokens.
+				</p>
 			</LandingReveal>
 		</div>
 		<LandingReveal :delay="200">

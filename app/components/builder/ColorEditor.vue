@@ -28,10 +28,19 @@ const tint = computed({
 	set: (value) => builder.setNeutralTint(value),
 })
 
-const tintTrack = computed(() => {
-	const { h } = builder.settings.value.brand
-	return `linear-gradient(to right, oklch(0.6 0 ${h}), oklch(0.6 ${neutralChroma(builder.settings.value.brand, 1)} ${h}))`
+const ownHue = computed(() => builder.settings.value.neutralHue)
+const neutralHue = computed({
+	get: () => ownHue.value ?? Math.round(builder.settings.value.brand.h),
+	set: (value) => builder.setNeutralHue(value),
 })
+
+const tintTrack = computed(() => {
+	const h = neutralHue.value
+	const chroma = neutralChroma(builder.settings.value.brand, 1, ownHue.value)
+	return `linear-gradient(to right, oklch(0.6 0 ${h}), oklch(0.6 ${chroma} ${h}))`
+})
+
+const hueTrack = `linear-gradient(to right, ${Array.from({ length: 13 }, (_, index) => `oklch(0.6 0.1 ${index * 30})`).join(', ')})`
 </script>
 
 <template>
@@ -65,7 +74,7 @@ const tintTrack = computed(() => {
 		<template v-else-if="color.id === 'neutral'">
 			<ColorGradientSlider
 				v-model="tint"
-				label="Brand tint"
+				label="Tint"
 				:min="0"
 				:max="1"
 				:step="0.01"
@@ -73,9 +82,34 @@ const tintTrack = computed(() => {
 				:format="(v) => `${Math.round(v * 100)}%`"
 				@commit="builder.snapshot()"
 			/>
-			<p class="text-sm text-muted-foreground">
-				How much of your brand's hue the grays carry. At 0% they are pure gray.
-			</p>
+			<ColorGradientSlider
+				v-model="neutralHue"
+				label="Hue"
+				:min="0"
+				:max="359"
+				:step="1"
+				:track="hueTrack"
+				:format="(v) => `${Math.round(v)}°`"
+				@commit="builder.snapshot()"
+			/>
+			<div class="flex items-center justify-between gap-3">
+				<p class="text-sm text-muted-foreground">
+					{{
+						ownHue === null
+							? 'The grays carry your brand hue. At 0% tint they are pure gray.'
+							: 'The grays use their own hue instead of your brand hue.'
+					}}
+				</p>
+				<Button
+					v-if="ownHue !== null"
+					variant="outline"
+					size="sm"
+					class="shrink-0 bg-background dark:bg-input/30"
+					@click="builder.followBrandHue()"
+				>
+					<Icon name="lucide:rotate-ccw" data-icon="inline-start" /> Follow brand
+				</Button>
+			</div>
 		</template>
 
 		<template v-else-if="statusKind">

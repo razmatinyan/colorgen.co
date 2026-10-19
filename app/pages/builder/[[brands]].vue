@@ -34,9 +34,9 @@ const target = computed(() => ({
 	query: toBuilderQuery(builder.settings.value),
 }))
 
+const replaceUrl = useToolUrlSync()
 const syncUrl = useDebounceFn((next: typeof target.value) => {
-	const resolved = router.resolve(next)
-	if (resolved.fullPath !== route.fullPath) router.replace(next)
+	replaceUrl(next)
 }, 250)
 watch(target, (next) => syncUrl(next))
 
@@ -58,6 +58,7 @@ usePageOgImage({
 	kind: 'builder',
 	colors: toBrandsParam(builder.settings.value),
 	tint: Math.round(builder.settings.value.neutralTint * 100),
+	hue: builder.settings.value.neutralHue ?? undefined,
 })
 
 const { copy } = useClipboard({ legacy: true })
@@ -83,6 +84,21 @@ const previewModes = [
 ] as const
 
 const exportOpen = ref(false)
+const importOpen = ref(false)
+
+function openImportFromQuery() {
+	if (route.query.import === undefined) return
+	importOpen.value = true
+	const { import: _import, ...query } = route.query
+	replaceUrl({ query })
+}
+
+onMounted(openImportFromQuery)
+watch(() => route.query.import, openImportFromQuery)
+
+function onImported() {
+	view.value = builder.failingReadability.value.length ? 'tokens' : 'preview'
+}
 
 async function copyLink() {
 	await copy(`${requestUrl.origin}${router.resolve(target.value).fullPath}`)
@@ -103,6 +119,11 @@ onKeyStroke(['e', 'E'], (event) => {
 	if (isInteractiveTarget(event) || event.metaKey || event.ctrlKey || exportOpen.value) return
 	event.preventDefault()
 	exportOpen.value = true
+})
+onKeyStroke(['i', 'I'], (event) => {
+	if (isInteractiveTarget(event) || event.metaKey || event.ctrlKey || importOpen.value) return
+	event.preventDefault()
+	importOpen.value = true
 })
 onKeyStroke(['ArrowDown', 'ArrowUp'], (event) => {
 	if (isInteractiveTarget(event)) return
@@ -147,6 +168,14 @@ onKeyStroke(['z', 'Z'], (event) => {
 					</Button>
 				</TooltipTrigger>
 				<TooltipContent>Redo <Kbd>⇧⌘Z</Kbd></TooltipContent>
+			</Tooltip>
+			<Tooltip>
+				<TooltipTrigger as-child>
+					<Button variant="outline" size="sm" aria-label="Import" @click="importOpen = true">
+						<Icon name="lucide:file-input" data-icon="inline-start" /> <span class="hidden sm:inline">Import</span>
+					</Button>
+				</TooltipTrigger>
+				<TooltipContent>Import an existing theme <Kbd>I</Kbd></TooltipContent>
 			</Tooltip>
 			<AppSaveButton kind="builder" :path="savePath" :snapshot="savedSnapshot" />
 			<Tooltip>
@@ -219,5 +248,6 @@ onKeyStroke(['z', 'Z'], (event) => {
 			</Card>
 		</div>
 		<BuilderExportDialog v-model:open="exportOpen" @review="view = 'tokens'" />
+		<BuilderImportDialog v-model:open="importOpen" @imported="onImported" />
 	</div>
 </template>

@@ -3,7 +3,10 @@ import {
 	clearRecents,
 	emptyLibrary,
 	parseLibrary,
+	removeRecent,
 	removeSaved,
+	renameRecent,
+	restoreRecent,
 	saveItem,
 	upsertRecent,
 	type LibraryData,
@@ -27,6 +30,15 @@ export const useLibrary = createSharedComposable(() => {
 		},
 		clearRecents: () => {
 			library.value = clearRecents(library.value)
+		},
+		removeRecent: (id: string) => {
+			library.value = removeRecent(library.value, id)
+		},
+		restoreRecent: (entry: RecentItem, index: number) => {
+			library.value = restoreRecent(library.value, entry, index)
+		},
+		renameRecent: (id: string, title: string) => {
+			library.value = renameRecent(library.value, id, title)
 		},
 		saved: computed(() => library.value.saved),
 		save: (entry: SavedItem) => {

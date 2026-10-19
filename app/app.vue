@@ -1,5 +1,6 @@
 <script setup lang="ts">
 const colorMode = useColorMode()
+const toolVisit = useToolVisit()
 
 const toastTheme = computed(() => (colorMode.value === 'dark' ? 'dark' : 'light'))
 const toastOptions = {
@@ -21,7 +22,7 @@ const toastOptions = {
 <template>
 	<TooltipProvider :delay-duration="200">
 		<NuxtLayout>
-			<NuxtPage />
+			<NuxtPage :page-key="(route) => toolPageKey(route, toolVisit)" />
 		</NuxtLayout>
 		<AppCommandMenu />
 		<Toaster

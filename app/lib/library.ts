@@ -1,6 +1,7 @@
-export const libraryVersion = 2
+export const libraryVersion = 3
 export const maxRecents = 8
 export const maxSaved = 200
+export const maxTitleLength = 60
 
 export const recentKinds = ['builder', 'palette', 'scale', 'contrast', 'convert', 'gradient'] as const
 export type RecentKind = (typeof recentKinds)[number]
@@ -12,6 +13,7 @@ export interface RecentItem {
 	title: string
 	colors: string[]
 	visitedAt: number
+	customTitle?: string
 }
 
 export interface SavedItem {
@@ -56,7 +58,11 @@ function hasItemFields(value: unknown, timeKey: 'visitedAt' | 'savedAt'): value 
 }
 
 export function isRecentItem(value: unknown): value is RecentItem {
-	return hasItemFields(value, 'visitedAt')
+	return (
+		hasItemFields(value, 'visitedAt') &&
+		(value.customTitle === undefined ||
+			(typeof value.customTitle === 'string' && value.customTitle.length <= maxTitleLength))
+	)
 }
 
 export function isSavedItem(value: unknown): value is SavedItem {
@@ -65,8 +71,8 @@ export function isSavedItem(value: unknown): value is SavedItem {
 
 export function migrateLibrary(data: unknown): LibraryData {
 	if (!isRecord(data) || !Array.isArray(data.recents)) return emptyLibrary()
-	if (data.version !== 1 && data.version !== libraryVersion) return emptyLibrary()
-	const saved = data.version === libraryVersion && Array.isArray(data.saved) ? data.saved : []
+	if (data.version !== 1 && data.version !== 2 && data.version !== libraryVersion) return emptyLibrary()
+	const saved = data.version !== 1 && Array.isArray(data.saved) ? data.saved : []
 	return {
 		version: libraryVersion,
 		recents: data.recents.filter(isRecentItem).slice(0, maxRecents),
@@ -84,8 +90,40 @@ export function parseLibrary(raw: string | null): LibraryData {
 }
 
 export function upsertRecent(library: LibraryData, entry: RecentItem): LibraryData {
+	const replaced = library.recents.filter((item) => item.id === entry.id || item.path === entry.path)
+	const others = library.recents.filter((item) => !replaced.includes(item))
+	const customTitle = entry.customTitle ?? replaced.find((item) => item.customTitle)?.customTitle
+	const next = customTitle ? { ...entry, customTitle } : entry
+	return { ...library, recents: [next, ...others].slice(0, maxRecents) }
+}
+
+export function recentTitle(item: Pick<RecentItem, 'title' | 'customTitle'>) {
+	return item.customTitle ?? item.title
+}
+
+export function removeRecent(library: LibraryData, id: string): LibraryData {
+	return { ...library, recents: library.recents.filter((item) => item.id !== id) }
+}
+
+export function restoreRecent(library: LibraryData, entry: RecentItem, index: number): LibraryData {
 	const others = library.recents.filter((item) => item.id !== entry.id && item.path !== entry.path)
-	return { ...library, recents: [entry, ...others].slice(0, maxRecents) }
+	const position = Math.min(Math.max(0, index), others.length)
+	return {
+		...library,
+		recents: [...others.slice(0, position), entry, ...others.slice(position)].slice(0, maxRecents),
+	}
+}
+
+export function renameRecent(library: LibraryData, id: string, title: string): LibraryData {
+	const customTitle = title.trim().slice(0, maxTitleLength)
+	return {
+		...library,
+		recents: library.recents.map((item) => {
+			if (item.id !== id) return item
+			const { customTitle: _previous, ...rest } = item
+			return customTitle && customTitle !== item.title ? { ...rest, customTitle } : rest
+		}),
+	}
 }
 
 export function clearRecents(library: LibraryData): LibraryData {

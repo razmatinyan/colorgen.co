@@ -40,6 +40,7 @@ export interface OgImageProps {
 	kind?: string
 	colors?: string
 	tint?: number | string
+	hue?: number | string
 	type?: string
 	angle?: number | string
 	space?: string
@@ -127,6 +128,11 @@ function parseTint(value: number | string | undefined) {
 	return tint !== null && tint >= 0 && tint <= 100 ? tint / 100 : defaultNeutralTint
 }
 
+function parseHue(value: number | string | undefined) {
+	const hue = toInteger(value)
+	return hue !== null && hue >= 0 && hue < 360 ? hue : null
+}
+
 function parseGradient({ type, angle, space }: OgImageProps) {
 	const parsedAngle = toInteger(angle)
 	return {
@@ -140,8 +146,8 @@ function scaleRow(label: string, color: Oklch): OgScaleRow {
 	return { label, hexes: scaleHexes(color), anchorIndex: nearestStepIndex(color.l) }
 }
 
-function systemRows(brand: Oklch, brand2: Oklch | null, neutralTint: number): OgScaleRow[] {
-	return systemScales(generateSystem({ brand, brand2, neutralTint, status: {} })).map((scale) => ({
+function systemRows(brand: Oklch, brand2: Oklch | null, neutralTint: number, neutralHue: number | null): OgScaleRow[] {
+	return systemScales(generateSystem({ brand, brand2, neutralTint, neutralHue, status: {} })).map((scale) => ({
 		label: systemScaleLabels[scale.id],
 		hexes: scale.swatches.map((swatch) => swatch.hex),
 		anchorIndex: scale.anchorStep === null ? null : scale.swatches.findIndex((s) => s.step === scale.anchorStep),
@@ -176,14 +182,17 @@ function buildForColors(kind: Exclude<OgImageKind, 'image'>, colors: Oklch[], pr
 				kind,
 				label,
 				title: 'Turn your brand color into a complete design system',
-				visual: { type: 'scales', rows: systemRows(first, null, defaultNeutralTint) },
+				visual: { type: 'scales', rows: systemRows(first, null, defaultNeutralTint, null) },
 			}
 		case 'builder':
 			return {
 				kind,
 				label,
 				title: `Design system for ${listHexes(colors)}`,
-				visual: { type: 'scales', rows: systemRows(first, colors[1] ?? null, parseTint(props.tint)) },
+				visual: {
+					type: 'scales',
+					rows: systemRows(first, colors[1] ?? null, parseTint(props.tint), parseHue(props.hue)),
+				},
 			}
 		case 'palette':
 			return {

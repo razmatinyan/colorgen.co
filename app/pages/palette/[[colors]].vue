@@ -26,8 +26,9 @@ const savedSnapshot = () => ({
 })
 useRecentTracking('palette', () => (colorsParam.value ? savedSnapshot() : null))
 
+const replaceUrl = useToolUrlSync()
 const syncUrl = useDebounceFn((param: string) => {
-	if (param !== colorsParam.value) router.replace({ params: { colors: param } })
+	if (param !== colorsParam.value) replaceUrl({ params: { colors: param } })
 }, 250)
 watch(palette.hexes, () => syncUrl(toColorsParam(palette.colors.value)))
 

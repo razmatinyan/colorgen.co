@@ -52,6 +52,16 @@ const themes = [
 
 			<CommandSeparator />
 
+			<CommandGroup heading="Actions">
+				<CommandItem value="Import colors" @select="run(() => navigateTo('/builder?import'))">
+					<Icon name="lucide:file-input" />
+					<span>Import colors</span>
+					<span class="truncate text-muted-foreground">From CSS, Tailwind or design tokens</span>
+				</CommandItem>
+			</CommandGroup>
+
+			<CommandSeparator />
+
 			<CommandGroup heading="Theme">
 				<CommandItem
 					v-for="theme in themes"

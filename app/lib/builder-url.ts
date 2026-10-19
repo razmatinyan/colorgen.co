@@ -14,12 +14,16 @@ import {
 import { parseColorsParam, parseHexPart, toHexPart } from './palette-url'
 
 export type BuilderQuery = Record<string, unknown>
-export type BuilderOptions = Pick<SystemSettings, 'neutralTint' | 'status'> & { tokens: TokenOverrides }
+export type BuilderOptions = Pick<SystemSettings, 'neutralTint' | 'status'> & {
+	neutralHue: number | null
+	tokens: TokenOverrides
+}
 export type BuilderBrands = Pick<SystemSettings, 'brand' | 'brand2'>
 
 const maxBrands = 2
 const tokenSeparator = ','
 const refSeparator = '~'
+const neutralHueKey = 'neutral-hue'
 
 export function parseBrandsParam(param: string | undefined): BuilderBrands | null {
 	const colors = parseColorsParam(param)
@@ -43,6 +47,12 @@ function parseTint(value: string | undefined) {
 	if (!value || !/^\d{1,3}$/.test(value)) return defaultNeutralTint
 	const percent = Number(value)
 	return percent <= 100 ? percent / 100 : defaultNeutralTint
+}
+
+function parseHue(value: string | undefined) {
+	if (!value || !/^\d{1,3}$/.test(value)) return null
+	const hue = Number(value)
+	return hue < 360 ? hue : null
 }
 
 export function parseTokensParam(value: string | undefined): TokenOverrides {
@@ -76,15 +86,17 @@ export function parseBuilderQuery(query: BuilderQuery): BuilderOptions {
 	}
 	return {
 		neutralTint: parseTint(firstString(query.tint)),
+		neutralHue: parseHue(firstString(query[neutralHueKey])),
 		status,
 		tokens: parseTokensParam(firstString(query.tokens)),
 	}
 }
 
-export function toBuilderQuery({ neutralTint, status, tokens }: BuilderOptions): Record<string, string> {
+export function toBuilderQuery({ neutralTint, neutralHue, status, tokens }: BuilderOptions): Record<string, string> {
 	const query: Record<string, string> = {}
 	const tintPercent = Math.round(neutralTint * 100)
 	if (tintPercent !== Math.round(defaultNeutralTint * 100)) query.tint = String(tintPercent)
+	if (neutralHue !== null) query[neutralHueKey] = String(Math.round(neutralHue) % 360)
 	for (const kind of statusKinds) {
 		const color = status[kind]
 		if (color) query[kind] = toHexPart(color)

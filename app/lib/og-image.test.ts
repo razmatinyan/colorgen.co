@@ -53,6 +53,16 @@ describe('buildOgImage', () => {
 		expect(neutral('101')).toEqual(neutral())
 	})
 
+	it('gives the neutral scale its own hue and ignores an invalid one', () => {
+		const neutral = (hue?: string) => {
+			const visual = buildOgImage({ kind: 'builder', colors: '1f6cb0', tint: '80', hue }).visual
+			return visual.type === 'scales' ? visual.rows[1]!.hexes : []
+		}
+		expect(neutral('30')).not.toEqual(neutral())
+		expect(neutral('360')).toEqual(neutral())
+		expect(neutral('abc')).toEqual(neutral())
+	})
+
 	it('lists palette colors with names', () => {
 		const model = buildOgImage({ kind: 'palette', colors: '1f6cb0-ffffff-000000' })
 		expect(model.title).toBe('Palette built around #1F6CB0')

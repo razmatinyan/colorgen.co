@@ -41,8 +41,9 @@ const target = computed(() => {
 	}
 })
 
+const replaceUrl = useToolUrlSync()
 const syncUrl = useDebounceFn((next: typeof target.value) => {
-	if (router.resolve(next).fullPath !== route.fullPath) router.replace(next)
+	replaceUrl(next)
 }, 250)
 watch(target, (next) => syncUrl(next))
 

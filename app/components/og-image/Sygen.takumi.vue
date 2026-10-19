@@ -6,6 +6,7 @@ const props = defineProps<{
 	kind?: string
 	colors?: string
 	tint?: number | string
+	hue?: number | string
 	type?: string
 	angle?: number | string
 	space?: string

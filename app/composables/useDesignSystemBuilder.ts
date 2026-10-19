@@ -29,10 +29,10 @@ export interface BuilderColor extends SystemScale {
 	edited: boolean
 }
 
-export type BuilderState = SystemSettings & { tokens: TokenOverrides }
+export type BuilderState = SystemSettings & { neutralHue: number | null; tokens: TokenOverrides }
 export type BrandId = 'brand' | 'brand2'
 
-const colorDetails: Record<SystemColorId, { label: string; hint: string }> = {
+export const colorDetails: Record<SystemColorId, { label: string; hint: string }> = {
 	brand: { label: 'Brand', hint: 'Main buttons, links, focus rings' },
 	brand2: { label: 'Second brand', hint: 'Secondary buttons, highlights, charts' },
 	neutral: { label: 'Neutral', hint: 'Text, borders, backgrounds' },
@@ -66,6 +66,7 @@ export function useDesignSystemBuilder(initial: Partial<BuilderState> = {}) {
 		brand: initial.brand ?? defaultBrand,
 		brand2: initial.brand2 ?? null,
 		neutralTint: initial.neutralTint ?? defaultNeutralTint,
+		neutralHue: initial.neutralHue ?? null,
 		status: initial.status ?? {},
 		tokens: initial.tokens ?? {},
 	})
@@ -111,6 +112,22 @@ export function useDesignSystemBuilder(initial: Partial<BuilderState> = {}) {
 
 	function setNeutralTint(tint: number) {
 		settings.value.neutralTint = tint
+	}
+
+	function setNeutralHue(hue: number | null) {
+		settings.value.neutralHue = hue
+	}
+
+	function followBrandHue() {
+		if (settings.value.neutralHue === null) return
+		history.snapshot()
+		settings.value.neutralHue = null
+	}
+
+	function load(state: BuilderState) {
+		history.snapshot()
+		settings.value = state
+		selectedId.value = 'brand'
 	}
 
 	function updateStatus(kind: StatusKind, patch: Partial<Oklch>) {
@@ -176,6 +193,9 @@ export function useDesignSystemBuilder(initial: Partial<BuilderState> = {}) {
 		addSecondBrand,
 		removeSecondBrand,
 		setNeutralTint,
+		setNeutralHue,
+		followBrandHue,
+		load,
 		updateStatus,
 		resetStatus,
 		setToken,
