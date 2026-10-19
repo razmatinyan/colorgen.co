@@ -1,6 +1,7 @@
 import { describe, expect, it } from 'vitest'
 import { suggestDistinctColor, suggestSecondBrand } from './brand'
-import { isInGamut } from './format'
+import { colorDifference } from './difference'
+import { isInGamut, toHex } from './format'
 import { hueDifference, parseColor } from './parse'
 import { statusHueRanges } from './status'
 
@@ -56,5 +57,21 @@ describe('suggestDistinctColor', () => {
 
 	it('is deterministic', () => {
 		expect(suggestDistinctColor(['#1f6cb0', '#16a34a'])).toEqual(suggestDistinctColor(['#1f6cb0', '#16a34a']))
+	})
+
+	it('keeps the reference lightness while there are free hues', () => {
+		const colors = [parseColor('#1f6cb0')!]
+		for (let index = 0; index < 8; index++) colors.push(suggestDistinctColor(colors))
+		for (const color of colors.slice(1)) expect(color.l).toBeCloseTo(colors[0]!.l, 1)
+	})
+
+	it.each(['#1f6cb0', '#facc15', '#18181b'])('keeps adding clearly different colors after %s', (start) => {
+		const colors = [parseColor(start)!]
+		for (let index = 0; index < 30; index++) colors.push(suggestDistinctColor(colors))
+		expect(new Set(colors.map((color) => toHex(color))).size).toBe(colors.length)
+		for (const [index, color] of colors.entries()) {
+			expect(isInGamut(color)).toBe(true)
+			for (const other of colors.slice(index + 1)) expect(colorDifference(color, other)).toBeGreaterThan(0.03)
+		}
 	})
 })

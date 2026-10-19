@@ -16,7 +16,6 @@ export interface ImageColorItem {
 
 const maxSide = 200
 const paletteSize = 5
-const maxScaleColors = 6
 
 function drawSample(context: CanvasRenderingContext2D, width: number, height: number) {
 	const sky = context.createLinearGradient(0, 0, 0, height * 0.7)
@@ -78,13 +77,7 @@ export function useImageColors() {
 			.map((color) => bare(color.hex))
 			.join('-')}`
 	})
-	const scalePath = computed(
-		() =>
-			`/scale/${colors.value
-				.slice(0, maxScaleColors)
-				.map((color) => bare(color.hex))
-				.join('-')}`,
-	)
+	const scalePath = computed(() => `/scale/${colors.value.map((color) => bare(color.hex)).join('-')}`)
 
 	function replaceImage(url: string, name: string) {
 		if (imageUrl.value?.startsWith('blob:')) URL.revokeObjectURL(imageUrl.value)

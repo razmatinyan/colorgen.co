@@ -178,7 +178,6 @@ onKeyStroke(['z', 'Z'], (event) => {
 					<div class="-mx-2 grid grid-cols-1 gap-1">
 						<ScaleColorRow v-for="scale in generator.scales.value" :key="scale.id" :scale="scale" />
 						<button
-							v-if="generator.canAdd.value"
 							type="button"
 							class="flex items-center gap-3 rounded-xl p-2.5 text-left text-sm text-muted-foreground transition-colors outline-none hover:bg-muted/50 hover:text-foreground focus-visible:ring-3 focus-visible:ring-ring/50"
 							@click="generator.add()"

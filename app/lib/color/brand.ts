@@ -1,4 +1,6 @@
+import { colorDifference } from './difference'
 import { toGamutOklch } from './format'
+import { flatteringLightness } from './generate'
 import { hueDifference, toOklch, wrapHue } from './parse'
 import { statusHueRanges } from './status'
 import type { ColorInput, Oklch } from './types'
@@ -35,20 +37,43 @@ export function suggestSecondBrand(brandInput: ColorInput): Oklch {
 	})
 }
 
-const distinctHueCandidates = Array.from({ length: 12 }, (_, index) => index * 30 + 15)
+const isFlatteringHue = (hue: number) => hue < unflatteringHueRange[0] || hue > unflatteringHueRange[1]
+const distinctHueCandidates = Array.from({ length: 12 }, (_, index) => index * 30 + 15).filter(isFlatteringHue)
+const crowdedHueCandidates = Array.from({ length: 24 }, (_, index) => index * 15 + 15).filter(isFlatteringHue)
+const crowdedLightnessOffsets = [0, 0.18, -0.18] as const
+const crowdedLightnessRange = [0.38, 0.88] as const
+const minFreeHueDistance = 15
+
+function farthestFrom(colors: readonly Oklch[], candidates: readonly Oklch[]) {
+	const distance = (candidate: Oklch) => Math.min(...colors.map((color) => colorDifference(candidate, color)))
+	let best = { color: candidates[0]!, distance: distance(candidates[0]!) }
+	for (const candidate of candidates.slice(1)) {
+		const candidateDistance = distance(candidate)
+		if (candidateDistance > best.distance + 1e-9) best = { color: candidate, distance: candidateDistance }
+	}
+	return best.color
+}
 
 export function suggestDistinctColor(existing: readonly ColorInput[]): Oklch {
 	const colors = existing.map(toOklch)
 	const reference = colors[0]
 	const chromatic = colors.filter((color) => color.c >= achromaticChroma)
 	if (!reference || !chromatic.length) return suggestSecondBrand(reference ?? { l: 0.55, c: 0.15, h: fallbackHue - 60 })
+	const lightness = clamp(reference.l, ...lightnessRange)
+	const chroma = Math.max(reference.c, minChroma)
 	const distanceToUsed = (hue: number) => Math.min(...chromatic.map((color) => Math.abs(hueDifference(hue, color.h))))
-	const hue = distinctHueCandidates
-		.filter((candidate) => candidate < unflatteringHueRange[0] || candidate > unflatteringHueRange[1])
-		.reduce((best, candidate) => (distanceToUsed(candidate) > distanceToUsed(best) ? candidate : best))
-	return toGamutOklch({
-		l: clamp(reference.l, ...lightnessRange),
-		c: Math.max(reference.c, minChroma),
-		h: hue,
-	})
+	const hue = distinctHueCandidates.reduce((best, candidate) =>
+		distanceToUsed(candidate) > distanceToUsed(best) ? candidate : best,
+	)
+	if (distanceToUsed(hue) >= minFreeHueDistance) return toGamutOklch({ l: lightness, c: chroma, h: hue })
+	const candidates = crowdedLightnessOffsets.flatMap((offset) =>
+		crowdedHueCandidates.map((candidate) =>
+			toGamutOklch({
+				l: flatteringLightness(clamp(lightness + offset, ...crowdedLightnessRange), wrapHue(candidate)),
+				c: chroma,
+				h: wrapHue(candidate),
+			}),
+		),
+	)
+	return farthestFrom(colors, candidates)
 }

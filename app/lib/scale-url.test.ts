@@ -2,7 +2,6 @@ import { describe, expect, it } from 'vitest'
 import { parseColor, toHex } from './color'
 import {
 	isScaleName,
-	maxScales,
 	parseNamesParam,
 	parseScalesParam,
 	resolveScaleNames,
@@ -20,8 +19,8 @@ describe('parseScalesParam', () => {
 		expect(parseScalesParam('1f6cb0-f68443')!.map((color) => toHex(color))).toEqual(['#1f6cb0', '#f68443'])
 	})
 
-	it(`rejects more than ${maxScales} colors`, () => {
-		expect(parseScalesParam(Array.from({ length: maxScales + 1 }, () => '1f6cb0').join('-'))).toBeNull()
+	it('accepts any number of colors', () => {
+		expect(parseScalesParam(Array.from({ length: 40 }, () => '1f6cb0').join('-'))).toHaveLength(40)
 	})
 
 	it.each([undefined, '', 'blue', '1f6cb0--f68443'])('rejects %j', (param) => {

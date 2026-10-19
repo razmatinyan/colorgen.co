@@ -21,7 +21,6 @@ import { systemScaleLabels } from './color-page'
 import { toFallbackGradient } from './export'
 import { defaultGradientOptions, isGradientType, type GradientType } from './gradient-url'
 import { parseColorsParam } from './palette-url'
-import { maxScales } from './scale-url'
 
 export const ogImageKinds = [
 	'home',
@@ -77,13 +76,14 @@ export interface OgImageModel {
 }
 
 export const ogImageHomeBrand = '#2f5bea'
+export const maxImageScaleRows = 6
 export const ogImageSampleColors = ['#1d1b3a', '#4b2f6b', '#c2477a', '#f2785c', '#fbbf6e', '#fde7c4'] as const
 
 const colorLimits: Record<Exclude<OgImageKind, 'image'>, readonly [number, number]> = {
 	home: [1, 1],
 	builder: [1, 2],
 	palette: [1, 6],
-	scale: [1, maxScales],
+	scale: [1, Number.POSITIVE_INFINITY],
 	contrast: [2, 2],
 	convert: [1, 1],
 	color: [1, 1],
@@ -206,7 +206,10 @@ function buildForColors(kind: Exclude<OgImageKind, 'image'>, colors: Oklch[], pr
 				kind,
 				label,
 				title: colors.length === 1 ? `${displayHex(first)} shades, 50 to 950` : `Color scales for ${listHexes(colors)}`,
-				visual: { type: 'scales', rows: colors.map((color) => scaleRow(displayHex(color), color)) },
+				visual: {
+					type: 'scales',
+					rows: colors.slice(0, maxImageScaleRows).map((color) => scaleRow(displayHex(color), color)),
+				},
 			}
 		case 'contrast': {
 			const [text, background] = colors as [Oklch, Oklch]

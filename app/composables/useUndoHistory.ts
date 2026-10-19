@@ -1,10 +1,19 @@
 import type { Ref } from 'vue'
 
+function toPlainCopy<T>(value: T): T {
+	const raw = toRaw(value)
+	if (Array.isArray(raw)) return raw.map(toPlainCopy) as T
+	if (raw && typeof raw === 'object') {
+		return Object.fromEntries(Object.entries(raw).map(([key, item]) => [key, toPlainCopy(item)])) as T
+	}
+	return raw
+}
+
 export function useUndoHistory<T>(source: Ref<T>, capacity = 50) {
 	const past = shallowRef<T[]>([])
 	const future = shallowRef<T[]>([])
 
-	const copy = () => structuredClone(toRaw(source.value))
+	const copy = () => toPlainCopy(source.value)
 
 	function snapshot() {
 		past.value = [...past.value, copy()].slice(-capacity)

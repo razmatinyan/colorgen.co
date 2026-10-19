@@ -1,14 +1,13 @@
 import { colorFamily, type Oklch } from './color'
 import { parseColorsParam } from './palette-url'
 
-export const maxScales = 6
 export const maxScaleNameLength = 24
 
 const nameSeparator = ','
 
 export function parseScalesParam(param: string | undefined): Oklch[] | null {
 	const colors = parseColorsParam(param)
-	return colors && colors.length <= maxScales ? colors : null
+	return colors?.length ? colors : null
 }
 
 export function toScaleName(input: string) {

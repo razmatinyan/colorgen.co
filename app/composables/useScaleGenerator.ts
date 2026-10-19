@@ -9,7 +9,7 @@ import {
 	type ScaleStep,
 	type ScaleSwatch,
 } from '~/lib/color'
-import { maxScales, resolveScaleNames } from '~/lib/scale-url'
+import { resolveScaleNames } from '~/lib/scale-url'
 import { defaultBrand } from '~/composables/useDesignSystemBuilder'
 
 export interface ScaleEntry {
@@ -67,7 +67,6 @@ export function useScaleGenerator(initial: ScaleGeneratorInitial = {}) {
 		}),
 	)
 	const selected = computed(() => scales.value.find((scale) => scale.id === selectedId.value) ?? null)
-	const canAdd = computed(() => entries.value.length < maxScales)
 	const canRemove = computed(() => entries.value.length > 1)
 
 	function findEntry(id: number) {
@@ -87,7 +86,6 @@ export function useScaleGenerator(initial: ScaleGeneratorInitial = {}) {
 	}
 
 	function add() {
-		if (!canAdd.value) return
 		history.snapshot()
 		const entry = { id: ++lastId, color: suggestDistinctColor(entries.value.map((item) => item.color)), name: null }
 		entries.value = [...entries.value, entry]
@@ -118,7 +116,6 @@ export function useScaleGenerator(initial: ScaleGeneratorInitial = {}) {
 		scales,
 		selected,
 		selectedId,
-		canAdd,
 		canRemove,
 		...history,
 		updateColor,

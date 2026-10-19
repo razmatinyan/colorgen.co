@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest'
 import { scaleSteps } from './color'
-import { buildOgImage, ogImageKinds, ogImageSampleColors } from './og-image'
+import { buildOgImage, maxImageScaleRows, ogImageKinds, ogImageSampleColors } from './og-image'
 
 describe('buildOgImage', () => {
 	it('falls back to the home image for unknown kinds and invalid colors', () => {
@@ -82,6 +82,13 @@ describe('buildOgImage', () => {
 		expect(buildOgImage({ kind: 'scale', colors: '1f6cb0-f68443-22c55e' }).title).toBe(
 			'Color scales for #1F6CB0 and 2 more',
 		)
+	})
+
+	it('draws the first scales when there are more than fit', () => {
+		const colors = Array.from({ length: maxImageScaleRows + 4 }, (_, index) => `${index}0${index}0${index}0`)
+		const model = buildOgImage({ kind: 'scale', colors: colors.join('-') })
+		expect(model.title).toBe(`Color scales for #000000 and ${colors.length - 1} more`)
+		expect(model.visual.type === 'scales' && model.visual.rows).toHaveLength(maxImageScaleRows)
 	})
 
 	it('reports contrast with WCAG level and APCA Lc', () => {
