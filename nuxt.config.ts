@@ -110,5 +110,5 @@ export default defineNuxtConfig({
 	ogImage: {
 		defaults: { width: 1200, height: 630 },
 	},
-	css: ['~/assets/css/tailwind.css', 'vue-sonner/style.css'],
+	css: ['~/assets/css/tailwind.css'],
 })

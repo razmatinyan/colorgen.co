@@ -53,7 +53,7 @@ Post-v1 (in rough order): import an existing system, mesh gradients, color-blind
 - **Tailwind CSS v4** (CSS-first config, no `tailwind.config.*`) + **shadcn-vue** (`reka-maia` style, components in `app/components/ui`)
 - **culori** — color engine dependency (OKLCH, gamut mapping, WCAG contrast)
 - **@nuxtjs/color-mode** (dark/light, `.dark` class) and **@nuxt/fonts** (self-hosted Inter)
-- **@vueuse/core**, **vue-sonner** (toasts via shadcn `Sonner`, mounted once in `app.vue` with the resolved color-mode theme; its stylesheet `vue-sonner/style.css` is loaded through `css` in `nuxt.config.ts` — without it toasts are invisible; show toasts only through `useAppToast`), **@nuxt/icon** with Lucide
+- **@vueuse/core**, **vue-sonner** (toasts via shadcn `Sonner`, mounted once in `app.vue` with the resolved color-mode theme; its stylesheet `vue-sonner/style.css` is imported into `@layer components` in `tailwind.css` — without it toasts are invisible, and the layer lets toast option classes override it without `!`; show toasts only through `useAppToast`), **@nuxt/icon** with Lucide
 - **@nuxtjs/sitemap**, **@nuxtjs/robots**, **nuxt-og-image** v7 (Takumi renderer via `@takumi-rs/core`; share images per page)
 - Node 22.22.3+ or 24.15+ (required by nuxt-og-image v7)
 
