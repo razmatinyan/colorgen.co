@@ -41,7 +41,7 @@ export default defineNuxtConfig({
 		},
 	},
 	site: {
-		url: 'https://sygen.vercel.app',
+		url: 'https://sygenn.vercel.app',
 		name: 'Sygen',
 		indexable: true,
 	},

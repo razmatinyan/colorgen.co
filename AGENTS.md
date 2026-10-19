@@ -69,7 +69,7 @@ npm test           # Vitest, runs app/lib/**/*.test.ts once — must pass before
 npm run test:watch # Vitest in watch mode
 ```
 
-Environment variables in production: `NUXT_SITE_URL` overrides `site.url` (default `https://sygen.vercel.app`; used for canonical URLs, sitemap, robots and share image URLs). `NUXT_APP_SECRET` (at least 32 characters, `npx nuxt-og-image generate-secret`, keep it stable across deploys) signs share image URLs; without it every share image returns 500. `GTAG_ID` turns on Google Analytics.
+Environment variables in production: `NUXT_SITE_URL` overrides `site.url` (default `https://sygenn.vercel.app`; used for canonical URLs, sitemap, robots and share image URLs). `NUXT_APP_SECRET` (at least 32 characters, `npx nuxt-og-image generate-secret`, keep it stable across deploys) signs share image URLs; without it every share image returns 500. `GTAG_ID` turns on Google Analytics.
 
 Add shadcn components with the CLI (`npx shadcn-vue@latest add <name>`), never by hand-copying. Do not edit generated files in `app/components/ui/` except for token-level styling tweaks.
 

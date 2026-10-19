@@ -18,7 +18,6 @@ const modifierKey = useModifierKey()
 				></TooltipContent
 			>
 		</Tooltip>
-		<Separator orientation="vertical" class="mr-1 data-[orientation=vertical]:h-4" />
 		<component :is="titleAs" class="min-w-0 truncate text-sm font-medium">{{ title }}</component>
 		<div class="ml-auto flex shrink-0 items-center gap-1.5">
 			<slot />

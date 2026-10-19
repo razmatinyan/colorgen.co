@@ -8,7 +8,7 @@
 			height="20"
 			class="hidden size-5 shrink-0 rounded-[3px] dark:block"
 		/>
-		<span class="group-data-[collapsible=icon]:hidden">
+		<span class="mt-1 group-data-[collapsible=icon]:hidden">
 			<img src="/logo-light.svg" alt="Sygen" width="56" height="16" class="h-4 w-auto dark:hidden" />
 			<img src="/logo-dark.svg" alt="Sygen" width="56" height="16" class="hidden h-4 w-auto dark:block" />
 		</span>

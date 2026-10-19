@@ -2,13 +2,13 @@
 
 **Colors for your design system.** Start from your brand color and get a complete, accessible UI color system for light and dark mode, ready to paste into code or Figma.
 
-Live at **[sygen.vercel.app](https://sygen.vercel.app)**. Free, no sign-up, everything runs in your browser.
+Live at **[sygenn.vercel.app](https://sygenn.vercel.app)**. Free, no sign-up, everything runs in your browser.
 
 ## Design system builder
 
-The core of Sygen, at [`/builder`](https://sygen.vercel.app/builder):
+The core of Sygen, at [`/builder`](https://sygenn.vercel.app/builder):
 
-1. **Brand color in.** Enter the color you already have. No color yet? The [palette tool](https://sygen.vercel.app/palette) suggests starting points.
+1. **Brand color in.** Enter the color you already have. No color yet? The [palette tool](https://sygenn.vercel.app/palette) suggests starting points.
 2. **Scales.** Brand (plus an optional second brand), a neutral gray tinted with your brand, and success, warning, danger and info, each as a full 50–950 scale in OKLCH.
 3. **Semantic tokens.** shadcn-style tokens (`background`, `primary`, `muted`, `border`, …) for light and dark mode, each pointing to a scale step you can change.
 4. **Readability check.** Every text and background pair is checked against WCAG 2.2 and APCA, with one-click fixes.
@@ -21,17 +21,17 @@ Every state lives in the URL, so a system can be shared or reopened by its link.
 
 Each tool works on its own and can send its result to the builder.
 
-| Tool                                                  | What it does                                                         |
-| ----------------------------------------------------- | -------------------------------------------------------------------- |
-| [Palette](https://sygen.vercel.app/palette)           | Palettes built around your color, previewed on UI components         |
-| [Scale](https://sygen.vercel.app/scale)               | 50–950 shade scales for up to six colors, with Tailwind export       |
-| [Contrast](https://sygen.vercel.app/contrast)         | WCAG 2.2 and APCA checks, with the closest colors that pass          |
-| [Convert](https://sygen.vercel.app/convert)           | HEX, RGB, HSL, HWB, OKLCH, OKLab, LCH, Lab and Display P3            |
-| [Gradient](https://sygen.vercel.app/gradient)         | Linear, radial and conic gradients that stay vivid, blended in OKLCH |
-| [Image colors](https://sygen.vercel.app/image-colors) | Main colors of an image and a suggested brand color                  |
-| [Color pages](https://sygen.vercel.app/color/1f6cb0)  | Shades, readable pairs, palettes and a brand system for any color    |
+| Tool                                                   | What it does                                                         |
+| ------------------------------------------------------ | -------------------------------------------------------------------- |
+| [Palette](https://sygenn.vercel.app/palette)           | Palettes built around your color, previewed on UI components         |
+| [Scale](https://sygenn.vercel.app/scale)               | 50–950 shade scales for up to six colors, with Tailwind export       |
+| [Contrast](https://sygenn.vercel.app/contrast)         | WCAG 2.2 and APCA checks, with the closest colors that pass          |
+| [Convert](https://sygenn.vercel.app/convert)           | HEX, RGB, HSL, HWB, OKLCH, OKLab, LCH, Lab and Display P3            |
+| [Gradient](https://sygenn.vercel.app/gradient)         | Linear, radial and conic gradients that stay vivid, blended in OKLCH |
+| [Image colors](https://sygenn.vercel.app/image-colors) | Main colors of an image and a suggested brand color                  |
+| [Color pages](https://sygenn.vercel.app/color/1f6cb0)  | Shades, readable pairs, palettes and a brand system for any color    |
 
-Saved items and recent work are kept in your browser's local storage and listed in the [library](https://sygen.vercel.app/saved).
+Saved items and recent work are kept in your browser's local storage and listed in the [library](https://sygenn.vercel.app/saved).
 
 ## Tech stack
 
@@ -69,7 +69,7 @@ The dev server runs at http://localhost:3000. `npm install` also turns on the pr
 | Variable          | Needed for                                                                                                                                        |
 | ----------------- | ------------------------------------------------------------------------------------------------------------------------------------------------- |
 | `NUXT_APP_SECRET` | Production. Signs share image URLs; at least 32 characters, keep it stable across deploys. Generate one with `npx nuxt-og-image generate-secret`. |
-| `NUXT_SITE_URL`   | Optional. Overrides the site URL used for canonical links, the sitemap and share images. Defaults to `https://sygen.vercel.app`.                  |
+| `NUXT_SITE_URL`   | Optional. Overrides the site URL used for canonical links, the sitemap and share images. Defaults to `https://sygenn.vercel.app`.                 |
 | `GTAG_ID`         | Optional. Turns on Google Analytics.                                                                                                              |
 
 ## Contributing

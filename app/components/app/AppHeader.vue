@@ -23,7 +23,7 @@ const navItem = 'inline-flex h-8 items-center rounded-4xl px-3 text-sm font-medi
 		<div class="flex h-full items-center gap-6 px-4 sm:px-6">
 			<NuxtLink
 				to="/"
-				class="rounded-md outline-none focus-visible:ring-3 focus-visible:ring-ring/50"
+				class="flex items-center rounded-md outline-none focus-visible:ring-3 focus-visible:ring-ring/50"
 				aria-label="Sygen home"
 			>
 				<AppLogo />
