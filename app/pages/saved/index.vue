@@ -1,197 +1,161 @@
-<template>
-	<section id="saved" class="paddings">
-		<h1 class="saved-title big-title text-center">
-			Saved Palettes
-		</h1>
+<script setup lang="ts">
+import type { RecentKind, SavedItem } from '~/lib/library'
+import { tools } from '~/lib/tools'
 
-		<div v-if="savedPalettes !== undefined" class="palettes">
-			<PaletteCard 
-				v-for="(item, index) in savedPalettes"
-				:key="index"
-				:item="item"
-				@copied="handleToast($event)"
-				@copyURL="handleCopyURL($event)"
-				@unsave="handleUnsaveModal($event)"
-			/>
-		</div>
-		
-		<div v-else class="empty">
-			<p class="empty-text">You don't have any saved palette.</p>
-			
-			<div class="palette-btn-wrap">
-				<button id="random-btn" :disabled="disableButton" @click="generateRandomPalette" class="gnr-btn btn btn-medium btn-blue btn-min-width-200">Start Generate</button>
-			</div>
-		</div>
-		
-		<AlertDialog v-model:open="deleteDialogOpen">
-			<AlertDialogContent>
-				<AlertDialogHeader>
-					<AlertDialogTitle>Delete palette</AlertDialogTitle>
-					<AlertDialogDescription>
-						Are you sure you want to delete this palette? This action cannot be undone.
-					</AlertDialogDescription>
-				</AlertDialogHeader>
-				<AlertDialogFooter>
-					<AlertDialogCancel>Cancel</AlertDialogCancel>
-					<AlertDialogAction variant="destructive" @click="handleUnsave(deletePalette)">
-						Delete
-					</AlertDialogAction>
-				</AlertDialogFooter>
-			</AlertDialogContent>
-		</AlertDialog>
+definePageMeta({ layout: 'app' })
 
-	</section>
-</template>
+useSeoMeta({
+	title: 'Library | Sygen',
+	description: 'Color systems, palettes, scales and gradients you saved. Stored in this browser only.',
+	robots: 'noindex, nofollow',
+})
 
-<script setup>
-useHead({
-	link: [
-		{
-			rel: 'canonical',
-			href: 'https://colorgen.co/palette/saved'
-		},
+const { saved, save, removeSaved } = useLibrary()
+const { showToast } = useAppToast()
+
+const kindLabels: Record<RecentKind, string> = {
+	builder: 'Color systems',
+	palette: 'Palettes',
+	scale: 'Scales',
+	contrast: 'Contrast pairs',
+	convert: 'Colors',
+	gradient: 'Gradients',
+}
+const kindIcons = Object.fromEntries(tools.map((tool) => [tool.id, tool.icon])) as Record<string, string>
+
+type Filter = RecentKind | 'all'
+const filter = ref<Filter>('all')
+const query = ref('')
+
+const filters = computed(() => {
+	const kinds = (Object.keys(kindLabels) as RecentKind[]).filter((kind) =>
+		saved.value.some((item) => item.kind === kind),
+	)
+	return [
+		{ value: 'all' as Filter, label: 'All' },
+		...kinds.map((kind) => ({ value: kind as Filter, label: kindLabels[kind] })),
 	]
 })
 
-useSeoMeta({
-	title: 'Saved Palettes | colorgen.co',
-	description: "Discover through your favorite color palettes and download them for future use.",
-	keywords: 'Color Palette, Saved, Palettes, Generate, Download, Generator, Colorgen',
-	ogTitle: 'Saved Palettes | colorgen.co',
-	ogDescription: "Discover through your favorite color palettes and download them for future use.",
-	ogUrl: `https://colorgen.co/saved`,
+watch(filters, (options) => {
+	if (!options.some((option) => option.value === filter.value)) filter.value = 'all'
 })
 
-const savedPalettes = useCookie('saved-palettes');
-const deletePalette = ref('');
-const deleteDialogOpen = ref(false);
-const { showToast } = useAppToast();
+const visible = computed(() => {
+	const search = query.value.trim().toLowerCase()
+	return saved.value.filter(
+		(item) =>
+			(filter.value === 'all' || item.kind === filter.value) &&
+			(!search ||
+				item.title.toLowerCase().includes(search) ||
+				item.colors.some((color) => color.includes(search.replace('#', '')))),
+	)
+})
 
-function handleUnsaveModal(palette) {
-	deletePalette.value = palette;
-	deleteDialogOpen.value = true;
+const dateFormat = new Intl.DateTimeFormat(undefined, { day: 'numeric', month: 'short', year: 'numeric' })
+
+function swatchBackground(item: SavedItem) {
+	return item.kind === 'gradient' ? `linear-gradient(90deg in oklch, ${item.colors.join(', ')})` : undefined
 }
 
-async function handleUnsave(palette) {
-	const res = await $fetch('/api/saved/palettes', {
-		method: 'POST',
-		body: {
-			palette: palette,
-			action: 'delete'
-		}
-	});
-
-	if ( res.action === 'unsaved' ) {
-		showToast('You successfully deleted palette.', 'info');
-
-		savedPalettes.value = res.newSaved;
-		deletePalette.value = '';
-	}
-	else if ( res.status === 400 ) showToast(res.action, 'error');
-
-	deleteDialogOpen.value = false;
+function remove(item: SavedItem) {
+	removeSaved(item.id)
+	showToast('Removed from library', 'info', {
+		description: item.title,
+		action: { label: 'Undo', onClick: () => save(item) },
+	})
 }
-
-function handleToast(color) {
-	showToast(`You copied this color: ${color.toUpperCase()}`, 'info');
-}
-function handleCopyURL(palette) {
-	copyURL('https://colorgen.co/palette/' + palette);
-
-	showToast(`You copied palette URL`, 'info');
-}
-
-const { $chroma } = useNuxtApp();
-const schemes = useHomeSchemes();
-const count = useColorCount();
-const disableButton = ref(false);
-
-function generateRandomPalette() {
-	disableButton.value = true
-	
-	if ( count.value <= 0 ) count.value = 5
-	else if ( count.value >= 15 ) count.value = 15
-	
-	let colors;
-	const randomType = randomNumber(1, 2);
-	
-	if ( randomType === 1 ) {
-		let inputColor = $chroma.random().hex();
-		colors = generatePalette(inputColor, schemes.value[Math.floor((Math.random() * schemes.value.length))], count.value);
-		colors = colors.map(c => c.substring(1)).join('-');
-	} else if ( randomType === 2 ) {
-		colors = new Array();
-		for( let i = 1; i <= count.value; i++ ) {
-			colors.push($chroma.random().hex());
-		}
-		colors = colors.map(c => c.substring(1)).join('-');
-	}
-
-	setTimeout(() => {
-		disableButton.value = false
-	}, 2000)
-
-	navigateTo('/palette/'+colors);
-}
-
-function randomNumber(min, max) {
-	return Math.floor(Math.random() * (max - min + 1) + min)
-}
-
 </script>
 
-<style scoped>
-#saved {
-	padding-top: 70px;
-}
-.saved-title {
+<template>
+	<div class="flex min-h-0 flex-1 flex-col">
+		<AppTopBar title="Library" />
 
-}
-.palettes {
-	display: grid;
-	grid-template-columns: repeat(4, 1fr);
-	grid-gap: 40px 30px;
-	margin-top: 70px;
-}
-.empty-text {
-	margin-top: 34px;
-	margin-bottom: 34px;
-	text-align: center;
-	color: var(--gray-3);
-}
-.gnr-btn {
-	max-width: 200px;
-	margin: 0 auto;
-}
+		<div class="min-h-0 flex-1 p-4 lg:overflow-y-auto">
+			<ClientOnly>
+				<div v-if="saved.length" class="grid gap-5">
+					<div class="flex flex-wrap items-center justify-between gap-3">
+						<AppSegmentedControl v-model="filter" :options="filters" label="Show" class="max-w-full overflow-x-auto" />
+						<Input
+							v-model="query"
+							type="search"
+							placeholder="Search by name or hex"
+							aria-label="Search the library"
+							class="w-full sm:w-64"
+						/>
+					</div>
 
-@media only screen and (max-width: 1200px) {
-	.palettes {
-		grid-template-columns: repeat(3, 1fr);
-	}
-}
+					<ul v-if="visible.length" class="grid grid-cols-1 gap-3 sm:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4">
+						<li
+							v-for="item in visible"
+							:key="item.id"
+							class="group relative grid gap-3 rounded-2xl bg-card p-2 ring-1 ring-foreground/10 transition-colors hover:bg-muted/40"
+						>
+							<NuxtLink
+								:to="item.path"
+								class="grid gap-3 rounded-xl outline-none focus-visible:ring-3 focus-visible:ring-ring/50"
+							>
+								<span
+									v-if="item.kind === 'gradient'"
+									class="h-20 rounded-xl ring-1 ring-foreground/10 ring-inset"
+									:style="{ background: swatchBackground(item) }"
+									aria-hidden="true"
+								/>
+								<span v-else class="flex h-20 gap-1" aria-hidden="true">
+									<span
+										v-for="(color, index) in item.colors"
+										:key="index"
+										class="flex-1 rounded-lg ring-1 ring-foreground/10 ring-inset"
+										:style="{ background: color }"
+									/>
+								</span>
+								<span class="grid gap-0.5 px-2 pr-10 pb-1">
+									<span class="truncate text-sm font-medium">{{ item.title }}</span>
+									<span class="flex items-center gap-1.5 truncate text-xs text-muted-foreground">
+										<Icon :name="kindIcons[item.kind] ?? 'lucide:bookmark'" class="size-3.5 shrink-0" />
+										{{ kindLabels[item.kind] }} · {{ dateFormat.format(item.savedAt) }}
+									</span>
+								</span>
+							</NuxtLink>
+							<Button
+								variant="ghost"
+								size="icon-sm"
+								class="absolute right-3 bottom-3"
+								:aria-label="`Remove ${item.title}`"
+								@click="remove(item)"
+							>
+								<Icon name="lucide:trash-2" />
+							</Button>
+						</li>
+					</ul>
+					<p v-else class="rounded-xl bg-muted/40 p-8 text-center text-sm text-muted-foreground">
+						Nothing matches “{{ query }}”.
+					</p>
 
-@media only screen and (max-width: 1023px) {
-	.palettes {
-		grid-template-columns: repeat(2, 1fr);
-	}
-}
+					<p class="flex gap-2 text-sm text-muted-foreground">
+						<Icon name="lucide:info" class="mt-0.5 size-4 shrink-0" />
+						Your library lives in this browser. Clearing site data removes it.
+					</p>
+				</div>
 
-@media only screen and (max-width: 600px) {
-	.palettes {
-		grid-template-columns: repeat(1, 1fr);
-	}
-}
-@media only screen and (max-width: 420px) {
-	.custom-buttons {
-		flex-direction: column;
-	}
-	.custom-buttons > .button {
-		width: 100%;
-		margin-right: 0;
-		margin-bottom: 10px;
-	}
-	.custom-buttons > .button:last-child {
-		margin-bottom: 0;
-	}
-}
-</style>
+				<div
+					v-else
+					class="grid min-h-80 place-items-center content-center gap-4 rounded-2xl bg-muted/40 p-8 text-center"
+				>
+					<span class="grid size-11 place-items-center rounded-full bg-muted"
+						><Icon name="lucide:bookmark" class="size-5"
+					/></span>
+					<div class="grid max-w-sm gap-1">
+						<p class="text-sm font-medium">Nothing saved yet</p>
+						<p class="text-sm text-pretty text-muted-foreground">
+							Press the bookmark in any tool, or <Kbd>S</Kbd>, to keep a color system, palette, scale or gradient here.
+						</p>
+					</div>
+					<Button as-child size="sm">
+						<NuxtLink to="/builder"><Icon name="lucide:blocks" data-icon="inline-start" /> Open the builder</NuxtLink>
+					</Button>
+				</div>
+			</ClientOnly>
+		</div>
+	</div>
+</template>

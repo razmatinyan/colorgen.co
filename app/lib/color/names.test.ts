@@ -1,0 +1,43 @@
+import { describe, expect, it } from 'vitest'
+import { colorFamily, describeColor } from './names'
+
+describe('describeColor', () => {
+	it.each([
+		['#ff0000', 'Red'],
+		['#ffa500', 'Orange'],
+		['#f97316', 'Orange'],
+		['#ea580c', 'Orange'],
+		['#ff6347', 'Red'],
+		['#dc2626', 'Red'],
+		['#ffff00', 'Yellow'],
+		['#00ff00', 'Green'],
+		['#008080', 'Teal'],
+		['#0000ff', 'Blue'],
+		['#800080', 'Purple'],
+		['#1f6cb0', 'Blue'],
+		['#f4e19c', 'Light yellow'],
+		['#ffffff', 'White'],
+		['#000000', 'Black'],
+		['#808080', 'Gray'],
+		['#d9d9d9', 'Light gray'],
+		['#222933', 'Dark gray'],
+		['#3b0a0a', 'Deep red'],
+		['#7a8b7a', 'Muted green'],
+	])('names %s "%s"', (input, name) => {
+		expect(describeColor(input)).toBe(name)
+	})
+})
+
+describe('colorFamily', () => {
+	it.each([
+		['#1f6cb0', 'blue'],
+		['#3b0a0a', 'red'],
+		['#0ea5e9', 'sky blue'],
+		['#f4e19c', 'yellow'],
+		['#ffffff', 'gray'],
+		['#000000', 'gray'],
+		['#222933', 'gray'],
+	])('groups %s as "%s"', (input, family) => {
+		expect(colorFamily(input)).toBe(family)
+	})
+})

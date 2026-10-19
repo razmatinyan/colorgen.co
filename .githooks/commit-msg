@@ -1,0 +1,2 @@
+#!/bin/sh
+exec node "$(git rev-parse --show-toplevel)/.githooks/no-ai-attribution.mjs" --commit-msg "$1"

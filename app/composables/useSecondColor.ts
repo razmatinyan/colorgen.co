@@ -1,1 +1,0 @@
-export const useSecondColor = () => useState<string>('secondColor', () => '');

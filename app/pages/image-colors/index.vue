@@ -1,168 +1,134 @@
-<template>
-	<section id="image-colors">
-		<div class="container">
-			<h1 class="image-title big-title text-center">Image Colors</h1>
-			
-			<p class="image-descr">
-				Extract the color palette from your images with our Image Color Extractor tool.
-			</p>
+<script setup lang="ts">
+import { onKeyStroke, useClipboard, useEventListener } from '@vueuse/core'
+import { toNumberedVariables } from '~/lib/export'
+import { isInteractiveTarget } from '~/lib/keyboard'
+import { imageColorsKey, useImageColors } from '~/composables/useImageColors'
 
-			<div class="dropzone-wrapper">
-				<DropZone ref="inputRef" @drop.prevent="drop" @change="fileSelected" />
-			</div>
+definePageMeta({ layout: 'app' })
 
-			<div class="img-wrapper">
-				<img
-					v-if="imgSrc"
-					:src="imgSrc"
-					alt="Image"
-					id="image" 
-					crossorigin="Anonymous"
-				>
-			</div>
-			
-			<div class="palette-wrapper">
-				<PaletteCard 
-					v-if="colors.palette"
-					:item="colors"
-					:showDelete="false"
-					@copied="handleToast($event)"
-					@copyURL="handleCopyURL($event)"
-				/>
-			</div>
-		</div>
+const image = useImageColors()
+provide(imageColorsKey, image)
 
-	</section>
-</template>
-
-<script setup>
-useHead({
-	link: [
-		{
-			rel: 'canonical',
-			href: 'https://colorgen.co/image-colors'
-		},
-	]
-});
-
+const title = 'Extract Colors from an Image: Palette and Brand Color | Sygen'
+const description =
+	'Drop a photo, logo or screenshot to get its main colors with how much of the image each covers, plus a suggested brand color to build a full UI color system from. Runs in your browser, free, no sign-up.'
 useSeoMeta({
-	title: 'Extract Color Palette From The Image | colorgen.co',
-	description: "Effortlessly extract color palette from your images with our Image Color Extractor tool. Enhance your design palette with the main colors of your photos. Try it now for free!",
-	keywords: 'image color extractor, color palette, main colors, palette generator, generate palette, Colorgen',
-	ogTitle: 'Extract Color Palette From The Image | colorgen.co',
-	ogDescription: "Effortlessly extract color palette from your images with our Image Color Extractor tool. Enhance your design palette with the main colors of your photos. Try it now for free!",
-	ogUrl: `https://colorgen.co/image-colors`,
+	title,
+	description,
+	ogTitle: title,
+	ogDescription: description,
+})
+useCanonicalUrl('/image-colors')
+usePageOgImage({ kind: 'image' })
+
+const { copy } = useClipboard({ legacy: true })
+const { showToast } = useAppToast()
+const drop = useTemplateRef<{ chooseFile: () => void }>('drop')
+
+async function copyCss() {
+	if (!image.colors.value.length) return
+	await copy(
+		toNumberedVariables(
+			image.colors.value.map((color) => color.hex),
+			'hex',
+			'image',
+		).trimEnd(),
+	)
+	showToast('Copied CSS variables', 'success', { description: `${image.colors.value.length} colors` })
+}
+
+useEventListener(import.meta.client ? window : undefined, 'paste', (event: ClipboardEvent) => {
+	const file = [...(event.clipboardData?.files ?? [])].find((item) => item.type.startsWith('image/'))
+	if (!file) return
+	event.preventDefault()
+	image.loadFile(file)
 })
 
-const imgSrc = ref('');
-const colors = ref([]);
-const inputRef = ref(null);
-let dropzoneFile = ref('');
-const { $extractPalette } = useNuxtApp();
-const { showToast } = useAppToast();
-
-const drop = (e) => {
-	dropzoneFile.value = e.dataTransfer.files[0];
-	handleImageShow(dropzoneFile.value)
-};
-
-const fileSelected = () => {
-	dropzoneFile.value = document.querySelector(".dropzoneFile").files[0];
-	handleImageShow(dropzoneFile.value)
-};
-
-const handleImageShow = (file) => {
-
-	if ( file.type !== 'image/jpeg' && file.type !== 'image/png' ) {
-		showToast('Only JPG and PNG formats are allowed!', 'error');
-		inputRef.value.btnText = 'Select File'
-	} else {
-
-		const image = new Image();
-		const fileReader = new FileReader();
-	
-		fileReader.onload = () => {
-			image.onload = () => {
-				const result = $extractPalette(image, 8);
-
-				if (!result?.length) {
-					showToast('Could not extract colors from this image.', 'error');
-					return;
-				}
-
-				const paletteString = result
-										.map(color => color.hex().substring(1))
-										.join('-');
-				
-				colors.value = {
-					palette: paletteString
-				}
-			};
-			image.src = fileReader.result;
-			imgSrc.value = image.src;
-
-			setTimeout(() => {
-				scrollToPalette();
-				inputRef.value.btnText = 'Select File'
-			}, 1)
-		};
-		fileReader.readAsDataURL(file);
-
-	}
-	inputRef.value.emptyFiles();
-	
-}
-
-const scrollToPalette = () => {
-	document.querySelector('.palette-wrapper').scrollIntoView({ behavior: 'smooth' })
-}
-
-function handleToast(color) {
-	showToast(`You copied this color: ${color.toUpperCase()}`, 'info');
-}
-
-function handleCopyURL(palette) {
-	copyURL('https://colorgen.co/palette/' + palette);
-	showToast(`You copied palette URL`, 'info');
-}
-
+onKeyStroke(['c', 'C'], (event) => {
+	if (!isInteractiveTarget(event) && !event.metaKey && !event.ctrlKey) copyCss()
+})
+onKeyStroke(['o', 'O'], (event) => {
+	if (isInteractiveTarget(event) || event.metaKey || event.ctrlKey) return
+	event.preventDefault()
+	drop.value?.chooseFile()
+})
 </script>
 
-<style scoped>
-#image-colors {
-	padding-top: 70px;
-}
-.image-title {
-	margin-bottom: 34px;
-}
-.image-descr {
-	display: block;
-	max-width: 900px;
-	margin: 0 auto;
-	margin-bottom: 50px;
-	color: var(--gray-3);
-	text-align: center;
-}
-.dropzone-wrapper {
-	max-width: 600px;
-	margin: 0 auto 50px auto;
-}
-.img-wrapper {
-	max-width: 700px;
-	margin: 0 auto 30px auto;
-}
-#image { 
-	width: 100%;
-	border-radius: 20px;
-}
-.palette-wrapper {
-	max-width: 700px;
-	margin: 0 auto;
-}
+<template>
+	<div class="flex min-h-0 flex-1 flex-col">
+		<AppTopBar title="Image color extractor">
+			<Tooltip>
+				<TooltipTrigger as-child>
+					<Button variant="outline" size="sm" aria-label="Copy CSS" :disabled="!image.hasImage.value" @click="copyCss">
+						<Icon name="lucide:copy" data-icon="inline-start" /> <span class="hidden sm:inline">Copy CSS</span>
+					</Button>
+				</TooltipTrigger>
+				<TooltipContent>Copy the colors as CSS variables <Kbd>C</Kbd></TooltipContent>
+			</Tooltip>
+			<Tooltip>
+				<TooltipTrigger as-child>
+					<Button as-child size="sm">
+						<NuxtLink :to="image.builderPath.value" aria-label="Use in builder">
+							<Icon name="lucide:blocks" data-icon="inline-start" />
+							<span class="hidden sm:inline">Use in builder</span>
+						</NuxtLink>
+					</Button>
+				</TooltipTrigger>
+				<TooltipContent>{{
+					image.brand.value
+						? `Build a color system from ${image.brand.value.hex.toUpperCase()}`
+						: 'Build a color system'
+				}}</TooltipContent>
+			</Tooltip>
+		</AppTopBar>
 
-@media only screen and (max-width: 769px) {
-	#palette-static {
-		padding-top: 56px;
-	}
-}
-</style>
+		<div
+			class="grid min-h-0 flex-1 grid-cols-[minmax(0,1fr)] content-start gap-4 p-4 lg:grid-cols-[23rem_minmax(0,1fr)] lg:content-stretch"
+		>
+			<Card size="sm" class="min-h-0">
+				<CardHeader>
+					<CardTitle>Your image</CardTitle>
+					<CardDescription>A photo, logo or screenshot. Press O to choose a file.</CardDescription>
+				</CardHeader>
+				<CardContent class="flex min-h-0 flex-1 flex-col overflow-x-hidden lg:overflow-y-auto">
+					<ImageDrop ref="drop" />
+				</CardContent>
+			</Card>
+
+			<Card size="sm" class="min-h-0" aria-label="Colors">
+				<CardHeader>
+					<CardTitle>Colors in your image</CardTitle>
+					<CardDescription>{{
+						image.hasImage.value ? 'Largest first. Click a color to copy it.' : 'Add an image to see its colors.'
+					}}</CardDescription>
+				</CardHeader>
+				<CardContent class="min-h-0 flex-1 lg:overflow-y-auto">
+					<ImageColors v-if="image.hasImage.value" />
+					<div
+						v-else
+						class="grid h-full min-h-64 place-items-center content-center gap-4 rounded-xl bg-muted/40 p-8 text-center"
+					>
+						<div class="flex gap-1.5" aria-hidden="true">
+							<span
+								v-for="shade in [20, 35, 50, 65, 80]"
+								:key="shade"
+								class="size-8 rounded-lg bg-foreground"
+								:style="{ opacity: shade / 100 }"
+							/>
+						</div>
+						<div class="grid max-w-sm gap-1">
+							<p class="text-sm font-medium">No image yet</p>
+							<p class="text-sm text-pretty text-muted-foreground">
+								Drop, paste or choose an image. You'll get its main colors and a brand color to build a full system
+								from.
+							</p>
+						</div>
+						<Button variant="outline" size="sm" @click="image.loadSample()">
+							<Icon name="lucide:sparkles" data-icon="inline-start" /> Try a sample image
+						</Button>
+					</div>
+				</CardContent>
+			</Card>
+		</div>
+	</div>
+</template>

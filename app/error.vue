@@ -1,33 +1,27 @@
-<template>
-	<div id="error" class="cg-content">
-		<Header />
-		<img class="image" :src="ErrorSVG" alt="404">
-		<NuxtLink to="/" class="home-link btn btn-blue btn-medium">Go Back Home</NuxtLink>
-	</div>
-</template>
+<script setup lang="ts">
+import type { NuxtError } from '#app'
 
-<script setup>
-import ErrorSVG from '@/assets/404.svg?url'
+const props = defineProps<{ error: NuxtError }>()
 
-defineProps(['error']);
+const isNotFound = computed(() => props.error.statusCode === 404)
+
+useSeoMeta({
+	title: () => (isNotFound.value ? 'Page not found | Sygen' : 'Something went wrong | Sygen'),
+	robots: 'noindex',
+})
 </script>
 
-<style scoped>
-.cg-content {
-	padding-top: 140px;
-}
-.image {
-	max-width: 800px;
-	margin: 0 auto 30px auto;
-}
-.home-link {
-	max-width: 200px;
-	margin: 0 auto;
-}
-
-@media only screen and (max-width: 769px) {
-	.cg-content {
-		padding-top: 70px;
-	}
-}
-</style>
+<template>
+	<NuxtLayout>
+		<section class="mx-auto flex max-w-xl flex-col items-center px-6 py-32 text-center">
+			<Badge variant="secondary">Error {{ error.statusCode }}</Badge>
+			<h1 class="mt-4 text-4xl font-semibold tracking-(--tracking-display)">
+				{{ isNotFound ? 'This color is out of gamut.' : 'Something went wrong.' }}
+			</h1>
+			<p class="mt-4 text-muted-foreground">
+				{{ isNotFound ? 'The page you are looking for does not exist or has moved.' : error.message }}
+			</p>
+			<Button class="mt-8" size="lg" @click="clearError({ redirect: '/' })">Back to home</Button>
+		</section>
+	</NuxtLayout>
+</template>
