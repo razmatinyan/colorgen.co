@@ -9,6 +9,7 @@
 		"preview": "nuxt preview",
 		"typecheck": "nuxt typecheck",
 		"postinstall": "nuxt prepare",
+		"prepare": "node .githooks/install.mjs",
 		"test": "vitest run",
 		"test:watch": "vitest"
 	},

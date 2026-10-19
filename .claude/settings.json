@@ -9,6 +9,15 @@
 						"command": "node \"$CLAUDE_PROJECT_DIR/.claude/hooks/no-comments.mjs\""
 					}
 				]
+			},
+			{
+				"matcher": "Bash|PowerShell",
+				"hooks": [
+					{
+						"type": "command",
+						"command": "node \"$CLAUDE_PROJECT_DIR/.githooks/no-ai-attribution.mjs\""
+					}
+				]
 			}
 		],
 		"PostToolUse": [
