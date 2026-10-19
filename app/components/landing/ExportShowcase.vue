@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { useClipboard, useDocumentVisibility, useIntervalFn, usePreferredReducedMotion } from '@vueuse/core'
 import { buildExportModel, toCssVariables, toDesignTokens, toFigmaTokens, toTailwindCss } from '~/lib/export'
+import { highlightLine } from '~/lib/highlight'
 import { landingDemoKey } from '~/composables/useLandingDemo'
 
 const { builder } = inject(landingDemoKey)!
@@ -60,7 +61,6 @@ const content = computed(() => {
 })
 
 const excerptLength = 15
-const colorValue = /(oklch\([^)]+\)|#[0-9a-f]{6}\b)/i
 const lines = computed(() => {
 	const all = content.value.split('\n')
 	const format = formats.find((item) => item.id === active.value)!
@@ -69,10 +69,10 @@ const lines = computed(() => {
 		all.findIndex((line) => line.startsWith(format.anchor)),
 	)
 	const prefix = active.value === 'css' ? [':root {'] : []
-	return [...prefix, ...all.slice(start, start + excerptLength - prefix.length), '  …'].map((text) => ({
-		text,
-		color: text.match(colorValue)?.[1] ?? null,
-	}))
+	const language = active.value === 'figma' || active.value === 'json' ? 'json' : 'css'
+	return [...prefix, ...all.slice(start, start + excerptLength - prefix.length), '  …'].map((line) =>
+		highlightLine(line, language),
+	)
 })
 
 const reducedMotion = usePreferredReducedMotion()
@@ -151,9 +151,9 @@ async function copyFile() {
 					<pre class="h-[25rem] overflow-hidden p-5 font-sans text-[13px]/relaxed tabular-nums" aria-live="polite"><span
 						v-for="(line, index) in lines"
 						:key="`${active}-${builder.brandHex.value}-${index}`"
-						class="flex items-center gap-2 animate-in fade-in slide-in-from-left-1 fill-mode-both duration-300"
+						class="block animate-in fade-in slide-in-from-left-1 fill-mode-both duration-300"
 						:style="{ animationDelay: `${index * 35}ms` }"
-					><span class="whitespace-pre text-muted-foreground" :class="line.color && 'text-foreground'">{{ line.text || ' ' }}</span><span v-if="line.color" class="size-3 shrink-0 rounded-[3px] ring-1 ring-foreground/10 ring-inset" :style="{ background: line.color }" /></span></pre>
+					><CodeLine :tokens="line" /></span></pre>
 				</div>
 			</LandingReveal>
 		</div>

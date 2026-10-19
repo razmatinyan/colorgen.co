@@ -159,11 +159,12 @@ function review() {
 					<span class="truncate font-medium">{{ shownFile.name }}</span>
 					<span class="shrink-0 text-muted-foreground tabular-nums">{{ lineCount }} lines</span>
 				</div>
-				<pre
-					class="min-h-0 overflow-auto p-4 font-sans text-xs/relaxed tabular-nums"
-					tabindex="0"
-					:aria-label="`Contents of ${shownFile.name}`"
-					>{{ shownFile.content }}</pre>
+				<CodeBlock
+					class="min-h-0 overflow-auto p-4"
+					:code="shownFile.content"
+					:language="shownFile.type === 'application/json' ? 'json' : 'css'"
+					:label="`Contents of ${shownFile.name}`"
+				/>
 			</div>
 
 			<DialogFooter class="flex-wrap gap-2 sm:justify-end">

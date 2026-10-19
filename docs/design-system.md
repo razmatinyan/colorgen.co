@@ -29,15 +29,16 @@ Use shadcn-vue primitives from `app/components/ui/` first (Button, Card, Badge, 
 
 shadcn's neutral palette in OKLCH (chroma 0), light and dark.
 
-| Token                               | Use                                                                  |
-| ----------------------------------- | -------------------------------------------------------------------- |
-| `background` / `foreground`         | Page canvas and default text                                         |
-| `card`, `popover`                   | Raised surfaces                                                      |
-| `muted` / `muted-foreground`        | Fills for inputs, segmented controls, selected items; secondary text |
-| `primary` / `primary-foreground`    | Main actions (near-black in light, near-white in dark)               |
-| `secondary`, `accent`               | Secondary buttons, hover fills                                       |
-| `border`, `input`, `ring`           | Hairlines, input borders, focus rings                                |
-| `success`, `warning`, `destructive` | Status only                                                          |
+| Token                                                                          | Use                                                                                                             |
+| ------------------------------------------------------------------------------ | --------------------------------------------------------------------------------------------------------------- |
+| `background` / `foreground`                                                    | Page canvas and default text                                                                                    |
+| `card`, `popover`                                                              | Raised surfaces                                                                                                 |
+| `muted` / `muted-foreground`                                                   | Fills for inputs, segmented controls, selected items; secondary text                                            |
+| `primary` / `primary-foreground`                                               | Main actions (near-black in light, near-white in dark)                                                          |
+| `secondary`, `accent`                                                          | Secondary buttons, hover fills                                                                                  |
+| `border`, `input`, `ring`                                                      | Hairlines, input borders, focus rings                                                                           |
+| `success`, `warning`, `destructive`                                            | Status only                                                                                                     |
+| `code-keyword`, `code-property`, `code-string`, `code-number`, `code-function` | Syntax colors in code previews (`CodeBlock`) only; muted, at least 5:1 on card and muted surfaces in both modes |
 
 Rules:
 

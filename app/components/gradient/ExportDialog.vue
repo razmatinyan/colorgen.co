@@ -103,11 +103,13 @@ function downloadFile() {
 				<div class="flex items-center justify-between gap-3 border-b px-4 py-2 text-sm">
 					<span class="truncate font-medium">{{ file.name }}</span>
 				</div>
-				<pre
-					class="min-h-0 overflow-auto p-4 font-sans text-xs/relaxed break-all whitespace-pre-wrap tabular-nums"
-					tabindex="0"
-					:aria-label="`Contents of ${file.name}`"
-					>{{ file.content }}</pre>
+				<CodeBlock
+					class="min-h-0 overflow-auto p-4"
+					:code="file.content"
+					:language="format === 'tailwind' ? 'text' : 'css'"
+					:label="`Contents of ${file.name}`"
+					wrap
+				/>
 			</div>
 
 			<DialogFooter class="flex-wrap gap-2 sm:justify-end">

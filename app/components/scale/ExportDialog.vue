@@ -91,11 +91,12 @@ function downloadFile() {
 					<span class="truncate font-medium">{{ file.name }}</span>
 					<span class="shrink-0 text-muted-foreground tabular-nums">{{ lineCount }} lines</span>
 				</div>
-				<pre
-					class="min-h-0 overflow-auto p-4 font-sans text-xs/relaxed tabular-nums"
-					tabindex="0"
-					:aria-label="`Contents of ${file.name}`"
-					>{{ file.content }}</pre>
+				<CodeBlock
+					class="min-h-0 overflow-auto p-4"
+					:code="file.content"
+					:language="format === 'json' ? 'json' : 'css'"
+					:label="`Contents of ${file.name}`"
+				/>
 			</div>
 
 			<DialogFooter class="flex-wrap gap-2 sm:justify-end">

@@ -59,11 +59,12 @@ async function copySnippet() {
 					<Icon name="lucide:copy" data-icon="inline-start" /> Copy
 				</Button>
 			</div>
-			<pre
-				class="max-h-72 overflow-auto px-4 pb-4 font-sans text-xs/relaxed tabular-nums"
-				tabindex="0"
-				aria-label="Tailwind theme for these shades"
-				>{{ snippet }}</pre>
+			<CodeBlock
+				class="max-h-72 overflow-auto px-4 pb-4"
+				:code="snippet"
+				language="css"
+				label="Tailwind theme for these shades"
+			/>
 		</div>
 	</ColorPageSection>
 </template>
