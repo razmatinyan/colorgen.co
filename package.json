@@ -1,4 +1,5 @@
 {
+	"name": "sygen",
 	"private": true,
 	"scripts": {
 		"build": "nuxt build",

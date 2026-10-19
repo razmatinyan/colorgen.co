@@ -69,7 +69,7 @@ const navItem = 'inline-flex h-8 items-center rounded-4xl px-3 text-sm font-medi
 				<AppThemeToggle />
 				<Button
 					as="a"
-					href="https://github.com/razmatinyan/colorgen.co"
+					href="https://github.com/razmatinyan/sygen.app"
 					target="_blank"
 					rel="noopener"
 					variant="ghost"

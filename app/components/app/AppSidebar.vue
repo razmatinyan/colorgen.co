@@ -150,7 +150,7 @@ watch(
 				</SidebarMenuItem>
 				<SidebarMenuItem>
 					<SidebarMenuButton as-child tooltip="Source on GitHub">
-						<a href="https://github.com/razmatinyan/colorgen.co" target="_blank" rel="noopener">
+						<a href="https://github.com/razmatinyan/sygen.app" target="_blank" rel="noopener">
 							<Icon name="lucide:github" />
 							<span>Source on GitHub</span>
 						</a>

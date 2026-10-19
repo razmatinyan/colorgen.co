@@ -79,7 +79,7 @@ const themes = [
 					value="Source on GitHub"
 					@select="
 						run(() =>
-							navigateTo('https://github.com/razmatinyan/colorgen.co', { external: true, open: { target: '_blank' } }),
+							navigateTo('https://github.com/razmatinyan/sygen.app', { external: true, open: { target: '_blank' } }),
 						)
 					"
 				>
