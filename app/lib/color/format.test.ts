@@ -24,6 +24,13 @@ describe('formatting', () => {
 			expect(toHex(parseColor(hex)!)).toBe(hex)
 		}
 	})
+
+	it('keeps colors on the edge of sRGB exact', () => {
+		for (const hex of ['#00ffff', '#ff00ff', '#ffff00', '#00ff00', '#0000ff']) {
+			expect(toHex(parseColor(hex)!)).toBe(hex)
+			expect(isInGamut(hex)).toBe(true)
+		}
+	})
 })
 
 describe('gamut mapping', () => {

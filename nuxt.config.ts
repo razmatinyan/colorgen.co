@@ -1,9 +1,5 @@
 import tailwindcss from '@tailwindcss/vite'
-import { colorsNamed } from 'culori'
-
-const namedColorPaths = [
-	...new Set(Object.values(colorsNamed).map((value) => `/color/${value.toString(16).padStart(6, '0')}`)),
-]
+import { colorSitemapPaths } from './app/lib/sitemap-colors'
 
 export default defineNuxtConfig({
 	compatibilityDate: '2026-09-30',
@@ -65,7 +61,7 @@ export default defineNuxtConfig({
 			'/palette/143449-d6f863-fe6122-f5f7f8-0c1828',
 			'/palette/41436a-974063-f54768-ff9677',
 			'/palette/2e424d-5b8291-98dad9-eaebed',
-			...namedColorPaths,
+			...colorSitemapPaths(),
 		],
 		exclude: ['/saved', '/saved/**'],
 	},

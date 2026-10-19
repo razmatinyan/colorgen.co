@@ -6,13 +6,18 @@ const toOklchColor = converter('oklch')
 const toRgbColor = converter('rgb')
 const gamutTolerance = 1e-5
 
-const mapToSrgb = (color: ReturnType<typeof culori>) => clampChroma(color, 'oklch', 'rgb')
-
 const culori = ({ l, c, h }: Oklch) => ({ mode: 'oklch' as const, l, c, h })
 
-export function isInGamut(input: ColorInput) {
-	const { r, g, b } = toRgbColor(culori(toOklch(input)))
+function isCuloriInSrgb(color: ReturnType<typeof culori>) {
+	const { r, g, b } = toRgbColor(color)
 	return [r, g, b].every((channel) => channel >= -gamutTolerance && channel <= 1 + gamutTolerance)
+}
+
+const mapToSrgb = (color: ReturnType<typeof culori>) =>
+	isCuloriInSrgb(color) ? color : clampChroma(color, 'oklch', 'rgb')
+
+export function isInGamut(input: ColorInput) {
+	return isCuloriInSrgb(culori(toOklch(input)))
 }
 
 export function toGamutOklch(input: ColorInput): Oklch {
