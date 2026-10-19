@@ -47,9 +47,8 @@ const showcased = Object.keys(layout)
 </script>
 
 <template>
-	<section class="mx-auto grid max-w-6xl grid-cols-1 gap-12 px-4 py-20 sm:px-6 lg:py-28">
+	<section class="mx-auto grid max-w-7xl grid-cols-1 gap-12 px-4 py-20 sm:px-6 lg:py-28">
 		<LandingSectionHeading
-			label="More tools"
 			title="Everything around the builder."
 			description="Smaller tools for everyday color work. Each one can send its result into the builder."
 		/>

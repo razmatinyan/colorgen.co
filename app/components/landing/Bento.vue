@@ -55,9 +55,8 @@ const tile = 'grid content-between gap-6 overflow-hidden rounded-2xl bg-card p-5
 </script>
 
 <template>
-	<section class="mx-auto grid max-w-6xl grid-cols-1 gap-12 px-4 pt-8 pb-20 sm:px-6 lg:pt-12 lg:pb-28">
+	<section class="mx-auto grid max-w-7xl grid-cols-1 gap-12 px-4 pt-20 pb-20 sm:px-6 lg:pt-28 lg:pb-28">
 		<LandingSectionHeading
-			label="How it works"
 			title="One color in. A whole system out."
 			description="The builder does the color science for you, in OKLCH, so every step looks even and stays inside what screens can show."
 		/>

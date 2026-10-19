@@ -24,10 +24,9 @@ const features = [
 
 <template>
 	<section class="border-y bg-muted/30">
-		<div class="mx-auto grid max-w-6xl grid-cols-1 gap-12 px-4 py-20 sm:px-6 lg:py-28">
+		<div class="mx-auto grid max-w-7xl grid-cols-1 gap-12 px-4 py-20 sm:px-6 lg:py-28">
 			<div class="grid grid-cols-1 gap-10 lg:grid-cols-[minmax(0,1fr)_minmax(0,1fr)] lg:items-end">
 				<LandingSectionHeading
-					label="Design system builder"
 					title="See it on real UI before you ship it."
 					description="Buttons, forms, alerts, charts and navigation, rendered with your tokens. Switch the site theme to see dark mode."
 				/>

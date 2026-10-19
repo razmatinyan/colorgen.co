@@ -106,11 +106,10 @@ const points = [
 
 <template>
 	<section
-		class="mx-auto grid max-w-6xl grid-cols-1 items-center gap-12 px-4 py-20 sm:px-6 lg:grid-cols-[minmax(0,0.9fr)_minmax(0,1.1fr)] lg:gap-16 lg:py-28"
+		class="mx-auto grid max-w-7xl grid-cols-1 items-center gap-12 px-4 py-20 sm:px-6 lg:grid-cols-[minmax(0,0.9fr)_minmax(0,1.1fr)] lg:gap-16 lg:py-28"
 	>
 		<div class="grid gap-8">
 			<LandingSectionHeading
-				label="Readability"
 				title="Readable by default. Fixed in one click."
 				description="Every pair of text and background in your tokens is checked, so nobody ships gray-on-gray by accident."
 			/>

@@ -34,7 +34,7 @@ usePageOgImage({ kind: 'color', colors: page.value.hex.slice(1) })
 </script>
 
 <template>
-	<div class="mx-auto max-w-6xl px-4 sm:px-6">
+	<div class="mx-auto max-w-7xl px-4 sm:px-6">
 		<ColorPageHero :page="page" :summary="summary" />
 		<ColorPageShades :page="page" />
 		<ColorPageReadability :page="page" />

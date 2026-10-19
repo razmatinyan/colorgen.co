@@ -8,7 +8,7 @@ Sygen follows **shadcn/ui's "Maia" style** (`components.json` → `"style": "rek
 
 **Hallmarks (keep):** pure-neutral surfaces, `rounded-2xl` cards with a `ring-foreground/10` edge, pill buttons (`rounded-4xl`), filled pill inputs/selects, `rounded-xl` list items with `bg-muted` for the active one, sentence-case labels.
 
-**Avoid (reads as "AI-made"):** uppercase/letter-spaced micro labels, monospace "instrument" readouts, engineering grids, gradient glows, purple gradients, glassmorphism, heavy shadows, decorative illustrations, full-bleed vertical color stripes (Coolors).
+**Avoid (reads as "AI-made"):** uppercase/letter-spaced micro labels, eyebrow labels above section headings, monospace "instrument" readouts, engineering grids, gradient glows, purple gradients, glassmorphism, heavy shadows, decorative illustrations, full-bleed vertical color stripes (Coolors).
 
 ## Components
 
@@ -106,7 +106,7 @@ Thumb only — no arrow buttons, no visible track (global rule in `tailwind.css`
 
 ## Landing page
 
-The landing page shows the product by running it: one live builder instance drives every section, so whatever color the visitor types re-themes the hero, the flow, the builder preview, the readability demo, the export excerpt and the tool cards. Sections alternate between the page background and a `bg-muted/30` band with `border-y`. Feature overviews use a bento grid (`lg:grid-cols-6`, one large tile plus smaller ones, each a card with a live visual on top and a title and one sentence below). Bento and section grids always set `grid-cols-1` as the base, so wide content (code, long labels) can never push a single-column phone layout off-screen. Headings use `SectionHeading` (sentence-case label, display-tracked title, one-line description). Showcases use real components and real engine output, never screenshots.
+The landing page shows the product by running it: one live builder instance drives every section, so whatever color the visitor types re-themes the hero, the flow, the builder preview, the readability demo, the export excerpt and the tool cards. Sections alternate between the page background and a `bg-muted/30` band with `border-y`. Feature overviews use a bento grid (`lg:grid-cols-6`, one large tile plus smaller ones, each a card with a live visual on top and a title and one sentence below). Bento and section grids always set `grid-cols-1` as the base, so wide content (code, long labels) can never push a single-column phone layout off-screen. Headings use `SectionHeading` (display-tracked title and a one-line description, no eyebrow label). Showcases use real components and real engine output, never screenshots.
 
 ## Interaction
 
