@@ -40,7 +40,6 @@ const syncUrl = useDebounceFn((next: typeof target.value) => {
 }, 250)
 watch(target, (next) => syncUrl(next))
 
-const siteUrl = 'https://sygen.app'
 const defaultTitle = 'Design System Color Builder: Brand, Neutral and Status Scales | Sygen'
 useSeoMeta({
 	title: () =>
@@ -53,10 +52,12 @@ useSeoMeta({
 	description:
 		'Enter your brand color and get a complete UI color system: brand scales, brand-tinted neutrals, success, warning, danger and info, plus readable light and dark tokens for shadcn and Tailwind. Free, no sign-up.',
 	ogTitle: defaultTitle,
-	ogUrl: () => `${siteUrl}${route.path}`,
 })
-useHead({
-	link: [{ rel: 'canonical', href: () => `${siteUrl}${route.path}` }],
+useCanonicalUrl(() => route.path)
+usePageOgImage({
+	kind: 'builder',
+	colors: toBrandsParam(builder.settings.value),
+	tint: Math.round(builder.settings.value.neutralTint * 100),
 })
 
 const { copy } = useClipboard({ legacy: true })

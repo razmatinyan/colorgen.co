@@ -75,9 +75,6 @@ const themes = [
 				<CommandItem value="Library" @select="run(() => navigateTo('/saved'))">
 					<Icon name="lucide:bookmark" /> Library
 				</CommandItem>
-				<CommandItem value="Contact" @select="run(() => navigateTo('/contact'))">
-					<Icon name="lucide:mail" /> Contact
-				</CommandItem>
 				<CommandItem
 					value="Source on GitHub"
 					@select="

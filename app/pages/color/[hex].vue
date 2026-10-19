@@ -21,7 +21,6 @@ const page = computed(() => {
 })
 const summary = computed(() => colorPageSummary(page.value))
 
-const siteUrl = 'https://sygen.app'
 const title = computed(() => `${colorPageTitle(page.value)} | Sygen`)
 
 useSeoMeta({
@@ -29,11 +28,9 @@ useSeoMeta({
 	description: summary,
 	ogTitle: title,
 	ogDescription: summary,
-	ogUrl: () => `${siteUrl}${route.path}`,
 })
-useHead({
-	link: [{ rel: 'canonical', href: () => `${siteUrl}/color/${page.value.hex.slice(1)}` }],
-})
+useCanonicalUrl(() => `/color/${page.value.hex.slice(1)}`)
+usePageOgImage({ kind: 'color', colors: page.value.hex.slice(1) })
 </script>
 
 <template>

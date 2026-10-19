@@ -9,7 +9,6 @@ definePageMeta({ layout: 'app' })
 const image = useImageColors()
 provide(imageColorsKey, image)
 
-const siteUrl = 'https://sygen.app'
 const title = 'Extract Colors from an Image: Palette and Brand Color | Sygen'
 const description =
 	'Drop a photo, logo or screenshot to get its main colors with how much of the image each covers, plus a suggested brand color to build a full UI color system from. Runs in your browser, free, no sign-up.'
@@ -18,11 +17,9 @@ useSeoMeta({
 	description,
 	ogTitle: title,
 	ogDescription: description,
-	ogUrl: `${siteUrl}/image-colors`,
 })
-useHead({
-	link: [{ rel: 'canonical', href: `${siteUrl}/image-colors` }],
-})
+useCanonicalUrl('/image-colors')
+usePageOgImage({ kind: 'image' })
 
 const { copy } = useClipboard({ legacy: true })
 const { showToast } = useAppToast()

@@ -31,7 +31,6 @@ const syncUrl = useDebounceFn((param: string) => {
 }, 250)
 watch(palette.hexes, () => syncUrl(toColorsParam(palette.colors.value)))
 
-const siteUrl = 'https://sygen.app'
 useSeoMeta({
 	title: () =>
 		colorsParam.value
@@ -43,11 +42,9 @@ useSeoMeta({
 	description:
 		'Start from your color and pick from six palettes built around it in OKLCH. Fine-tune every color, check text contrast, and preview it on real UI components. Free, no sign-up.',
 	ogTitle: 'Color Palette Generator from Your Color, with Live UI Preview | Sygen',
-	ogUrl: () => `${siteUrl}${route.path}`,
 })
-useHead({
-	link: [{ rel: 'canonical', href: () => `${siteUrl}${route.path}` }],
-})
+useCanonicalUrl(() => route.path)
+usePageOgImage({ kind: 'palette', colors: toColorsParam(palette.colors.value) })
 
 const { copy } = useClipboard({ legacy: true })
 const { showToast } = useAppToast()

@@ -10,14 +10,21 @@ export default defineNuxtConfig({
 	devtools: { enabled: false },
 	runtimeConfig: {
 		public: {
-			BASE_URL: 'https://sygen.app',
-			gtagID: process.env.GTAG_ID,
+			gtagId: process.env.GTAG_ID,
 		},
 	},
 	vite: {
 		plugins: [tailwindcss()],
 	},
-	modules: ['@nuxt/icon', 'shadcn-nuxt', '@nuxtjs/sitemap', '@nuxtjs/robots', '@nuxtjs/color-mode', '@nuxt/fonts'],
+	modules: [
+		'@nuxt/icon',
+		'shadcn-nuxt',
+		'@nuxtjs/sitemap',
+		'@nuxtjs/robots',
+		'@nuxtjs/color-mode',
+		'@nuxt/fonts',
+		'nuxt-og-image',
+	],
 	colorMode: {
 		classSuffix: '',
 		preference: 'system',
@@ -25,7 +32,7 @@ export default defineNuxtConfig({
 		storageKey: 'sygen-color-mode',
 	},
 	fonts: {
-		families: [{ name: 'Inter', provider: 'google', weights: [400, 500, 600, 700] }],
+		families: [{ name: 'Inter', provider: 'google', weights: [400, 500, 600, 700], global: true }],
 	},
 	shadcn: {
 		prefix: '',
@@ -38,7 +45,7 @@ export default defineNuxtConfig({
 		},
 	},
 	site: {
-		url: 'https://sygen.app',
+		url: 'https://sygen.vercel.app',
 		name: 'Sygen',
 		indexable: true,
 	},
@@ -46,6 +53,12 @@ export default defineNuxtConfig({
 		zeroRuntime: true,
 		xsl: false,
 		urls: [
+			'/builder',
+			'/palette',
+			'/scale',
+			'/contrast',
+			'/convert',
+			'/gradient',
 			'/palette/326789-78a6c8-e9eef2-e65c4f',
 			'/palette/0295a9-12adc1-fdd037-f5f5f5',
 			'/palette/1c1c1e-ba8f6c-9f9d99-fafaf8-23262b',
@@ -83,20 +96,12 @@ export default defineNuxtConfig({
 						'Design system colors, Color scales, Design tokens, Tailwind colors, shadcn theme, Color palette, Sygen',
 				},
 				{
-					property: 'og:image',
-					content: '/og-image.jpg',
-				},
-				{
 					property: 'og:site_name',
 					content: 'Sygen',
 				},
 				{
 					property: 'og:type',
 					content: 'website',
-				},
-				{
-					name: 'google-site-verification',
-					content: '_nkR76E889L8-Gs_AQOTLSCNwkS4PKh40ZgsIoL028w',
 				},
 			],
 			link: [
@@ -105,6 +110,9 @@ export default defineNuxtConfig({
 				{ rel: 'apple-touch-icon', href: '/apple-touch-icon.png' },
 			],
 		},
+	},
+	ogImage: {
+		defaults: { width: 1200, height: 630 },
 	},
 	css: ['~/assets/css/tailwind.css', 'vue-sonner/style.css'],
 })

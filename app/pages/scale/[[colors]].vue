@@ -46,7 +46,6 @@ const syncUrl = useDebounceFn((next: typeof target.value) => {
 }, 250)
 watch(target, (next) => syncUrl(next))
 
-const siteUrl = 'https://sygen.app'
 const defaultTitle = 'Shade Scale Generator: 50–950 Color Scales for Tailwind | Sygen'
 const pathHexes = computed(() => colorsParam.value?.split('-').map((hex) => `#${hex.toUpperCase()}`) ?? [])
 useSeoMeta({
@@ -58,13 +57,11 @@ useSeoMeta({
 	description:
 		'Turn any color into an even 50–950 shade scale in OKLCH, with your exact color kept at its step. Check which text is readable on every shade and export to Tailwind, CSS or design tokens. Free, no sign-up.',
 	ogTitle: defaultTitle,
-	ogUrl: () => `${siteUrl}${route.path}`,
 })
 
 const firstHex = computed(() => generator.scales.value[0]!.hex)
-useHead({
-	link: [{ rel: 'canonical', href: () => `${siteUrl}${route.path}` }],
-})
+useCanonicalUrl(() => route.path)
+usePageOgImage({ kind: 'scale', colors: toColorsParam(generator.entries.value.map((entry) => entry.color)) })
 
 const { copy } = useClipboard({ legacy: true })
 const { showToast } = useAppToast()

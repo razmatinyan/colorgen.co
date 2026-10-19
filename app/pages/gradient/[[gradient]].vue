@@ -37,7 +37,6 @@ const syncUrl = useDebounceFn((next: typeof target.value) => {
 }, 250)
 watch(target, (next) => syncUrl(next), { deep: true })
 
-const siteUrl = 'https://sygen.app'
 const defaultTitle = 'Gradient Generator: Smooth OKLCH Gradients for CSS and Tailwind | Sygen'
 const pathHexes = computed(() => gradientParam.value?.split('-').map((hex) => `#${hex.toUpperCase()}`) ?? [])
 useSeoMeta({
@@ -52,10 +51,14 @@ useSeoMeta({
 			? `A ${pathHexes.value.join(' to ')} gradient that stays vivid in the middle, with CSS, Tailwind classes and solid steps to copy.`
 			: 'Make linear, radial and conic gradients that stay vivid in the middle by blending in OKLCH. Copy CSS with a fallback for older browsers, Tailwind classes or solid steps. Free, no sign-up.',
 	ogTitle: defaultTitle,
-	ogUrl: () => `${siteUrl}${route.path}`,
 })
-useHead({
-	link: [{ rel: 'canonical', href: () => `${siteUrl}${route.path}` }],
+useCanonicalUrl(() => route.path)
+usePageOgImage({
+	kind: 'gradient',
+	colors: toColorsParam(generator.colors.value),
+	type: generator.state.value.type,
+	angle: generator.state.value.angle,
+	space: generator.state.value.space,
 })
 
 const { copy } = useClipboard({ legacy: true })

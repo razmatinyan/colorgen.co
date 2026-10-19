@@ -39,7 +39,6 @@ const syncUrl = useDebounceFn((next: typeof target.value) => {
 }, 250)
 watch(target, (next) => syncUrl(next))
 
-const siteUrl = 'https://sygen.app'
 const defaultTitle = 'Color Converter: HEX, RGB, HSL, OKLCH, Lab and Display P3 | Sygen'
 const pathConversion = computed(() => {
 	const color = parseConvertRoute(colorParam.value, undefined)
@@ -57,11 +56,9 @@ useSeoMeta({
 		return `${pathConversion.value.hex.toUpperCase()} is ${byId.rgb}, ${byId.hsl} and ${byId.oklch}. Copy it as HWB, OKLab, LCH, Lab or Display P3, then build shades or a full color system from it.`
 	},
 	ogTitle: defaultTitle,
-	ogUrl: () => `${siteUrl}${route.path}`,
 })
-useHead({
-	link: [{ rel: 'canonical', href: () => `${siteUrl}${route.path}` }],
-})
+useCanonicalUrl(() => route.path)
+usePageOgImage({ kind: 'convert', colors: conversion.value.hex.slice(1) })
 
 const { copy } = useClipboard({ legacy: true })
 const { showToast } = useAppToast()

@@ -37,7 +37,6 @@ const syncUrl = useDebounceFn((next: typeof target.value) => {
 }, 250)
 watch(target, (next) => syncUrl(next))
 
-const siteUrl = 'https://sygen.app'
 const defaultTitle = 'Color Contrast Checker: WCAG 2.2 and APCA, with Fixes | Sygen'
 const pathCheck = computed(() => {
 	const pair = parseContrastParam(pairParam.value)
@@ -64,11 +63,9 @@ useSeoMeta({
 		return `${text} text on ${background} has a contrast ratio of ${check.ratio.toFixed(2)}:1 and APCA Lc ${Math.round(check.lc)}. ${summary} See the closest colors that pass.`
 	},
 	ogTitle: defaultTitle,
-	ogUrl: () => `${siteUrl}${route.path}`,
 })
-useHead({
-	link: [{ rel: 'canonical', href: () => `${siteUrl}${route.path}` }],
-})
+useCanonicalUrl(() => route.path)
+usePageOgImage({ kind: 'contrast', colors: toContrastParam(checker.pair.value) })
 
 const { copy } = useClipboard({ legacy: true })
 const { showToast } = useAppToast()

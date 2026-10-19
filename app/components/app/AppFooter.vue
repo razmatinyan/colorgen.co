@@ -15,7 +15,6 @@
 				in Armenia.
 			</p>
 			<div class="flex items-center gap-4">
-				<NuxtLink to="/contact" class="hover:text-foreground">Contact</NuxtLink>
 				<a
 					href="https://github.com/razmatinyan"
 					target="_blank"

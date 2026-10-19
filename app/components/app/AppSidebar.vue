@@ -149,14 +149,6 @@ watch(
 					</SidebarMenuButton>
 				</SidebarMenuItem>
 				<SidebarMenuItem>
-					<SidebarMenuButton as-child :is-active="isActive('/contact')" tooltip="Contact">
-						<NuxtLink to="/contact">
-							<Icon name="lucide:mail" />
-							<span>Contact</span>
-						</NuxtLink>
-					</SidebarMenuButton>
-				</SidebarMenuItem>
-				<SidebarMenuItem>
 					<SidebarMenuButton as-child tooltip="Source on GitHub">
 						<a href="https://github.com/razmatinyan/colorgen.co" target="_blank" rel="noopener">
 							<Icon name="lucide:github" />
