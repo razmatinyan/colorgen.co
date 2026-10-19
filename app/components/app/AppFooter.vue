@@ -4,15 +4,14 @@
 			class="mx-auto flex max-w-6xl flex-col gap-3 px-4 py-8 text-sm text-muted-foreground sm:flex-row sm:items-center sm:justify-between sm:px-6"
 		>
 			<p>
-				Built by
+				Website by
 				<a
-					href="https://razmatinyan.com"
+					href="https://www.linkedin.com/in/razmatinyan/"
 					target="_blank"
 					rel="noopener"
 					class="text-foreground underline-offset-4 hover:underline"
-					>Raz Matinyan</a
+					>Razo Codes</a
 				>
-				in Armenia.
 			</p>
 			<div class="flex items-center gap-4">
 				<a
@@ -25,7 +24,7 @@
 					<Icon name="lucide:github" class="size-4" />
 				</a>
 				<a
-					href="https://www.instagram.com/raz28m/"
+					href="https://www.instagram.com/razo.codes/"
 					target="_blank"
 					rel="noopener"
 					aria-label="Instagram"
