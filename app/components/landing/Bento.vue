@@ -47,7 +47,7 @@ const chartBars = computed(() =>
 	})),
 )
 const brand2Hex = computed(() =>
-	toHex(builder.system.value.brand2?.base ?? suggestSecondBrand(builder.settings.value.brand)),
+	toHex(builder.system.value.extras[0]?.base ?? suggestSecondBrand(builder.settings.value.brand)),
 )
 
 const formats = ['HEX', 'RGB', 'HSL', 'OKLCH']

@@ -37,7 +37,7 @@ function toggleSaved() {
 	const current = savedItem.value
 	if (current) {
 		removeSaved(current.id)
-		showToast('Removed from library', 'info', {
+		showToast('Removed from saved systems', 'info', {
 			description: current.title,
 			action: { label: 'Undo', onClick: () => save(current) },
 		})
@@ -51,7 +51,7 @@ function toggleSaved() {
 		colors: props.item.colors,
 		savedAt: Date.now(),
 	})
-	showToast('Saved to library', 'success', {
+	showToast('Saved', 'success', {
 		description: title.value,
 		action: { label: 'View', onClick: () => navigateTo('/saved') },
 	})
@@ -104,7 +104,7 @@ function remove() {
 				<DropdownMenuItem @select="copyLink"> <Icon name="lucide:link" /> Copy link </DropdownMenuItem>
 				<DropdownMenuItem @select="toggleSaved">
 					<Icon :name="savedItem ? 'lucide:bookmark-check' : 'lucide:bookmark'" />
-					{{ savedItem ? 'Remove from library' : 'Save to library' }}
+					{{ savedItem ? 'Remove from saved systems' : 'Save' }}
 				</DropdownMenuItem>
 				<DropdownMenuItem @select="openRename"> <Icon name="lucide:pencil" /> Rename </DropdownMenuItem>
 				<DropdownMenuSeparator />

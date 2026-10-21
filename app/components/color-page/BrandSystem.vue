@@ -1,14 +1,7 @@
 <script setup lang="ts">
-import {
-	parseTokenRef,
-	readableTextColor,
-	tokenModes,
-	wcagRatio,
-	type TokenMode,
-	type TokenName,
-	type TokenRef,
-} from '~/lib/color'
-import { systemScaleLabels, type ColorPage } from '~/lib/color-page'
+import { readableTextColor, tokenModes, wcagRatio, type TokenMode, type TokenName, type TokenRef } from '~/lib/color'
+import { type ColorPage } from '~/lib/color-page'
+import { tokenRefLabel } from '~/lib/scale-names'
 
 const props = defineProps<{ page: ColorPage }>()
 
@@ -18,9 +11,7 @@ const tokens = computed(() => props.page.system.tokens)
 const modeLabels: Record<TokenMode, string> = { light: 'Light', dark: 'Dark' }
 
 function refLabel(ref: TokenRef) {
-	const parsed = parseTokenRef(ref)
-	if (!parsed || parsed === 'white') return 'White'
-	return `${systemScaleLabels[parsed.scale]} ${parsed.step}`
+	return tokenRefLabel(ref)
 }
 
 function token(name: TokenName, mode: TokenMode) {

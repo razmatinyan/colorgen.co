@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import type { Oklch } from '~/lib/color'
 import { toHexPart } from '~/lib/palette-url'
-import { maxScaleNameLength, toScaleName } from '~/lib/scale-url'
+import { maxScaleNameLength, toScaleName } from '~/lib/scale-names'
 import { scaleGeneratorKey, type ScaleItem } from '~/composables/useScaleGenerator'
 
 const props = defineProps<{ scale: ScaleItem }>()

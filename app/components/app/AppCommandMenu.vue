@@ -82,8 +82,8 @@ const themes = [
 			<CommandSeparator />
 
 			<CommandGroup heading="Links">
-				<CommandItem value="Library" @select="run(() => navigateTo('/saved'))">
-					<Icon name="lucide:bookmark" /> Library
+				<CommandItem value="Saved systems" @select="run(() => navigateTo('/saved'))">
+					<Icon name="lucide:bookmark" /> Saved systems
 				</CommandItem>
 				<CommandItem
 					value="Source on GitHub"

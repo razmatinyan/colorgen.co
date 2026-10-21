@@ -9,7 +9,7 @@ import {
 	type ScaleStep,
 	type ScaleSwatch,
 } from '~/lib/color'
-import { resolveScaleNames } from '~/lib/scale-url'
+import { resolveScaleNames } from '~/lib/scale-names'
 import { defaultBrand } from '~/composables/useDesignSystemBuilder'
 
 export interface ScaleEntry {

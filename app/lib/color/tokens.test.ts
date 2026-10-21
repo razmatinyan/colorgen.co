@@ -2,16 +2,25 @@ import { describe, expect, it } from 'vitest'
 import { wcagRatio } from './contrast'
 import { parseColor } from './parse'
 import { generateSystem, type SystemSettings } from './system'
-import { isTokenRef, nearbyRefs, parseTokenRef, refHex, resolveTokens, tokenGroups, tokenNames } from './tokens'
+import {
+	isTokenRef,
+	nearbyRefs,
+	parseTokenRef,
+	refHex,
+	resolveTokens,
+	tokenGroups,
+	tokenNames,
+	withoutExtraColor,
+} from './tokens'
 
 const settings: SystemSettings = {
 	brand: parseColor('#1f6cb0')!,
-	brand2: parseColor('#8b5cf6')!,
+	extras: [parseColor('#8b5cf6')!],
 	neutralTint: 0.3,
 	status: {},
 }
 const system = generateSystem(settings)
-const singleBrand = generateSystem({ ...settings, brand2: null })
+const singleBrand = generateSystem({ ...settings, extras: [] })
 
 describe('token names', () => {
 	it('cover the shadcn set plus status colors, each once', () => {
@@ -90,7 +99,7 @@ describe('resolveTokens', () => {
 		for (let h = 0; h < 360; h += 15) {
 			for (const l of [0.3, 0.5, 0.65, 0.8]) {
 				for (const c of [0, 0.08, 0.2]) {
-					const brandTokens = resolveTokens(generateSystem({ ...settings, brand: { l, c, h }, brand2: null }))
+					const brandTokens = resolveTokens(generateSystem({ ...settings, brand: { l, c, h }, extras: [] }))
 					for (const [fill, text] of statusPairs) {
 						for (const mode of ['light', 'dark'] as const) {
 							expect(wcagRatio(brandTokens[text][mode].hex, brandTokens[fill][mode].hex)).toBeGreaterThanOrEqual(4.5)
@@ -124,10 +133,63 @@ describe('resolveTokens', () => {
 		expect(edited['primary-foreground'].light.ref).toBe('neutral.950')
 	})
 
+	it('gives charts the brand colors in order, then lighter and darker brand steps', () => {
+		const chartRefs = (extras: string[]) => {
+			const tokens = resolveTokens(generateSystem({ ...settings, extras: extras.map((hex) => parseColor(hex)!) }))
+			return (['chart-1', 'chart-2', 'chart-3', 'chart-4', 'chart-5'] as const).map((name) =>
+				tokens[name].light.ref.replace(/\.\d+$/, ''),
+			)
+		}
+		expect(chartRefs([])).toEqual(['brand', 'brand', 'brand', 'brand', 'brand'])
+		expect(chartRefs(['#8b5cf6'])).toEqual(['brand', 'brand2', 'brand', 'brand2', 'brand'])
+		expect(chartRefs(['#8b5cf6', '#14b8a6'])).toEqual(['brand', 'brand2', 'brand3', 'brand', 'brand2'])
+		expect(chartRefs(['#8b5cf6', '#14b8a6', '#f43f5e', '#eab308', '#0ea5e9'])).toEqual([
+			'brand',
+			'brand2',
+			'brand3',
+			'brand4',
+			'brand5',
+		])
+	})
+
+	it('resolves overrides that point to any extra color', () => {
+		const many = generateSystem({
+			...settings,
+			extras: ['#8b5cf6', '#14b8a6', '#f43f5e'].map((hex) => parseColor(hex)!),
+		})
+		const edited = resolveTokens(many, { accent: { light: 'brand4.100' } })
+		expect(edited.accent.light).toMatchObject({ ref: 'brand4.100', edited: true })
+	})
+
 	it('ignores overrides that point to a removed second brand', () => {
 		const edited = resolveTokens(singleBrand, { 'chart-2': { light: 'brand2.500' } })
 		expect(edited['chart-2'].light.edited).toBe(false)
 		expect(edited['chart-2'].light.ref.startsWith('brand.')).toBe(true)
+	})
+})
+
+describe('withoutExtraColor', () => {
+	it('drops refs to the removed color and renumbers the ones after it', () => {
+		expect(
+			withoutExtraColor(
+				{
+					primary: { light: 'brand.500', dark: 'brand3.300' },
+					secondary: { light: 'brand2.600' },
+					'chart-4': { dark: 'brand4.500' },
+					ring: { light: 'white' },
+				},
+				1,
+			),
+		).toEqual({
+			primary: { light: 'brand.500' },
+			secondary: { light: 'brand2.600' },
+			'chart-4': { dark: 'brand3.500' },
+			ring: { light: 'white' },
+		})
+	})
+
+	it('drops tokens that are left without overrides', () => {
+		expect(withoutExtraColor({ secondary: { light: 'brand2.600' } }, 0)).toEqual({})
 	})
 })
 

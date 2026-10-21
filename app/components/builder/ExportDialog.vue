@@ -55,7 +55,7 @@ interface ExportFile {
 	label: string
 }
 
-const model = computed(() => buildExportModel(builder.system.value, builder.tokens.value))
+const model = computed(() => buildExportModel(builder.system.value, builder.tokens.value, builder.scaleNames.value))
 
 const files = computed<ExportFile[]>(() => {
 	switch (format.value) {

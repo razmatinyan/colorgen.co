@@ -1,6 +1,13 @@
 import { wcagRatio } from './contrast'
 import { scaleSteps, type ScaleStep } from './scale'
-import { systemColorIds, type ColorSystem, type SystemColorId } from './system'
+import {
+	extraColorId,
+	extraColorIndex,
+	isSystemColorId,
+	systemScale,
+	type ColorSystem,
+	type SystemColorId,
+} from './system'
 
 export const tokenModes = ['light', 'dark'] as const
 export type TokenMode = (typeof tokenModes)[number]
@@ -81,7 +88,7 @@ export function parseTokenRef(value: string): { scale: SystemColorId; step: Scal
 	const [scale, step, ...rest] = value.split('.')
 	if (rest.length || !scale || !step || !/^\d+$/.test(step)) return null
 	const stepNumber = Number(step) as ScaleStep
-	if (!(systemColorIds as readonly string[]).includes(scale) || !scaleSteps.includes(stepNumber)) return null
+	if (!isSystemColorId(scale) || !scaleSteps.includes(stepNumber)) return null
 	return { scale: scale as SystemColorId, step: stepNumber }
 }
 
@@ -97,7 +104,7 @@ export function refHex(system: ColorSystem, ref: TokenRef): string | null {
 	const parsed = parseTokenRef(ref)
 	if (!parsed) return null
 	if (parsed === 'white') return white
-	return system[parsed.scale]?.swatches.find((swatch) => swatch.step === parsed.step)?.hex ?? null
+	return systemScale(system, parsed.scale)?.swatches.find((swatch) => swatch.step === parsed.step)?.hex ?? null
 }
 
 interface DefaultContext {
@@ -109,12 +116,12 @@ interface DefaultContext {
 const pick = ({ mode }: DefaultContext, light: TokenRef, dark: TokenRef) => (mode === 'light' ? light : dark)
 
 function anchorRef(context: DefaultContext, id: SystemColorId): TokenRef {
-	const scale = context.system[id]!
+	const scale = systemScale(context.system, id)!
 	return scaleRef(id, scale.anchorStep ?? 500)
 }
 
 function liftedRef(context: DefaultContext, id: SystemColorId): TokenRef {
-	const scale = context.system[id]!
+	const scale = systemScale(context.system, id)!
 	const background = context.token('background').hex
 	const anchorIndex = scaleSteps.indexOf(scale.anchorStep ?? 500)
 	for (let index = anchorIndex; index >= 0; index--) {
@@ -137,7 +144,7 @@ function stepIndexesByDistance(fromIndex: number): number[] {
 
 function readableFillRef(context: DefaultContext, id: SystemColorId): TokenRef {
 	if (context.mode === 'dark') return liftedRef(context, id)
-	const scale = context.system[id]!
+	const scale = systemScale(context.system, id)!
 	const anchorIndex = scaleSteps.indexOf(scale.anchorStep ?? 500)
 	const readableIndex = stepIndexesByDistance(anchorIndex).find(
 		(index) => bestTextRatio(context.system, scale.swatches[index]!.hex) >= fillTextRatio,
@@ -151,11 +158,14 @@ function textOn(context: DefaultContext, fill: TokenName): TokenRef {
 	return wcagRatio(white, fillHex) >= wcagRatio(darkText, fillHex) ? 'white' : darkTextRef
 }
 
+const chartCount = 5
+const extraChartFillers: TokenRef[] = ['brand.300', 'brand2.300', 'brand.800', 'brand2.800']
+
 function chartRefs(context: DefaultContext): TokenRef[] {
-	if (context.system.brand2) {
-		return [anchorRef(context, 'brand'), anchorRef(context, 'brand2'), 'brand.300', 'brand2.300', 'brand.800']
-	}
-	return [anchorRef(context, 'brand'), 'brand.300', 'brand.700', 'brand.200', 'brand.900']
+	const { extras } = context.system
+	if (!extras.length) return [anchorRef(context, 'brand'), 'brand.300', 'brand.700', 'brand.200', 'brand.900']
+	const anchors = [anchorRef(context, 'brand'), ...extras.map((_, index) => anchorRef(context, extraColorId(index)))]
+	return [...anchors, ...extraChartFillers].slice(0, chartCount)
 }
 
 const defaults: Record<TokenName, (context: DefaultContext) => TokenRef> = {
@@ -167,8 +177,9 @@ const defaults: Record<TokenName, (context: DefaultContext) => TokenRef> = {
 	'popover-foreground': (c) => c.token('foreground').ref,
 	primary: (c) => colorRef(c, 'brand'),
 	'primary-foreground': (c) => textOn(c, 'primary'),
-	secondary: (c) => (c.system.brand2 ? colorRef(c, 'brand2') : pick(c, 'neutral.100', 'neutral.800')),
-	'secondary-foreground': (c) => (c.system.brand2 ? textOn(c, 'secondary') : pick(c, 'neutral.900', 'neutral.50')),
+	secondary: (c) => (c.system.extras.length ? colorRef(c, 'brand2') : pick(c, 'neutral.100', 'neutral.800')),
+	'secondary-foreground': (c) =>
+		c.system.extras.length ? textOn(c, 'secondary') : pick(c, 'neutral.900', 'neutral.50'),
 	accent: (c) => pick(c, 'neutral.100', 'neutral.800'),
 	'accent-foreground': (c) => pick(c, 'neutral.900', 'neutral.50'),
 	muted: (c) => pick(c, 'neutral.100', 'neutral.800'),
@@ -220,6 +231,26 @@ export function resolveTokens(system: ColorSystem, overrides: TokenOverrides = {
 	return Object.fromEntries(
 		tokenNames.map((name) => [name, { light: resolve(name, 'light'), dark: resolve(name, 'dark') }]),
 	) as ResolvedTokens
+}
+
+function shiftedRef(ref: TokenRef, removedIndex: number): TokenRef | null {
+	const parsed = parseTokenRef(ref)
+	if (!parsed || parsed === 'white') return ref
+	const index = extraColorIndex(parsed.scale)
+	if (index === null || index < removedIndex) return ref
+	return index === removedIndex ? null : scaleRef(extraColorId(index - 1), parsed.step)
+}
+
+export function withoutExtraColor(overrides: TokenOverrides, removedIndex: number): TokenOverrides {
+	const next: TokenOverrides = {}
+	for (const name of tokenNames) {
+		for (const mode of tokenModes) {
+			const ref = overrides[name]?.[mode]
+			const shifted = ref ? shiftedRef(ref, removedIndex) : null
+			if (shifted) next[name] = { ...next[name], [mode]: shifted }
+		}
+	}
+	return next
 }
 
 export function nearbyRefs(ref: TokenRef): TokenRef[] {

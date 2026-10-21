@@ -152,8 +152,8 @@ onKeyStroke(['z', 'Z'], (event) => {
 			<AppSaveButton kind="contrast" :path="savePath" :snapshot="savedSnapshot" />
 			<Tooltip>
 				<TooltipTrigger as-child>
-					<Button variant="outline" size="sm" aria-label="Copy link" @click="copyLink">
-						<Icon name="lucide:link" data-icon="inline-start" /> <span class="hidden sm:inline">Copy link</span>
+					<Button variant="ghost" size="icon-sm" aria-label="Copy link" @click="copyLink">
+						<Icon name="lucide:link" />
 					</Button>
 				</TooltipTrigger>
 				<TooltipContent>Share this color pair</TooltipContent>

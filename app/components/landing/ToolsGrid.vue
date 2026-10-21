@@ -16,7 +16,7 @@ const palette = computed(() =>
 )
 const brandScale = computed(() => builder.system.value.brand.swatches.map((swatch) => swatch.hex))
 const brand2Hex = computed(() =>
-	builder.system.value.brand2 ? toHex(builder.system.value.brand2.base) : brandScale.value[2]!,
+	builder.system.value.extras[0] ? toHex(builder.system.value.extras[0].base) : brandScale.value[2]!,
 )
 const contrastPairs = computed(() =>
 	[

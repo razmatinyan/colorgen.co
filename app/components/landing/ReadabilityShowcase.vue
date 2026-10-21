@@ -10,7 +10,7 @@ import {
 	type TokenMode,
 	type TokenOverrides,
 } from '~/lib/color'
-import { tokenRefLabel } from '~/composables/useDesignSystemBuilder'
+import { tokenRefLabel } from '~/lib/scale-names'
 import { landingDemoKey } from '~/composables/useLandingDemo'
 
 const { builder } = inject(landingDemoKey)!

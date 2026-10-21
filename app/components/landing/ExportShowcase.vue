@@ -46,7 +46,7 @@ const formats: { id: FormatId; label: string; text: string; icon: string; file: 
 ]
 
 const active = ref<FormatId>('tailwind')
-const model = computed(() => buildExportModel(builder.system.value, builder.tokens.value))
+const model = computed(() => buildExportModel(builder.system.value, builder.tokens.value, builder.scaleNames.value))
 const content = computed(() => {
 	switch (active.value) {
 		case 'tailwind':

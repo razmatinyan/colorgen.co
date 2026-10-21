@@ -13,10 +13,11 @@ import {
 	toTailwindScales,
 	type ExportScale,
 } from '.'
+import { systemScaleNames } from '../scale-names'
 
 const settings: SystemSettings = {
 	brand: parseColor('#1f6cb0')!,
-	brand2: parseColor('#8b5cf6')!,
+	extras: [parseColor('#8b5cf6')!],
 	neutralTint: 0.3,
 	status: {},
 }
@@ -24,8 +25,8 @@ const system = generateSystem(settings)
 const tokens = resolveTokens(system)
 const model = buildExportModel(system, tokens)
 const singleBrandModel = buildExportModel(
-	generateSystem({ ...settings, brand2: null }),
-	resolveTokens(generateSystem({ ...settings, brand2: null })),
+	generateSystem({ ...settings, extras: [] }),
+	resolveTokens(generateSystem({ ...settings, extras: [] })),
 )
 
 function block(css: string, selector: string) {
@@ -38,10 +39,10 @@ function declarations(css: string) {
 }
 
 describe('buildExportModel', () => {
-	it('lists every scale with 11 steps, naming the second brand brand-2', () => {
+	it('lists every scale with 11 steps, naming extra colors after their color', () => {
 		expect(model.scales.map((scale) => scale.name)).toEqual([
 			'brand',
-			'brand-2',
+			'violet',
 			'neutral',
 			'success',
 			'warning',
@@ -49,7 +50,13 @@ describe('buildExportModel', () => {
 			'info',
 		])
 		for (const scale of model.scales) expect(scale.steps).toHaveLength(11)
-		expect(singleBrandModel.scales.map((scale) => scale.name)).not.toContain('brand-2')
+		expect(singleBrandModel.scales.map((scale) => scale.name)).not.toContain('violet')
+	})
+
+	it('uses custom names for extra colors in scales and token references', () => {
+		const named = buildExportModel(system, tokens, systemScaleNames(system, ['accent']))
+		expect(named.scales[1]!.name).toBe('accent')
+		expect(named.tokens.find((token) => token.name === 'secondary')!.light.primitive!.scale).toBe('accent')
 	})
 
 	it('lists every token with its light and dark value', () => {
@@ -80,7 +87,7 @@ describe('toTailwindCss', () => {
 		const theme = declarations(block(css, '@theme'))
 		expect(Object.keys(theme)).toHaveLength(7 * 11)
 		expect(theme['color-brand-600']).toMatch(/^oklch\(/)
-		expect(theme['color-brand-2-500']).toBeDefined()
+		expect(theme['color-violet-500']).toBeDefined()
 	})
 
 	it('writes every token for light and dark', () => {

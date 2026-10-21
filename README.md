@@ -31,7 +31,7 @@ Each tool works on its own and can send its result to the builder.
 | [Image colors](https://sygenn.vercel.app/image-colors) | Main colors of an image and a suggested brand color                  |
 | [Color pages](https://sygenn.vercel.app/color/1f6cb0)  | Shades, readable pairs, palettes and a brand system for any color    |
 
-Saved items and recent work are kept in your browser's local storage and listed in the [library](https://sygenn.vercel.app/saved).
+Saved items and recent work are kept in your browser's local storage and listed under [saved systems](https://sygenn.vercel.app/saved).
 
 ## Tech stack
 

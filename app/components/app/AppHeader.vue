@@ -64,7 +64,7 @@ const navItem = 'inline-flex h-8 items-center rounded-4xl px-3 text-sm font-medi
 							: 'text-muted-foreground hover:bg-muted/60 hover:text-foreground',
 					]"
 				>
-					Library
+					Saved systems
 				</NuxtLink>
 				<AppThemeToggle />
 				<Button
@@ -106,7 +106,7 @@ const navItem = 'inline-flex h-8 items-center rounded-4xl px-3 text-sm font-medi
 							<Separator class="my-1" />
 							<NuxtLink to="/saved" class="flex items-center gap-3 rounded-xl px-3 py-2 text-sm hover:bg-muted">
 								<Icon name="lucide:bookmark" class="size-4 text-muted-foreground" />
-								Library
+								Saved systems
 							</NuxtLink>
 						</nav>
 					</PopoverContent>

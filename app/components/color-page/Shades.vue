@@ -3,7 +3,7 @@ import { useClipboard } from '@vueuse/core'
 import { readableTextColor } from '~/lib/color'
 import type { ColorPage } from '~/lib/color-page'
 import { toTailwindScales } from '~/lib/export'
-import { toScaleName } from '~/lib/scale-url'
+import { toScaleName } from '~/lib/scale-names'
 
 const props = defineProps<{ page: ColorPage }>()
 

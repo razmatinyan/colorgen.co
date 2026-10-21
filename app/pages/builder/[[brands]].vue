@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { onKeyStroke, useClipboard, useDebounceFn } from '@vueuse/core'
-import { describeColor, toHex, type ColorBlindVision } from '~/lib/color'
+import { describeColor, extraColorId, toHex, type ColorBlindVision } from '~/lib/color'
 import { parseBrandsParam, parseBuilderQuery, toBrandsParam, toBuilderQuery } from '~/lib/builder-url'
 import { isInteractiveTarget } from '~/lib/keyboard'
 import { designSystemBuilderKey, useDesignSystemBuilder } from '~/composables/useDesignSystemBuilder'
@@ -17,11 +17,15 @@ if (brandsParam.value && !initialBrands) {
 }
 
 const builder = useDesignSystemBuilder({
-	...parseBuilderQuery(route.query),
+	...parseBuilderQuery(route.query, initialBrands?.extras.length ?? 0),
 	...initialBrands,
 })
 provide(designSystemBuilderKey, builder)
 
+const lastBrandId = computed(() => {
+	const count = builder.settings.value.extras.length
+	return count ? extraColorId(count - 1) : 'brand'
+})
 const savePath = computed(() => router.resolve(target.value).fullPath)
 const savedSnapshot = () => ({
 	title: `${describeColor(builder.settings.value.brand)} system`,
@@ -41,14 +45,14 @@ const syncUrl = useDebounceFn((next: typeof target.value) => {
 watch(target, (next) => syncUrl(next))
 
 const defaultTitle = 'Design System Color Builder: Brand, Neutral and Status Scales | Sygen'
+function brandsTitle(param: string) {
+	const hexes = param.split('-').map((hex) => `#${hex.toUpperCase()}`)
+	return hexes.length <= 2 ? hexes.join(' and ') : `${hexes[0]} and ${hexes.length - 1} more colors`
+}
+
 useSeoMeta({
 	title: () =>
-		brandsParam.value
-			? `Design system colors for ${brandsParam.value
-					.split('-')
-					.map((hex) => `#${hex.toUpperCase()}`)
-					.join(' and ')} | Sygen`
-			: defaultTitle,
+		brandsParam.value ? `Design system colors for ${brandsTitle(brandsParam.value)} | Sygen` : defaultTitle,
 	description:
 		'Enter your brand color and get a complete UI color system: brand scales, brand-tinted neutrals, success, warning, danger and info, plus readable light and dark tokens for shadcn and Tailwind. Free, no sign-up.',
 	ogTitle: defaultTitle,
@@ -176,19 +180,11 @@ onKeyStroke(['z', 'Z'], (event) => {
 				</TooltipTrigger>
 				<TooltipContent>Redo <Kbd>⇧⌘Z</Kbd></TooltipContent>
 			</Tooltip>
-			<Tooltip>
-				<TooltipTrigger as-child>
-					<Button variant="outline" size="sm" aria-label="Import" @click="importOpen = true">
-						<Icon name="lucide:file-input" data-icon="inline-start" /> <span class="hidden sm:inline">Import</span>
-					</Button>
-				</TooltipTrigger>
-				<TooltipContent>Import an existing theme <Kbd>I</Kbd></TooltipContent>
-			</Tooltip>
 			<AppSaveButton kind="builder" :path="savePath" :snapshot="savedSnapshot" />
 			<Tooltip>
 				<TooltipTrigger as-child>
-					<Button variant="outline" size="sm" aria-label="Copy link" @click="copyLink">
-						<Icon name="lucide:link" data-icon="inline-start" /> <span class="hidden sm:inline">Copy link</span>
+					<Button variant="ghost" size="icon-sm" aria-label="Copy link" @click="copyLink">
+						<Icon name="lucide:link" />
 					</Button>
 				</TooltipTrigger>
 				<TooltipContent>Share this color system</TooltipContent>
@@ -210,21 +206,32 @@ onKeyStroke(['z', 'Z'], (event) => {
 				<CardHeader>
 					<CardTitle>Your colors</CardTitle>
 					<CardDescription>Click a color to adjust it. Neutral and status colors follow your brand.</CardDescription>
+					<CardAction>
+						<Tooltip>
+							<TooltipTrigger as-child>
+								<Button variant="outline" size="sm" aria-label="Import" @click="importOpen = true">
+									<Icon name="lucide:file-input" data-icon="inline-start" />
+									Import
+								</Button>
+							</TooltipTrigger>
+							<TooltipContent>Import an existing theme <Kbd>I</Kbd></TooltipContent>
+						</Tooltip>
+					</CardAction>
 				</CardHeader>
 				<CardContent class="flex min-h-0 flex-1 flex-col gap-5 overflow-x-hidden lg:overflow-y-auto">
 					<div class="-mx-2 grid grid-cols-1 gap-1">
 						<template v-for="color in builder.colors.value" :key="color.id">
 							<BuilderColorRow :color="color" />
 							<button
-								v-if="color.id === 'brand' && !builder.settings.value.brand2"
+								v-if="color.id === lastBrandId"
 								type="button"
 								class="flex items-center gap-3 rounded-xl p-2.5 text-left text-sm text-muted-foreground transition-colors outline-none hover:bg-muted/50 hover:text-foreground focus-visible:ring-3 focus-visible:ring-ring/50"
-								@click="builder.addSecondBrand()"
+								@click="builder.addColor()"
 							>
 								<span class="grid size-10 shrink-0 place-items-center rounded-lg border border-dashed">
 									<Icon name="lucide:plus" class="size-4" />
 								</span>
-								Add a second brand color
+								Add a color
 							</button>
 						</template>
 					</div>

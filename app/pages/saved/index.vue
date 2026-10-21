@@ -5,7 +5,7 @@ import { tools } from '~/lib/tools'
 definePageMeta({ layout: 'app' })
 
 useSeoMeta({
-	title: 'Library | Sygen',
+	title: 'Saved systems | Sygen',
 	description: 'Color systems, palettes, scales and gradients you saved. Stored in this browser only.',
 	robots: 'noindex, nofollow',
 })
@@ -60,7 +60,7 @@ function swatchBackground(item: SavedItem) {
 
 function remove(item: SavedItem) {
 	removeSaved(item.id)
-	showToast('Removed from library', 'info', {
+	showToast('Removed from saved systems', 'info', {
 		description: item.title,
 		action: { label: 'Undo', onClick: () => save(item) },
 	})
@@ -69,7 +69,7 @@ function remove(item: SavedItem) {
 
 <template>
 	<div class="flex min-h-0 flex-1 flex-col">
-		<AppTopBar title="Library" />
+		<AppTopBar title="Saved systems" />
 
 		<div class="min-h-0 flex-1 p-4 lg:overflow-y-auto">
 			<ClientOnly>
@@ -80,7 +80,7 @@ function remove(item: SavedItem) {
 							v-model="query"
 							type="search"
 							placeholder="Search by name or hex"
-							aria-label="Search the library"
+							aria-label="Search saved systems"
 							class="w-full sm:w-64"
 						/>
 					</div>
@@ -134,7 +134,7 @@ function remove(item: SavedItem) {
 
 					<p class="flex gap-2 text-sm text-muted-foreground">
 						<Icon name="lucide:info" class="mt-0.5 size-4 shrink-0" />
-						Your library lives in this browser. Clearing site data removes it.
+						Saved systems live in this browser. Clearing site data removes it.
 					</p>
 				</div>
 

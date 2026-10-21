@@ -3,15 +3,21 @@ import {
 	checkReadability,
 	checkVision,
 	defaultNeutralTint,
+	extraColorId,
+	extraColorIndex,
 	fixReadability,
 	generateSystem,
 	isStatusKind,
-	parseTokenRef,
 	resolveTokens,
+	statusKinds,
+	suggestDistinctColor,
 	suggestSecondBrand,
 	suggestStatusColors,
 	systemScales,
 	toHex,
+	withoutExtraColor,
+	type ExtraColorId,
+	type FixedColorId,
 	type Oklch,
 	type StatusKind,
 	type SystemColorId,
@@ -22,50 +28,41 @@ import {
 	type TokenOverrides,
 	type TokenRef,
 } from '~/lib/color'
+import { scaleLabel, scaleNameOf, systemScaleNames, tokenRefLabel } from '~/lib/scale-names'
 
 export interface BuilderColor extends SystemScale {
+	name: string
 	label: string
+	customName: string | null
 	hint: string
 	hex: string
 	edited: boolean
 }
 
-export type BuilderState = SystemSettings & { neutralHue: number | null; tokens: TokenOverrides }
-export type BrandId = 'brand' | 'brand2'
-
-export const colorDetails: Record<SystemColorId, { label: string; hint: string }> = {
-	brand: { label: 'Brand', hint: 'Main buttons, links, focus rings' },
-	brand2: { label: 'Second brand', hint: 'Secondary buttons, highlights, charts' },
-	neutral: { label: 'Neutral', hint: 'Text, borders, backgrounds' },
-	success: { label: 'Success', hint: 'Confirmations, positive changes' },
-	warning: { label: 'Warning', hint: 'Pending states, things to double-check' },
-	danger: { label: 'Danger', hint: 'Errors, destructive actions' },
-	info: { label: 'Info', hint: 'Tips and announcements' },
+export type BuilderState = SystemSettings & {
+	extraNames: (string | null)[]
+	neutralHue: number | null
+	tokens: TokenOverrides
 }
+export type BrandId = 'brand' | ExtraColorId
 
-export const defaultBrand: Oklch = { l: 0.55, c: 0.17, h: 258 }
-
-export function tokenRefLabel(tokenRef: TokenRef) {
-	const parsed = parseTokenRef(tokenRef)
-	if (!parsed) return tokenRef
-	return parsed === 'white' ? 'White' : `${colorDetails[parsed.scale].label} ${parsed.step}`
+const fixedColorHints: Record<FixedColorId, string> = {
+	brand: 'Main buttons, links, focus rings',
+	neutral: 'Text, borders, backgrounds',
+	success: 'Confirmations, positive changes',
+	warning: 'Pending states, things to double-check',
+	danger: 'Errors, destructive actions',
+	info: 'Tips and announcements',
 }
-
-function withoutSecondBrandRefs(tokens: TokenOverrides): TokenOverrides {
-	return Object.fromEntries(
-		Object.entries(tokens)
-			.map(([name, modes]) => [
-				name,
-				Object.fromEntries(Object.entries(modes ?? {}).filter(([, ref]) => !ref.startsWith('brand2.'))),
-			])
-			.filter(([, modes]) => Object.keys(modes as object).length > 0),
-	)
-}
+const secondColorHint = 'Secondary buttons, highlights, charts'
+const extraColorHint = 'Charts and extra accents'
 
 export function useDesignSystemBuilder(initial: Partial<BuilderState> = {}) {
+	const initialExtras = [...(initial.extras ?? [])]
 	const settings = ref<BuilderState>({
 		brand: initial.brand ?? defaultBrand,
-		brand2: initial.brand2 ?? null,
+		extras: initialExtras,
+		extraNames: initialExtras.map((_, index) => initial.extraNames?.[index] ?? null),
 		neutralTint: initial.neutralTint ?? defaultNeutralTint,
 		neutralHue: initial.neutralHue ?? null,
 		status: initial.status ?? {},
@@ -80,36 +77,81 @@ export function useDesignSystemBuilder(initial: Partial<BuilderState> = {}) {
 	const readability = computed(() => checkReadability(tokens.value))
 	const failingReadability = computed(() => readability.value.filter((result) => !result.passes))
 	const visionWarnings = computed(() => checkVision(tokens.value))
+	const scaleNames = computed(() => systemScaleNames(system.value, settings.value.extraNames))
+
+	function colorHint(id: SystemColorId) {
+		const index = extraColorIndex(id)
+		if (index === null) return fixedColorHints[id as FixedColorId]
+		return index === 0 ? secondColorHint : extraColorHint
+	}
 
 	const colors = computed<BuilderColor[]>(() =>
-		systemScales(system.value).map((scale) => ({
-			...scale,
-			...colorDetails[scale.id],
-			hex: toHex(scale.base),
-			edited: isStatusKind(scale.id) && !!settings.value.status[scale.id],
-		})),
+		systemScales(system.value).map((scale) => {
+			const index = extraColorIndex(scale.id)
+			const name = scaleNameOf(scaleNames.value, scale.id)
+			return {
+				...scale,
+				name,
+				label: scaleLabel(name),
+				customName: index === null ? null : (settings.value.extraNames[index] ?? null),
+				hint: colorHint(scale.id),
+				hex: toHex(scale.base),
+				edited: isStatusKind(scale.id) && !!settings.value.status[scale.id],
+			}
+		}),
 	)
 	const selected = computed(() => colors.value.find((color) => color.id === selectedId.value) ?? null)
 	const brandHex = computed(() => toHex(settings.value.brand))
 
+	function refLabel(tokenRef: TokenRef) {
+		return tokenRefLabel(tokenRef, scaleNames.value)
+	}
+
 	function updateBrand(id: BrandId, patch: Partial<Oklch>) {
-		const current = settings.value[id]
-		if (current) settings.value[id] = { ...current, ...patch }
+		const index = extraColorIndex(id)
+		if (index === null) {
+			settings.value.brand = { ...settings.value.brand, ...patch }
+			return
+		}
+		const current = settings.value.extras[index]
+		if (!current) return
+		settings.value.extras = settings.value.extras.map((color, position) =>
+			position === index ? { ...current, ...patch } : color,
+		)
 	}
 
-	function addSecondBrand() {
-		if (settings.value.brand2) return
-		history.snapshot()
-		settings.value.brand2 = suggestSecondBrand(settings.value.brand)
-		selectedId.value = 'brand2'
+	function suggestExtraColor() {
+		const { brand, extras } = settings.value
+		if (!extras.length) return suggestSecondBrand(brand)
+		return suggestDistinctColor([brand, ...extras, ...statusKinds.map((kind) => system.value[kind].base)])
 	}
 
-	function removeSecondBrand() {
-		if (!settings.value.brand2) return
+	function addColor() {
 		history.snapshot()
-		settings.value.brand2 = null
-		settings.value.tokens = withoutSecondBrandRefs(settings.value.tokens)
-		if (selectedId.value === 'brand2') selectedId.value = 'brand'
+		settings.value.extras = [...settings.value.extras, suggestExtraColor()]
+		settings.value.extraNames = [...settings.value.extraNames, null]
+		selectedId.value = extraColorId(settings.value.extras.length - 1)
+	}
+
+	function removeColor(id: ExtraColorId) {
+		const index = extraColorIndex(id)
+		if (index === null || index >= settings.value.extras.length) return
+		history.snapshot()
+		settings.value.extras = settings.value.extras.filter((_, position) => position !== index)
+		settings.value.extraNames = settings.value.extraNames.filter((_, position) => position !== index)
+		settings.value.tokens = withoutExtraColor(settings.value.tokens, index)
+		const selectedIndex = selectedId.value ? extraColorIndex(selectedId.value) : null
+		if (selectedIndex === index) selectedId.value = null
+		else if (selectedIndex !== null && selectedIndex > index) selectedId.value = extraColorId(selectedIndex - 1)
+	}
+
+	function setColorName(id: ExtraColorId, name: string | null) {
+		const index = extraColorIndex(id)
+		if (index === null || (settings.value.extraNames[index] ?? null) === name) return
+		history.snapshot()
+		settings.value.extraNames = settings.value.extras.map((_, position) =>
+			position === index ? name : (settings.value.extraNames[position] ?? null),
+		)
 	}
 
 	function setNeutralTint(tint: number) {
@@ -187,14 +229,17 @@ export function useDesignSystemBuilder(initial: Partial<BuilderState> = {}) {
 		readability,
 		failingReadability,
 		visionWarnings,
+		scaleNames,
 		colors,
 		selected,
 		selectedId,
 		brandHex,
 		...history,
+		refLabel,
 		updateBrand,
-		addSecondBrand,
-		removeSecondBrand,
+		addColor,
+		removeColor,
+		setColorName,
 		setNeutralTint,
 		setNeutralHue,
 		followBrandHue,
@@ -212,3 +257,5 @@ export function useDesignSystemBuilder(initial: Partial<BuilderState> = {}) {
 
 export type DesignSystemBuilder = ReturnType<typeof useDesignSystemBuilder>
 export const designSystemBuilderKey: InjectionKey<DesignSystemBuilder> = Symbol('design-system-builder')
+
+export const defaultBrand: Oklch = { l: 0.55, c: 0.17, h: 258 }

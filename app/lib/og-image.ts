@@ -17,7 +17,7 @@ import {
 	type GradientSpace,
 	type Oklch,
 } from './color'
-import { systemScaleLabels } from './color-page'
+import { scaleLabel, scaleNameOf, systemScaleNames } from './scale-names'
 import { toFallbackGradient } from './export'
 import { defaultGradientOptions, isGradientType, type GradientType } from './gradient-url'
 import { parseColorsParam } from './palette-url'
@@ -81,7 +81,7 @@ export const ogImageSampleColors = ['#1d1b3a', '#4b2f6b', '#c2477a', '#f2785c', 
 
 const colorLimits: Record<Exclude<OgImageKind, 'image'>, readonly [number, number]> = {
 	home: [1, 1],
-	builder: [1, 2],
+	builder: [1, Number.POSITIVE_INFINITY],
 	palette: [1, 6],
 	scale: [1, Number.POSITIVE_INFINITY],
 	contrast: [2, 2],
@@ -146,9 +146,11 @@ function scaleRow(label: string, color: Oklch): OgScaleRow {
 	return { label, hexes: scaleHexes(color), anchorIndex: nearestStepIndex(color.l) }
 }
 
-function systemRows(brand: Oklch, brand2: Oklch | null, neutralTint: number, neutralHue: number | null): OgScaleRow[] {
-	return systemScales(generateSystem({ brand, brand2, neutralTint, neutralHue, status: {} })).map((scale) => ({
-		label: systemScaleLabels[scale.id],
+function systemRows(brand: Oklch, extras: Oklch[], neutralTint: number, neutralHue: number | null): OgScaleRow[] {
+	const system = generateSystem({ brand, extras, neutralTint, neutralHue, status: {} })
+	const names = systemScaleNames(system)
+	return systemScales(system).map((scale) => ({
+		label: scaleLabel(scaleNameOf(names, scale.id)),
 		hexes: scale.swatches.map((swatch) => swatch.hex),
 		anchorIndex: scale.anchorStep === null ? null : scale.swatches.findIndex((s) => s.step === scale.anchorStep),
 	}))
@@ -182,7 +184,7 @@ function buildForColors(kind: Exclude<OgImageKind, 'image'>, colors: Oklch[], pr
 				kind,
 				label,
 				title: 'Turn your brand color into a complete design system',
-				visual: { type: 'scales', rows: systemRows(first, null, defaultNeutralTint, null) },
+				visual: { type: 'scales', rows: systemRows(first, [], defaultNeutralTint, null) },
 			}
 		case 'builder':
 			return {
@@ -191,7 +193,7 @@ function buildForColors(kind: Exclude<OgImageKind, 'image'>, colors: Oklch[], pr
 				title: `Design system for ${listHexes(colors)}`,
 				visual: {
 					type: 'scales',
-					rows: systemRows(first, colors[1] ?? null, parseTint(props.tint), parseHue(props.hue)),
+					rows: systemRows(first, colors.slice(1), parseTint(props.tint), parseHue(props.hue)),
 				},
 			}
 		case 'palette':

@@ -3,25 +3,12 @@ import { useSidebar } from '~/components/ui/sidebar'
 import { tools } from '~/lib/tools'
 
 const route = useRoute()
-const colorMode = useColorMode()
 const modifierKey = useModifierKey()
 const { show: showCommandMenu } = useCommandMenu()
 const { recents, clearRecents } = useLibrary()
 const { isMobile, setOpenMobile } = useSidebar()
 
 const [builder, ...otherTools] = tools
-
-const themes = [
-	{ value: 'system', label: 'System theme', icon: 'lucide:monitor' },
-	{ value: 'light', label: 'Light theme', icon: 'lucide:sun' },
-	{ value: 'dark', label: 'Dark theme', icon: 'lucide:moon' },
-] as const
-const currentTheme = computed(() => themes.find((theme) => theme.value === colorMode.preference) ?? themes[0])
-
-function cycleTheme() {
-	const index = themes.findIndex((theme) => theme.value === colorMode.preference)
-	colorMode.preference = themes[(index + 1) % themes.length]!.value
-}
 
 function isActive(to: string) {
 	return route.path === to || route.path.startsWith(`${to}/`)
@@ -61,6 +48,14 @@ watch(
 						<NuxtLink :to="builder.to">
 							<Icon :name="builder.icon" />
 							<span>{{ builder.label }}</span>
+						</NuxtLink>
+					</SidebarMenuButton>
+				</SidebarMenuItem>
+				<SidebarMenuItem>
+					<SidebarMenuButton as-child :is-active="isActive('/saved')" tooltip="Saved systems">
+						<NuxtLink to="/saved">
+							<Icon name="lucide:bookmark" />
+							<span>Saved systems</span>
 						</NuxtLink>
 					</SidebarMenuButton>
 				</SidebarMenuItem>
@@ -128,37 +123,9 @@ watch(
 		</SidebarContent>
 
 		<SidebarFooter>
-			<SidebarMenu>
-				<SidebarMenuItem>
-					<SidebarMenuButton as-child :is-active="isActive('/saved')" tooltip="Library">
-						<NuxtLink to="/saved">
-							<Icon name="lucide:bookmark" />
-							<span>Library</span>
-						</NuxtLink>
-					</SidebarMenuButton>
-				</SidebarMenuItem>
-				<SidebarMenuItem>
-					<SidebarMenuButton as-child tooltip="Source on GitHub">
-						<a href="https://github.com/razmatinyan/sygen.app" target="_blank" rel="noopener">
-							<Icon name="lucide:github" />
-							<span>Source on GitHub</span>
-						</a>
-					</SidebarMenuButton>
-				</SidebarMenuItem>
-				<SidebarMenuItem>
-					<SidebarMenuButton :tooltip="currentTheme.label" @click="cycleTheme">
-						<ClientOnly>
-							<Icon :name="currentTheme.icon" />
-							<template #fallback>
-								<Icon name="lucide:monitor" />
-							</template>
-						</ClientOnly>
-						<span>
-							<ClientOnly fallback="System theme">{{ currentTheme.label }}</ClientOnly>
-						</span>
-					</SidebarMenuButton>
-				</SidebarMenuItem>
-			</SidebarMenu>
+			<div class="flex items-center gap-1 group-data-[collapsible=icon]:flex-col">
+				<AppThemeToggle />
+			</div>
 		</SidebarFooter>
 		<SidebarRail />
 	</Sidebar>

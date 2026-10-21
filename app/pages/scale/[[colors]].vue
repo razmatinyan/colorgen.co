@@ -2,7 +2,8 @@
 import { onKeyStroke, useClipboard, useDebounceFn } from '@vueuse/core'
 import { isInteractiveTarget } from '~/lib/keyboard'
 import { toColorsParam, toHexPart } from '~/lib/palette-url'
-import { parseNamesParam, parseScalesParam, toNamesParam } from '~/lib/scale-url'
+import { parseNamesParam, toNamesParam } from '~/lib/scale-names'
+import { parseScalesParam } from '~/lib/scale-url'
 import { scaleGeneratorKey, useScaleGenerator } from '~/composables/useScaleGenerator'
 
 definePageMeta({ layout: 'app', key: 'scale' })

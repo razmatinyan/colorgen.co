@@ -1,3 +1,4 @@
+import { colorDifference } from './difference'
 import { toGamutOklch, toHex } from './format'
 import { normalize, toOklch } from './parse'
 import type { ColorInput, Oklch } from './types'
@@ -45,4 +46,18 @@ export function generateScale(input: ColorInput): ScaleSwatch[] {
 
 export function scaleHexes(input: ColorInput) {
 	return generateScale(input).map((swatch) => swatch.hex)
+}
+
+export function fitScaleBase(steps: Partial<Record<ScaleStep, Oklch>>): Oklch | null {
+	const known = scaleSteps.flatMap((step, index) => {
+		const color = steps[step]
+		return color ? [{ index, color }] : []
+	})
+	let best: { color: Oklch; error: number } | null = null
+	for (const candidate of known) {
+		const swatches = generateScale(candidate.color)
+		const error = known.reduce((sum, { index, color }) => sum + colorDifference(swatches[index]!.color, color), 0)
+		if (!best || error < best.error - 1e-9) best = { color: candidate.color, error }
+	}
+	return best?.color ?? null
 }

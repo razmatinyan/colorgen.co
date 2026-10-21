@@ -11,7 +11,13 @@ import {
 
 describe('parseBuilderQuery', () => {
 	it('falls back to defaults for an empty query', () => {
-		expect(parseBuilderQuery({})).toEqual({ neutralTint: defaultNeutralTint, neutralHue: null, status: {}, tokens: {} })
+		expect(parseBuilderQuery({})).toEqual({
+			neutralTint: defaultNeutralTint,
+			neutralHue: null,
+			status: {},
+			tokens: {},
+			extraNames: [],
+		})
 	})
 
 	it('reads the neutral tint as a percentage', () => {
@@ -52,13 +58,16 @@ describe('parseBuilderQuery', () => {
 			neutralHue: null,
 			status: {},
 			tokens: {},
+			extraNames: [],
 		})
 	})
 })
 
 describe('toBuilderQuery', () => {
 	it('omits default values', () => {
-		expect(toBuilderQuery({ neutralTint: defaultNeutralTint, neutralHue: null, status: {}, tokens: {} })).toEqual({})
+		expect(
+			toBuilderQuery({ neutralTint: defaultNeutralTint, neutralHue: null, status: {}, tokens: {}, extraNames: [] }),
+		).toEqual({})
 	})
 
 	it('writes the tint as a whole percentage and status colors as hex', () => {
@@ -68,6 +77,7 @@ describe('toBuilderQuery', () => {
 				neutralHue: null,
 				status: { warning: parseColor('#d97706')! },
 				tokens: { ring: { dark: 'white' } },
+				extraNames: [],
 			}),
 		).toEqual({ tint: '46', warning: 'd97706', tokens: 'ring.dark~white' })
 	})
@@ -79,25 +89,36 @@ describe('toBuilderQuery', () => {
 			success: '15803d',
 			info: '0369a1',
 			tokens: 'primary.light~brand.700,primary.dark~brand.300,muted-foreground.light~neutral.700',
+			names: ',accent',
 		}
-		expect(toBuilderQuery(parseBuilderQuery(query))).toEqual(query)
+		expect(toBuilderQuery(parseBuilderQuery(query, 2))).toEqual(query)
+	})
+
+	it('reads custom names for extra colors by position', () => {
+		expect(parseBuilderQuery({ names: 'accent,,Bad Name,extra' }, 3).extraNames).toEqual(['accent', null, null])
+		expect(parseBuilderQuery({}, 2).extraNames).toEqual([null, null])
 	})
 })
 
 describe('parseBrandsParam', () => {
-	it('reads one or two brand colors', () => {
+	it('reads the brand color and any number of extra colors', () => {
 		expect(toHex(parseBrandsParam('1f6cb0')!.brand)).toBe('#1f6cb0')
-		expect(parseBrandsParam('1f6cb0')!.brand2).toBeNull()
-		expect(toHex(parseBrandsParam('1f6cb0-8b5cf6')!.brand2!)).toBe('#8b5cf6')
+		expect(parseBrandsParam('1f6cb0')!.extras).toEqual([])
+		expect(parseBrandsParam('1f6cb0-8b5cf6-f59e0b')!.extras.map((color) => toHex(color))).toEqual([
+			'#8b5cf6',
+			'#f59e0b',
+		])
+		expect(parseBrandsParam(Array.from({ length: 30 }, () => '1f6cb0').join('-'))!.extras).toHaveLength(29)
 	})
 
-	it.each([undefined, '', 'zzz', '1f6cb0-8b5cf6-f59e0b', '1f6cb0-'])('rejects %j', (param) => {
+	it.each([undefined, '', 'zzz', '1f6cb0-', '1f6cb0--8b5cf6'])('rejects %j', (param) => {
 		expect(parseBrandsParam(param)).toBeNull()
 	})
 
 	it('round-trips with toBrandsParam', () => {
 		expect(toBrandsParam(parseBrandsParam('1f6cb0-8b5cf6')!)).toBe('1f6cb0-8b5cf6')
 		expect(toBrandsParam(parseBrandsParam('1f6cb0')!)).toBe('1f6cb0')
+		expect(toBrandsParam(parseBrandsParam('1f6cb0-8b5cf6-14b8a6')!)).toBe('1f6cb0-8b5cf6-14b8a6')
 	})
 })
 

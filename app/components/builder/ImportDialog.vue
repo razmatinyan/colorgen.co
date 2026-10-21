@@ -1,8 +1,9 @@
 <script setup lang="ts">
 import { refDebounced } from '@vueuse/core'
-import { generateSystem, toHex } from '~/lib/color'
+import { generateSystem, systemScale, toHex, type TokenRef } from '~/lib/color'
 import { importFormatLabels, importSample, readImport, type ImportSource, type TokenMatch } from '~/lib/import'
-import { colorDetails, designSystemBuilderKey, tokenRefLabel } from '~/composables/useDesignSystemBuilder'
+import { scaleLabel, systemScaleNames, tokenRefLabel } from '~/lib/scale-names'
+import { designSystemBuilderKey } from '~/composables/useDesignSystemBuilder'
 
 const open = defineModel<boolean>('open', { required: true })
 const emit = defineEmits<{ imported: [] }>()
@@ -93,12 +94,20 @@ function useSample() {
 
 const previewSystem = computed(() => (result.value ? generateSystem(result.value.system) : null))
 
+const previewNames = computed(() =>
+	previewSystem.value && result.value ? systemScaleNames(previewSystem.value, result.value.system.extraNames) : null,
+)
+
+function importRefLabel(ref: TokenRef) {
+	return tokenRefLabel(ref, previewNames.value ?? {})
+}
+
 const picks = computed(() =>
 	(result.value?.picks ?? []).map((pick) => {
-		const scale = previewSystem.value?.[pick.id]
+		const scale = previewSystem.value ? systemScale(previewSystem.value, pick.id) : null
 		return {
 			...pick,
-			label: colorDetails[pick.id].label,
+			label: scaleLabel(previewNames.value?.[pick.id] ?? pick.id),
 			hex: scale ? toHex(scale.base) : null,
 			description: pick.source ? `From ${pick.source}` : 'Suggested from your brand',
 		}
@@ -310,7 +319,7 @@ function apply() {
 							<span
 								class="flex shrink-0 items-center gap-1.5"
 								role="img"
-								:aria-label="`${entry.imported} becomes ${tokenRefLabel(entry.ref)}, ${entry.result}`"
+								:aria-label="`${entry.imported} becomes ${importRefLabel(entry.ref)}, ${entry.result}`"
 							>
 								<span
 									class="size-6 rounded-md ring-1 ring-foreground/10 ring-inset"
@@ -323,7 +332,7 @@ function apply() {
 								/>
 							</span>
 							<span class="hidden w-24 shrink-0 truncate text-muted-foreground sm:block">
-								{{ tokenRefLabel(entry.ref) }}
+								{{ importRefLabel(entry.ref) }}
 							</span>
 							<Badge variant="secondary" class="w-16 shrink-0" :class="matchClasses[entry.match]">
 								{{ matchLabels[entry.match] }}

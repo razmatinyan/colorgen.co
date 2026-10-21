@@ -24,7 +24,7 @@ export function useLandingDemo() {
 	const visibility = useDocumentVisibility()
 
 	function showBrand(brand: Oklch) {
-		builder.settings.value = { ...builder.settings.value, brand, brand2: null, status: {}, tokens: {} }
+		builder.settings.value = { ...builder.settings.value, brand, extras: [], extraNames: [], status: {}, tokens: {} }
 	}
 
 	const cycle = useIntervalFn(

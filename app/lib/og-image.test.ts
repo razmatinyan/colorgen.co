@@ -11,7 +11,7 @@ describe('buildOgImage', () => {
 	})
 
 	it('rejects color counts outside each tool limits', () => {
-		expect(buildOgImage({ kind: 'builder', colors: '111111-222222-333333' }).kind).toBe('home')
+		expect(buildOgImage({ kind: 'convert', colors: '111111-222222' }).kind).toBe('home')
 		expect(buildOgImage({ kind: 'contrast', colors: '1f6cb0' }).kind).toBe('home')
 		expect(buildOgImage({ kind: 'gradient', colors: '1f6cb0' }).kind).toBe('home')
 		expect(buildOgImage({ kind: 'color', colors: '1f6cb0-ffffff' }).kind).toBe('home')
@@ -33,14 +33,22 @@ describe('buildOgImage', () => {
 		expect(model.visual.rows.every((row) => row.hexes.length === scaleSteps.length)).toBe(true)
 	})
 
-	it('keeps the brand color in the builder image and adds the second brand', () => {
+	it('keeps the brand color in the builder image and adds extra colors by name', () => {
 		const model = buildOgImage({ kind: 'builder', colors: '1f6cb0-8b5cf6', tint: '50' })
 		expect(model.title).toBe('Design system for #1F6CB0 and #8B5CF6')
 		if (model.visual.type !== 'scales') throw new Error('expected scales')
-		const [brand, brand2, neutral] = model.visual.rows
-		expect(brand2!.label).toBe('Second brand')
+		const [brand, extra, neutral] = model.visual.rows
+		expect(extra!.label).toBe('Violet')
 		expect(brand!.hexes[brand!.anchorIndex!]).toBe('#1f6cb0')
 		expect(neutral!.anchorIndex).toBeNull()
+	})
+
+	it('accepts any number of builder colors and draws the first rows', () => {
+		const model = buildOgImage({ kind: 'builder', colors: '1f6cb0-8b5cf6-14b8a6-f43f5e' })
+		expect(model.kind).toBe('builder')
+		expect(model.title).toBe('Design system for #1F6CB0 and 3 more')
+		if (model.visual.type !== 'scales') throw new Error('expected scales')
+		expect(model.visual.rows.map((row) => row.label).slice(0, 4)).toEqual(['Brand', 'Violet', 'Teal', 'Red'])
 	})
 
 	it('changes the neutral scale with the tint and ignores an invalid one', () => {

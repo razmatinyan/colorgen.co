@@ -2,7 +2,9 @@ import {
 	colorDifference,
 	defaultNeutralTint,
 	estimateNeutral,
+	extraColorId,
 	fitNeutralScale,
+	fitScaleBase,
 	generateSystem,
 	parseColor,
 	resolveTokens,
@@ -23,11 +25,13 @@ import {
 	type TokenOverrides,
 	type TokenRef,
 } from '../color'
+import { isScaleName, resolveExtraNames } from '../scale-names'
 import type { RecognizedColor, RecognizedImport, RecognizedScale } from './recognize'
 
 export interface ImportedSystem extends SystemSettings {
 	neutralHue: number | null
 	tokens: TokenOverrides
+	extraNames: (string | null)[]
 }
 
 export interface ImportPick {
@@ -75,6 +79,7 @@ const statusScaleNames: Record<StatusKind, string[]> = {
 	warning: ['warning', 'amber', 'yellow', 'orange'],
 	info: ['info', 'blue', 'sky', 'cyan'],
 }
+const statusOwnNames = [...statusKinds, 'error', 'destructive']
 const statusTokens: Record<StatusKind, TokenName> = {
 	danger: 'destructive',
 	success: 'success',
@@ -136,6 +141,10 @@ function tokenColor(recognized: RecognizedImport, name: TokenName) {
 	return recognized.tokens[name]?.light ?? recognized.tokens[name]?.dark ?? null
 }
 
+function stepColors(scale: RecognizedScale): Partial<Record<ScaleStep, Oklch>> {
+	return Object.fromEntries(Object.entries(scale.steps).map(([step, value]) => [step, value!.color]))
+}
+
 function fromScale(scale: RecognizedScale | null): Pick | null {
 	const step = scale && mostColorfulStep(scale)
 	return step && scale ? { color: step.color, source: `${scale.name} scale`, scale: scale.name } : null
@@ -185,12 +194,7 @@ function pickNeutral(recognized: RecognizedImport, brand: Oklch) {
 			return color ? [color.color] : []
 		}),
 	)
-	const estimate = scale
-		? fitNeutralScale(
-				Object.fromEntries(Object.entries(scale.steps).map(([step, value]) => [step, value!.color])),
-				brand,
-			)
-		: estimateNeutral(tokenGrays, brand)
+	const estimate = scale ? fitNeutralScale(stepColors(scale), brand) : estimateNeutral(tokenGrays, brand)
 	if (!estimate) return { tint: defaultNeutralTint, hue: null, source: null }
 	return {
 		tint: Math.round(estimate.tint * 100) / 100,
@@ -199,7 +203,12 @@ function pickNeutral(recognized: RecognizedImport, brand: Oklch) {
 	}
 }
 
-function pickStatus(recognized: RecognizedImport, kind: StatusKind, brand: Oklch, usedScales: ReadonlySet<string>) {
+function pickStatus(
+	recognized: RecognizedImport,
+	kind: StatusKind,
+	brand: Oklch,
+	usedScales: ReadonlySet<string>,
+): Pick | null {
 	const token = tokenColor(recognized, statusTokens[kind])
 	if (token) return { color: token.color, source: token.source }
 	const scale = statusScaleNames[kind]
@@ -212,7 +221,35 @@ function pickStatus(recognized: RecognizedImport, kind: StatusKind, brand: Oklch
 			!best || Math.abs(candidate.color.l - target) < Math.abs(best.color.l - target) ? candidate : best,
 		null,
 	)
-	return step ? { color: step.color, source: step.source } : null
+	return step ? { color: step.color, source: step.source, scale: scale.name } : null
+}
+
+interface ExtraPick extends Pick {
+	name: string | null
+}
+
+function pickExtras(
+	recognized: RecognizedImport,
+	picked: readonly Oklch[],
+	second: Pick | null,
+	usedScales: ReadonlySet<string>,
+): ExtraPick[] {
+	const excluded = new Set([...usedScales, ...brandScaleNames, ...neutralScaleNames, ...statusOwnNames])
+	const extras: ExtraPick[] = second ? [{ ...second, name: null }] : []
+	for (const scale of recognized.scales) {
+		if (excluded.has(scale.name) || (mostColorfulStep(scale)?.color.c ?? 0) < colorfulChroma) continue
+		const base = fitScaleBase(stepColors(scale))
+		if (!base) continue
+		const name = isScaleName(scale.name) ? scale.name : null
+		const twin = extras.find((extra) => colorDifference(extra.color, base) < distinctBrandDifference)
+		if (twin) {
+			twin.name ??= name
+			continue
+		}
+		if (picked.some((color) => colorDifference(color, base) < distinctBrandDifference)) continue
+		extras.push({ color: base, source: `${scale.name} scale`, scale: scale.name, name })
+	}
+	return extras
 }
 
 function toMatch(difference: number): TokenMatch {
@@ -272,23 +309,30 @@ export function mapImport(recognized: RecognizedImport): ImportResult | null {
 	if (!picked) return null
 	const brand = snapToHex(picked)
 	const pickedSecond = pickSecondBrand(recognized, brand)
-	const brand2 = pickedSecond && snapToHex(pickedSecond)
+	const second = pickedSecond && snapToHex(pickedSecond)
 	const neutral = pickNeutral(recognized, brand.color)
-	const usedScales = new Set([brand.scale, brand2?.scale].filter((name): name is string => !!name))
+	const usedScales = new Set([brand.scale, second?.scale].filter((name): name is string => !!name))
 
 	const status: SystemSettings['status'] = {}
 	const statusPicks: ImportPick[] = statusKinds.map((kind) => {
 		const found = pickStatus(recognized, kind, brand.color, usedScales)
 		const pick = found && snapToHex(found)
+		if (found?.scale) usedScales.add(found.scale)
 		if (pick && colorDifference(pick.color, suggestStatusColor(kind, brand.color)) >= editedStatusDifference) {
 			status[kind] = pick.color
 		}
 		return { id: kind, source: pick?.source ?? null }
 	})
 
+	const extras = pickExtras(recognized, [brand.color], second, usedScales).map(snapToHex)
+	const automaticNames = resolveExtraNames(extras.map((extra) => extra.color))
+	const extraNames = extras.map((extra, index) =>
+		extra.name && extra.name !== automaticNames[index] ? extra.name : null,
+	)
+
 	const settings: SystemSettings = {
 		brand: brand.color,
-		brand2: brand2?.color ?? null,
+		extras: extras.map((extra) => extra.color),
 		neutralTint: neutral.tint,
 		neutralHue: neutral.hue,
 		status,
@@ -296,10 +340,10 @@ export function mapImport(recognized: RecognizedImport): ImportResult | null {
 	const { overrides, comparisons, missingTokens } = matchTokens(settings, recognized)
 
 	return {
-		system: { ...settings, neutralHue: neutral.hue, tokens: overrides },
+		system: { ...settings, neutralHue: neutral.hue, tokens: overrides, extraNames },
 		picks: [
 			{ id: 'brand', source: brand.source },
-			...(brand2 ? [{ id: 'brand2' as const, source: brand2.source }] : []),
+			...extras.map((extra, index) => ({ id: extraColorId(index), source: extra.source })),
 			{ id: 'neutral', source: neutral.source },
 			...statusPicks,
 		],

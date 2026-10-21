@@ -6,7 +6,7 @@ import { resolveTokens, tokenNames } from './tokens'
 
 const settings: SystemSettings = {
 	brand: parseColor('#1f6cb0')!,
-	brand2: parseColor('#8b5cf6')!,
+	extras: [parseColor('#8b5cf6')!],
 	neutralTint: 0.3,
 	status: {},
 }
@@ -78,7 +78,7 @@ describe('fixReadability', () => {
 
 describe('fixReadability with linked tokens', () => {
 	it('does not override a token that a previous fix already made readable', () => {
-		const system = generateSystem({ ...settings, brand: parseColor('#facc15')!, brand2: null })
+		const system = generateSystem({ ...settings, brand: parseColor('#facc15')!, extras: [] })
 		const overrides = fixReadability(system, {})
 		expect(overrides.primary?.light).toBeDefined()
 		expect(overrides.ring).toBeUndefined()

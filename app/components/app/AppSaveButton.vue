@@ -15,7 +15,7 @@ function toggle() {
 	const current = savedItem.value
 	if (current) {
 		removeSaved(current.id)
-		showToast('Removed from library', 'info', {
+		showToast('Removed from saved systems', 'info', {
 			description: current.title,
 			action: { label: 'Undo', onClick: () => save(current) },
 		})
@@ -29,7 +29,7 @@ function toggle() {
 		...props.snapshot(),
 	}
 	save(entry)
-	showToast('Saved to library', 'success', {
+	showToast('Saved', 'success', {
 		description: entry.title,
 		action: { label: 'View', onClick: () => navigateTo('/saved') },
 	})
@@ -48,13 +48,13 @@ onKeyStroke(['s', 'S'], (event) => {
 			<Button
 				variant="ghost"
 				size="icon-sm"
-				:aria-label="savedItem ? 'Remove from library' : 'Save to library'"
+				:aria-label="savedItem ? 'Remove from saved systems' : 'Save'"
 				:aria-pressed="!!savedItem"
 				@click="toggle"
 			>
 				<Icon :name="savedItem ? 'lucide:bookmark-check' : 'lucide:bookmark'" />
 			</Button>
 		</TooltipTrigger>
-		<TooltipContent>{{ savedItem ? 'Saved · click to remove' : 'Save to library' }} <Kbd>S</Kbd></TooltipContent>
+		<TooltipContent>{{ savedItem ? 'Saved · click to remove' : 'Save' }} <Kbd>S</Kbd></TooltipContent>
 	</Tooltip>
 </template>

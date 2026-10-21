@@ -12,30 +12,28 @@ import {
 	type TokenOverrides,
 } from './color'
 import { parseColorsParam, parseHexPart, toHexPart } from './palette-url'
+import { parseNamesParam, toNamesParam } from './scale-names'
 
 export type BuilderQuery = Record<string, unknown>
 export type BuilderOptions = Pick<SystemSettings, 'neutralTint' | 'status'> & {
 	neutralHue: number | null
 	tokens: TokenOverrides
+	extraNames: (string | null)[]
 }
-export type BuilderBrands = Pick<SystemSettings, 'brand' | 'brand2'>
+export type BuilderBrands = Pick<SystemSettings, 'brand' | 'extras'>
 
-const maxBrands = 2
 const tokenSeparator = ','
 const refSeparator = '~'
 const neutralHueKey = 'neutral-hue'
 
 export function parseBrandsParam(param: string | undefined): BuilderBrands | null {
 	const colors = parseColorsParam(param)
-	if (!colors || colors.length > maxBrands) return null
-	return { brand: colors[0]!, brand2: colors[1] ?? null }
+	if (!colors?.length) return null
+	return { brand: colors[0]!, extras: colors.slice(1) }
 }
 
-export function toBrandsParam({ brand, brand2 }: BuilderBrands) {
-	return [brand, brand2]
-		.filter((color): color is Oklch => color !== null)
-		.map(toHexPart)
-		.join('-')
+export function toBrandsParam({ brand, extras }: BuilderBrands) {
+	return [brand, ...extras].map(toHexPart).join('-')
 }
 
 function firstString(value: unknown) {
@@ -78,7 +76,7 @@ export function toTokensParam(tokens: TokenOverrides) {
 		.join(tokenSeparator)
 }
 
-export function parseBuilderQuery(query: BuilderQuery): BuilderOptions {
+export function parseBuilderQuery(query: BuilderQuery, extraCount = 0): BuilderOptions {
 	const status: Partial<Record<StatusKind, Oklch>> = {}
 	for (const kind of statusKinds) {
 		const color = parseHexPart(firstString(query[kind]))
@@ -89,10 +87,17 @@ export function parseBuilderQuery(query: BuilderQuery): BuilderOptions {
 		neutralHue: parseHue(firstString(query[neutralHueKey])),
 		status,
 		tokens: parseTokensParam(firstString(query.tokens)),
+		extraNames: parseNamesParam(firstString(query.names), extraCount),
 	}
 }
 
-export function toBuilderQuery({ neutralTint, neutralHue, status, tokens }: BuilderOptions): Record<string, string> {
+export function toBuilderQuery({
+	neutralTint,
+	neutralHue,
+	status,
+	tokens,
+	extraNames,
+}: BuilderOptions): Record<string, string> {
 	const query: Record<string, string> = {}
 	const tintPercent = Math.round(neutralTint * 100)
 	if (tintPercent !== Math.round(defaultNeutralTint * 100)) query.tint = String(tintPercent)
@@ -103,5 +108,7 @@ export function toBuilderQuery({ neutralTint, neutralHue, status, tokens }: Buil
 	}
 	const tokensParam = toTokensParam(tokens)
 	if (tokensParam) query.tokens = tokensParam
+	const namesParam = toNamesParam(extraNames)
+	if (namesParam) query.names = namesParam
 	return query
 }

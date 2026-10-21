@@ -1,6 +1,7 @@
 import { describe, expect, it } from 'vitest'
 import {
 	colorDifference,
+	generateScale,
 	generateSystem,
 	hueDifference,
 	parseColor,
@@ -94,7 +95,7 @@ const shadcnHsl = `
 
 const settings: SystemSettings = {
 	brand: parseColor('#1f6cb0')!,
-	brand2: null,
+	extras: [],
 	neutralTint: 0.3,
 	neutralHue: null,
 	status: {},
@@ -354,7 +355,7 @@ describe('readImport', () => {
 		expect(reading.hasDarkMode).toBe(true)
 		const { system, picks, comparisons } = reading.result!
 		expect(toHex(system.brand)).toBe('#2563eb')
-		expect(system.brand2).toBeNull()
+		expect(system.extras).toEqual([])
 		expect(picks.find((pick) => pick.id === 'brand')!.source).toBe('--primary')
 		expect(picks.find((pick) => pick.id === 'danger')!.source).toBe('--destructive')
 		expect(toHex(system.status.danger!)).toBe('#ef4444')
@@ -388,9 +389,35 @@ describe('readImport', () => {
 
 	it('adds a second brand only when secondary is colorful', () => {
 		const gray = readImport([{ text: ':root { --primary: #1f6cb0; --secondary: #f1f5f9; }' }]).result!
-		expect(gray.system.brand2).toBeNull()
+		expect(gray.system.extras).toEqual([])
 		const purple = readImport([{ text: ':root { --primary: #1f6cb0; --secondary: #8b5cf6; }' }]).result!
-		expect(toHex(purple.system.brand2!)).toBe('#8b5cf6')
+		expect(purple.system.extras.map((color) => toHex(color))).toEqual(['#8b5cf6'])
+		expect(purple.picks.find((pick) => pick.id === 'brand2')!.source).toBe('--secondary')
+	})
+
+	it('adds every other colorful scale as an extra color, keeping its name', () => {
+		const reading = readImport([
+			{
+				text: 'module.exports = { theme: { colors: { primary: colors.blue, gray: colors.slate, red: colors.red, ocean: colors.teal, pink: colors.pink } } }',
+			},
+		])
+		const { system, picks } = reading.result!
+		expect(picks.find((pick) => pick.id === 'brand')!.source).toBe('primary scale')
+		expect(
+			picks.filter((pick) => pick.id.startsWith('brand') && pick.id !== 'brand').map((pick) => pick.source),
+		).toEqual(['ocean scale', 'pink scale'])
+		expect(system.extras).toHaveLength(2)
+		expect(system.extraNames).toEqual(['ocean', 'pink'])
+	})
+
+	it('does not add scales that repeat the brand or a picked color', () => {
+		const css = `:root { --primary: #1f6cb0; --secondary: #8b5cf6; ${['brand', 'violet']
+			.flatMap((name, index) =>
+				generateScale(index ? '#8b5cf6' : '#1f6cb0').map((swatch) => `--color-${name}-${swatch.step}: ${swatch.hex};`),
+			)
+			.join(' ')} }`
+		const { system } = readImport([{ text: css }]).result!
+		expect(system.extras.map((color) => toHex(color))).toEqual(['#8b5cf6'])
 	})
 
 	it('counts unreadable and unresolved colors', () => {
@@ -421,7 +448,11 @@ describe('round trip through every export', () => {
 		['one brand', settings],
 		[
 			'two brands and edits',
-			{ ...settings, brand2: parseColor('#8b5cf6')!, status: { danger: parseColor('#b91c1c')! } },
+			{ ...settings, extras: [parseColor('#8b5cf6')!], status: { danger: parseColor('#b91c1c')! } },
+		],
+		[
+			'four extra colors',
+			{ ...settings, extras: ['#8b5cf6', '#14b8a6', '#e11d48', '#f59e0b'].map((hex) => parseColor(hex)!) },
 		],
 		['own neutral hue', { ...settings, brand: parseColor('#ea580c')!, neutralTint: 0.8, neutralHue: 257 }],
 	]
@@ -446,7 +477,8 @@ describe('round trip through every export', () => {
 		it.each(exports)('comes back unchanged from %s', (_, sources) => {
 			const { result } = readImport(sources)
 			expect(toHex(result!.system.brand)).toBe(toHex(input.brand))
-			expect(result!.system.brand2 && toHex(result!.system.brand2)).toBe(input.brand2 && toHex(input.brand2))
+			expect(result!.system.extras.map((color) => toHex(color))).toEqual(input.extras.map((color) => toHex(color)))
+			expect(result!.system.extraNames).toEqual(input.extras.map(() => null))
 			expect(result!.comparisons).toHaveLength(76)
 			expect(result!.comparisons.filter((entry) => entry.match !== 'same')).toEqual([])
 			const imported = resolveTokens(generateSystem(result!.system), result!.system.tokens)

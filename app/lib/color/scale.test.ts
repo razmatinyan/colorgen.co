@@ -1,7 +1,7 @@
 import { describe, expect, it } from 'vitest'
 import { isInGamut, toHex } from './format'
 import { parseColor } from './parse'
-import { generateScale, nearestStepIndex, scaleHexes, scaleSteps } from './scale'
+import { fitScaleBase, generateScale, nearestStepIndex, scaleHexes, scaleSteps } from './scale'
 
 describe('generateScale', () => {
 	const inputs = ['#1f6cb0', '#f68443', '#f4e19c', '#222933', '#808080', '#ffffff', '#000000', '#00ff00']
@@ -54,5 +54,23 @@ describe('nearestStepIndex', () => {
 		[0, 10],
 	])('maps lightness %d to step index %d', (lightness, index) => {
 		expect(nearestStepIndex(lightness)).toBe(index)
+	})
+})
+
+describe('fitScaleBase', () => {
+	const fromSwatches = (hex: string) =>
+		Object.fromEntries(generateScale(hex).map((swatch) => [swatch.step, parseColor(swatch.hex)!]))
+
+	it.each(['#8b5cf6', '#14b8a6', '#f43f5e', '#1f6cb0'])('finds the color that generated the scale for %s', (hex) => {
+		expect(toHex(fitScaleBase(fromSwatches(hex))!)).toBe(hex)
+	})
+
+	it('works with only some steps', () => {
+		const { 300: light, 600: dark } = fromSwatches('#14b8a6')
+		expect(fitScaleBase({ 300: light, 600: dark })).not.toBeNull()
+	})
+
+	it('returns null without steps', () => {
+		expect(fitScaleBase({})).toBeNull()
 	})
 })

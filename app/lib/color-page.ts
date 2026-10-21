@@ -31,6 +31,7 @@ import {
 	type SystemColorId,
 } from './color'
 import { parseHexPart } from './palette-url'
+import { scaleLabel } from './scale-names'
 
 export type ColorPageRoute = { hex: string } | { redirect: string } | null
 
@@ -99,16 +100,6 @@ export const harmonyLabels: Record<Harmony, string> = {
 	triadic: 'Triadic',
 	tetradic: 'Tetradic',
 	monochromatic: 'Monochromatic',
-}
-
-export const systemScaleLabels: Record<SystemColorId, string> = {
-	brand: 'Brand',
-	brand2: 'Second brand',
-	neutral: 'Neutral',
-	success: 'Success',
-	warning: 'Warning',
-	danger: 'Danger',
-	info: 'Info',
 }
 
 const readableRatio = 4.5
@@ -198,11 +189,11 @@ function relatedColors(hex: string, color: Oklch): RelatedColor[] {
 }
 
 function systemPreview(color: Oklch): ColorPage['system'] {
-	const system = generateSystem({ brand: color, brand2: null, neutralTint: defaultNeutralTint, status: {} })
+	const system = generateSystem({ brand: color, extras: [], neutralTint: defaultNeutralTint, status: {} })
 	return {
 		scales: systemScales(system).map((scale) => ({
 			id: scale.id,
-			label: systemScaleLabels[scale.id],
+			label: scaleLabel(scale.id),
 			anchorStep: scale.anchorStep,
 			swatches: scale.swatches,
 		})),

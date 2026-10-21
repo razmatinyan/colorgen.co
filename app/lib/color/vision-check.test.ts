@@ -6,7 +6,7 @@ import { checkVision, describeVisionWarning, visionTokenGroups, type VisionWarni
 
 const settings: SystemSettings = {
 	brand: parseColor('#1f6cb0')!,
-	brand2: null,
+	extras: [],
 	neutralTint: 0.3,
 	status: {},
 }
