@@ -1,12 +1,17 @@
 <script setup lang="ts">
-import { tokenGroups } from '~/lib/color'
+import { describeVisionWarning, tokenGroups, type ColorBlindVision, type VisionWarning } from '~/lib/color'
 import { designSystemBuilderKey } from '~/composables/useDesignSystemBuilder'
 
+const emit = defineEmits<{ simulate: [type: ColorBlindVision] }>()
 const builder = inject(designSystemBuilderKey)!
 
 const total = computed(() => builder.readability.value.length)
 const failing = computed(() => builder.failingReadability.value)
+const visionWarnings = computed(() => builder.visionWarnings.value)
 const modeLabel = { light: 'Light', dark: 'Dark' } as const
+
+const warningModes = (warning: VisionWarning) =>
+	warning.modes.length === 2 ? 'Light and dark' : modeLabel[warning.modes[0]!]
 </script>
 
 <template>
@@ -60,6 +65,71 @@ const modeLabel = { light: 'Light', dark: 'Dark' } as const
 						{{ Math.round(Math.abs(result.apca)) }}
 					</span>
 					<Button variant="outline" size="sm" @click="builder.fixPair(result.pair.id, result.mode)">Fix</Button>
+				</li>
+			</ul>
+		</section>
+
+		<section class="grid gap-3 rounded-2xl bg-muted/50 p-4" aria-labelledby="vision-heading">
+			<div class="flex items-start gap-3">
+				<Icon
+					:name="visionWarnings.length ? 'lucide:eye' : 'lucide:circle-check'"
+					class="mt-0.5 size-5 shrink-0"
+					:class="visionWarnings.length ? 'text-foreground' : 'text-success'"
+				/>
+				<div class="min-w-0 flex-1">
+					<h3 id="vision-heading" class="text-sm font-medium">
+						{{
+							visionWarnings.length
+								? `${visionWarnings.length} ${visionWarnings.length === 1 ? 'color pair looks' : 'color pairs look'} alike with color blindness`
+								: 'Status and chart colors stay distinct with color blindness'
+						}}
+					</h3>
+					<p class="text-sm text-muted-foreground">
+						Checked for red-, green- and blue-blind vision.
+						{{
+							visionWarnings.length
+								? 'Pair each status color with an icon or a label so it never relies on color alone.'
+								: ''
+						}}
+					</p>
+				</div>
+			</div>
+
+			<ul
+				v-if="visionWarnings.length"
+				class="grid grid-cols-1 gap-1 rounded-xl bg-background p-1 ring-1 ring-foreground/10 dark:bg-card"
+			>
+				<li
+					v-for="warning in visionWarnings"
+					:key="warning.id"
+					class="flex flex-wrap items-center gap-x-3 gap-y-1 rounded-lg px-2.5 py-2 text-sm"
+				>
+					<span class="flex shrink-0 items-center gap-1.5" aria-hidden="true">
+						<span class="flex overflow-hidden rounded-md ring-1 ring-foreground/10">
+							<span
+								v-for="(color, index) in warning.worst.colors"
+								:key="index"
+								class="size-7"
+								:style="{ background: color }"
+							/>
+						</span>
+						<Icon name="lucide:arrow-right" class="size-3.5 text-muted-foreground" />
+						<span class="flex overflow-hidden rounded-md ring-1 ring-foreground/10">
+							<span
+								v-for="(color, index) in warning.worst.simulated"
+								:key="index"
+								class="size-7"
+								:style="{ background: color }"
+							/>
+						</span>
+					</span>
+					<span class="min-w-0 flex-1">
+						{{ describeVisionWarning(warning) }}
+						<span class="text-muted-foreground">· {{ warningModes(warning) }}</span>
+					</span>
+					<Button variant="outline" size="sm" @click="emit('simulate', warning.worst.type)">
+						<Icon name="lucide:scan-eye" data-icon="inline-start" /> Preview
+					</Button>
 				</li>
 			</ul>
 		</section>

@@ -1,6 +1,7 @@
 import type { InjectionKey } from 'vue'
 import {
 	checkReadability,
+	checkVision,
 	defaultNeutralTint,
 	fixReadability,
 	generateSystem,
@@ -78,6 +79,7 @@ export function useDesignSystemBuilder(initial: Partial<BuilderState> = {}) {
 	const tokens = computed(() => resolveTokens(system.value, settings.value.tokens))
 	const readability = computed(() => checkReadability(tokens.value))
 	const failingReadability = computed(() => readability.value.filter((result) => !result.passes))
+	const visionWarnings = computed(() => checkVision(tokens.value))
 
 	const colors = computed<BuilderColor[]>(() =>
 		systemScales(system.value).map((scale) => ({
@@ -184,6 +186,7 @@ export function useDesignSystemBuilder(initial: Partial<BuilderState> = {}) {
 		tokens,
 		readability,
 		failingReadability,
+		visionWarnings,
 		colors,
 		selected,
 		selectedId,

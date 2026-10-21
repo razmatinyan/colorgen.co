@@ -1,11 +1,19 @@
 <script setup lang="ts">
-import { scaleSteps, statusKinds, type ScaleStep, type StatusKind, type TokenName } from '~/lib/color'
+import {
+	scaleSteps,
+	simulateVision,
+	statusKinds,
+	type ScaleStep,
+	type StatusKind,
+	type TokenName,
+	type VisionType,
+} from '~/lib/color'
 import { designSystemBuilderKey } from '~/composables/useDesignSystemBuilder'
 
-const props = defineProps<{ mode: 'light' | 'dark' }>()
+const props = withDefaults(defineProps<{ mode: 'light' | 'dark'; vision?: VisionType }>(), { vision: 'normal' })
 const builder = inject(designSystemBuilderKey)!
 
-const tokens = computed(() => {
+const tokenColors = computed<Record<string, string>>(() => {
 	const system = builder.system.value
 	const resolved = builder.tokens.value
 	const dark = props.mode === 'dark'
@@ -49,6 +57,12 @@ const tokens = computed(() => {
 		'--pv-bar-5': token('chart-5'),
 		...Object.fromEntries(statusTokens),
 	}
+})
+
+const tokens = computed(() => {
+	const vision = props.vision
+	if (vision === 'normal') return tokenColors.value
+	return Object.fromEntries(Object.entries(tokenColors.value).map(([name, hex]) => [name, simulateVision(hex, vision)]))
 })
 
 const card = 'mb-4 break-inside-avoid rounded-2xl bg-(--pv-surface) p-5 ring-1 ring-(--pv-border)'

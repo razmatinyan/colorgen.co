@@ -1,9 +1,11 @@
 <script setup lang="ts">
 import { useClipboard } from '@vueuse/core'
-import { readableTextColor } from '~/lib/color'
+import { readableTextColor, simulateVision, type VisionType } from '~/lib/color'
 import { designSystemBuilderKey } from '~/composables/useDesignSystemBuilder'
 
+const props = withDefaults(defineProps<{ vision?: VisionType }>(), { vision: 'normal' })
 const builder = inject(designSystemBuilderKey)!
+const shown = (hex: string) => simulateVision(hex, props.vision)
 const { copy } = useClipboard({ legacy: true })
 const { showToast } = useAppToast()
 
@@ -33,7 +35,7 @@ async function copySwatch(label: string, step: number, hex: string) {
 							<button
 								type="button"
 								class="flex h-16 w-full flex-col justify-between rounded-xl p-2 text-left text-xs ring-1 ring-foreground/10 transition-[color,background-color,transform] duration-300 outline-none ring-inset focus-visible:ring-3 focus-visible:ring-ring/50 active:scale-[0.97] @4xl:h-20"
-								:style="{ background: swatch.hex, color: readableTextColor(swatch.hex) }"
+								:style="{ background: shown(swatch.hex), color: readableTextColor(shown(swatch.hex)) }"
 								:aria-label="`Copy ${color.label} ${swatch.step}, ${swatch.hex.toUpperCase()}${swatch.step === color.anchorStep ? ', your color' : ''}`"
 								@click="copySwatch(color.label, swatch.step, swatch.hex)"
 							>

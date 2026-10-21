@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { onKeyStroke, useClipboard, useDebounceFn } from '@vueuse/core'
-import { describeColor, toHex } from '~/lib/color'
+import { describeColor, toHex, type ColorBlindVision } from '~/lib/color'
 import { parseBrandsParam, parseBuilderQuery, toBrandsParam, toBuilderQuery } from '~/lib/builder-url'
 import { isInteractiveTarget } from '~/lib/keyboard'
 import { designSystemBuilderKey, useDesignSystemBuilder } from '~/composables/useDesignSystemBuilder'
@@ -82,6 +82,13 @@ const previewModes = [
 	{ value: 'light', label: 'Light', icon: 'lucide:sun' },
 	{ value: 'dark', label: 'Dark', icon: 'lucide:moon' },
 ] as const
+
+const { vision } = useVisionSimulation(() => view.value !== 'tokens')
+
+function simulate(type: ColorBlindVision) {
+	vision.value = type
+	view.value = 'preview'
+}
 
 const exportOpen = ref(false)
 const importOpen = ref(false)
@@ -231,6 +238,7 @@ onKeyStroke(['z', 'Z'], (event) => {
 						<CardDescription>{{ viewDetails[view].description }}</CardDescription>
 					</div>
 					<div class="flex flex-wrap gap-2">
+						<ColorVisionMenu v-if="view !== 'tokens'" v-model="vision" />
 						<AppSegmentedControl
 							v-if="view === 'preview'"
 							v-model="previewMode"
@@ -241,9 +249,9 @@ onKeyStroke(['z', 'Z'], (event) => {
 					</div>
 				</CardHeader>
 				<CardContent class="min-h-0 flex-1 lg:overflow-y-auto">
-					<BuilderPreview v-if="view === 'preview'" :mode="previewMode" />
-					<BuilderTokens v-else-if="view === 'tokens'" />
-					<BuilderScales v-else />
+					<BuilderPreview v-if="view === 'preview'" :mode="previewMode" :vision="vision" />
+					<BuilderTokens v-else-if="view === 'tokens'" @simulate="simulate" />
+					<BuilderScales v-else :vision="vision" />
 				</CardContent>
 			</Card>
 		</div>

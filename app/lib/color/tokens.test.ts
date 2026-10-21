@@ -80,6 +80,32 @@ describe('resolveTokens', () => {
 		expect(tokens['primary-foreground'].light.ref).toBe('white')
 	})
 
+	it('picks status fills that keep their text readable for any brand', () => {
+		const statusPairs = [
+			['destructive', 'destructive-foreground'],
+			['success', 'success-foreground'],
+			['warning', 'warning-foreground'],
+			['info', 'info-foreground'],
+		] as const
+		for (let h = 0; h < 360; h += 15) {
+			for (const l of [0.3, 0.5, 0.65, 0.8]) {
+				for (const c of [0, 0.08, 0.2]) {
+					const brandTokens = resolveTokens(generateSystem({ ...settings, brand: { l, c, h }, brand2: null }))
+					for (const [fill, text] of statusPairs) {
+						for (const mode of ['light', 'dark'] as const) {
+							expect(wcagRatio(brandTokens[text][mode].hex, brandTokens[fill][mode].hex)).toBeGreaterThanOrEqual(4.5)
+						}
+					}
+				}
+			}
+		}
+	})
+
+	it('keeps an edited status color exact when its text is already readable', () => {
+		const edited = generateSystem({ ...settings, status: { danger: parseColor('#b91c1c')! } })
+		expect(resolveTokens(edited).destructive.light.hex).toBe('#b91c1c')
+	})
+
 	it('maps secondary to the second brand, or to a neutral without one', () => {
 		expect(tokens.secondary.light.ref.startsWith('brand2.')).toBe(true)
 		expect(resolveTokens(singleBrand).secondary.light.ref).toBe('neutral.100')

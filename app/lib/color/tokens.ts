@@ -66,6 +66,7 @@ export type ResolvedTokens = Record<TokenName, Record<TokenMode, ResolvedToken>>
 const white = '#ffffff'
 const darkTextRef: TokenRef = 'neutral.950'
 const darkModeColorRatio = 4.5
+const fillTextRatio = 4.5
 
 export function isTokenName(value: string): value is TokenName {
 	return (tokenNames as readonly string[]).includes(value)
@@ -126,6 +127,24 @@ function colorRef(context: DefaultContext, id: SystemColorId): TokenRef {
 	return context.mode === 'light' ? anchorRef(context, id) : liftedRef(context, id)
 }
 
+function bestTextRatio(system: ColorSystem, fillHex: string): number {
+	return Math.max(wcagRatio(white, fillHex), wcagRatio(refHex(system, darkTextRef)!, fillHex))
+}
+
+function stepIndexesByDistance(fromIndex: number): number[] {
+	return scaleSteps.map((_, index) => index).sort((a, b) => Math.abs(a - fromIndex) - Math.abs(b - fromIndex) || b - a)
+}
+
+function readableFillRef(context: DefaultContext, id: SystemColorId): TokenRef {
+	if (context.mode === 'dark') return liftedRef(context, id)
+	const scale = context.system[id]!
+	const anchorIndex = scaleSteps.indexOf(scale.anchorStep ?? 500)
+	const readableIndex = stepIndexesByDistance(anchorIndex).find(
+		(index) => bestTextRatio(context.system, scale.swatches[index]!.hex) >= fillTextRatio,
+	)
+	return scaleRef(id, scaleSteps[readableIndex ?? anchorIndex]!)
+}
+
 function textOn(context: DefaultContext, fill: TokenName): TokenRef {
 	const fillHex = context.token(fill).hex
 	const darkText = refHex(context.system, darkTextRef)!
@@ -157,13 +176,13 @@ const defaults: Record<TokenName, (context: DefaultContext) => TokenRef> = {
 	border: (c) => pick(c, 'neutral.200', 'neutral.800'),
 	input: (c) => pick(c, 'neutral.200', 'neutral.700'),
 	ring: (c) => c.token('primary').ref,
-	destructive: (c) => colorRef(c, 'danger'),
+	destructive: (c) => readableFillRef(c, 'danger'),
 	'destructive-foreground': (c) => textOn(c, 'destructive'),
-	success: (c) => colorRef(c, 'success'),
+	success: (c) => readableFillRef(c, 'success'),
 	'success-foreground': (c) => textOn(c, 'success'),
-	warning: (c) => colorRef(c, 'warning'),
+	warning: (c) => readableFillRef(c, 'warning'),
 	'warning-foreground': (c) => textOn(c, 'warning'),
-	info: (c) => colorRef(c, 'info'),
+	info: (c) => readableFillRef(c, 'info'),
 	'info-foreground': (c) => textOn(c, 'info'),
 	'chart-1': (c) => chartRefs(c)[0]!,
 	'chart-2': (c) => chartRefs(c)[1]!,

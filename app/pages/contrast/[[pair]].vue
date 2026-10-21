@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { onKeyStroke, useClipboard, useDebounceFn } from '@vueuse/core'
-import { checkContrast, toHex } from '~/lib/color'
+import { checkContrast, simulateVision, toHex, visionInfo, wcagRatio } from '~/lib/color'
 import { parseContrastParam, toContrastParam } from '~/lib/contrast-url'
 import { isInteractiveTarget } from '~/lib/keyboard'
 import { toHexPart } from '~/lib/palette-url'
@@ -77,6 +77,13 @@ const announcement = computed(() => {
 	const { ratio, criteria } = checker.check.value
 	const bodyAa = criteria.find((criterion) => criterion.id === 'body-aa')!
 	return `Contrast ${ratio.toFixed(2)} to 1, ${bodyAa.passes ? 'passes' : 'fails'} AA for body text`
+})
+
+const { vision } = useVisionSimulation()
+const simulatedRatio = computed(() => {
+	if (vision.value === 'normal') return null
+	const { text, background } = checker.hexes.value
+	return wcagRatio(simulateVision(text, vision.value), simulateVision(background, vision.value))
 })
 
 async function copyLink() {
@@ -195,9 +202,18 @@ onKeyStroke(['z', 'Z'], (event) => {
 				<CardHeader>
 					<CardTitle>{{ pairTitle }}</CardTitle>
 					<CardDescription>Is this text readable on this background?</CardDescription>
+					<CardAction>
+						<ColorVisionMenu v-model="vision" />
+					</CardAction>
 				</CardHeader>
 				<CardContent class="grid min-h-0 flex-1 content-start gap-6 lg:overflow-y-auto">
-					<ContrastPreview />
+					<div class="grid gap-2">
+						<ContrastPreview :vision="vision" />
+						<p v-if="simulatedRatio !== null" class="text-sm text-muted-foreground tabular-nums">
+							As seen by {{ visionInfo[vision].people }}: {{ simulatedRatio.toFixed(2) }}:1 contrast. The checks below
+							use the real colors.
+						</p>
+					</div>
 					<div class="grid grid-cols-1 gap-6 xl:grid-cols-2">
 						<ContrastResults />
 						<ContrastFixes />

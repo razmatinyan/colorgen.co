@@ -1,8 +1,13 @@
 <script setup lang="ts">
+import { simulateVision, type VisionType } from '~/lib/color'
 import { contrastCheckerKey } from '~/composables/useContrastChecker'
 
+const props = withDefaults(defineProps<{ vision?: VisionType }>(), { vision: 'normal' })
 const checker = inject(contrastCheckerKey)!
-const style = computed(() => ({ background: checker.hexes.value.background, color: checker.hexes.value.text }))
+const style = computed(() => ({
+	background: simulateVision(checker.hexes.value.background, props.vision),
+	color: simulateVision(checker.hexes.value.text, props.vision),
+}))
 </script>
 
 <template>
